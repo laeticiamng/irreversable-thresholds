@@ -93,4 +93,3 @@ export function useAuth() {
     checkSubscription,
   };
 }
-}

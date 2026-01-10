@@ -16,7 +16,8 @@ export default function CreateThreshCase() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { workspaces } = useWorkspaces(user?.id);
-  const { createCase } = useCases(user?.id);
+  const personalWorkspace = workspaces.find(w => w.is_personal);
+  const { createCase } = useCases(personalWorkspace?.id);
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -37,7 +38,6 @@ export default function CreateThreshCase() {
       return;
     }
 
-    const personalWorkspace = workspaces.find(w => w.is_personal);
     if (!personalWorkspace) {
       toast.error('Aucun workspace trouvé');
       return;
@@ -63,9 +63,7 @@ export default function CreateThreshCase() {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <span className="text-amber-500/50 font-display tracking-widest text-sm animate-pulse">
-          THRESH
-        </span>
+        <span className="text-amber-500/50 font-display tracking-widest text-sm animate-pulse">THRESH</span>
       </div>
     );
   }
@@ -75,16 +73,10 @@ export default function CreateThreshCase() {
       {/* Navigation */}
       <nav className="border-b border-amber-500/20">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center gap-4">
-          <Link 
-            to="/thresh/cases" 
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <Link to="/thresh/cases" className="text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <Link 
-            to="/thresh/home" 
-            className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors"
-          >
+          <Link to="/thresh/home" className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors">
             THRESH
           </Link>
         </div>
@@ -93,19 +85,13 @@ export default function CreateThreshCase() {
       {/* Form */}
       <main className="flex-1 max-w-2xl mx-auto w-full px-6 py-12">
         <div className="mb-8">
-          <h1 className="font-display text-3xl tracking-wide text-foreground mb-2">
-            Nouveau dossier THRESH
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Décris le contexte dans lequel tu vas identifier des seuils invisibles.
-          </p>
+          <h1 className="font-display text-3xl tracking-wide text-foreground mb-2">Nouveau dossier THRESH</h1>
+          <p className="text-muted-foreground text-sm">Décris le contexte dans lequel tu vas identifier des seuils invisibles.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-foreground">
-              Titre du dossier *
-            </Label>
+            <Label htmlFor="title" className="text-foreground">Titre du dossier *</Label>
             <Input
               id="title"
               value={title}
@@ -117,9 +103,7 @@ export default function CreateThreshCase() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-foreground">
-              Contexte (optionnel)
-            </Label>
+            <Label htmlFor="description" className="text-foreground">Contexte (optionnel)</Label>
             <Textarea
               id="description"
               value={description}
@@ -127,9 +111,7 @@ export default function CreateThreshCase() {
               placeholder="Décris brièvement le contexte de ce dossier..."
               className="bg-card/50 border-amber-500/20 focus:border-amber-500/40 min-h-[120px]"
             />
-            <p className="text-xs text-muted-foreground">
-              Le contexte aide à mieux comprendre les seuils que tu vas identifier.
-            </p>
+            <p className="text-xs text-muted-foreground">Le contexte aide à mieux comprendre les seuils que tu vas identifier.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -164,9 +146,7 @@ export default function CreateThreshCase() {
 
           <div className="flex items-center justify-end gap-4 pt-6 border-t border-amber-500/10">
             <Link to="/thresh/cases">
-              <Button type="button" variant="ghost" className="text-muted-foreground">
-                Annuler
-              </Button>
+              <Button type="button" variant="ghost" className="text-muted-foreground">Annuler</Button>
             </Link>
             <Button 
               type="submit" 
@@ -182,9 +162,7 @@ export default function CreateThreshCase() {
       {/* Footer */}
       <footer className="border-t border-amber-500/20 py-6">
         <div className="max-w-2xl mx-auto px-6">
-          <p className="text-xs text-muted-foreground/60 text-center">
-            Outil de lucidité. Pas de promesse. Pas de décision à ta place.
-          </p>
+          <p className="text-xs text-muted-foreground/60 text-center">Outil de lucidité. Pas de promesse. Pas de décision à ta place.</p>
         </div>
       </footer>
     </div>

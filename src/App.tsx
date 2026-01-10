@@ -30,6 +30,12 @@ import NullaHome from "./pages/nulla/NullaHome";
 import NullaCases from "./pages/nulla/NullaCases";
 import NullaCaseDetail from "./pages/nulla/NullaCaseDetail";
 
+// THRESH Module
+import ThreshHome from "./pages/thresh/ThreshHome";
+import ThreshCases from "./pages/thresh/ThreshCases";
+import ThreshCaseDetail from "./pages/thresh/ThreshCaseDetail";
+import CreateThreshCase from "./pages/thresh/CreateThreshCase";
+
 // Other modules
 import NullaModule from "./pages/NullaModule";
 import ThreshModule from "./pages/ThreshModule";
@@ -70,7 +76,11 @@ const App = () => (
             <Route path="/nulla/cases/:caseId" element={<NullaCaseDetail />} />
             <Route path="/nulla/space" element={<NullaModule />} />
             
-            {/* Other modules */}
+            {/* THRESH Module */}
+            <Route path="/thresh/home" element={<ThreshHome />} />
+            <Route path="/thresh/cases" element={<ThreshCases />} />
+            <Route path="/thresh/cases/new" element={<CreateThreshCase />} />
+            <Route path="/thresh/cases/:caseId" element={<ThreshCaseDetail />} />
             <Route path="/thresh/space" element={<ThreshModule />} />
             <Route path="/silva/space" element={<SilvaSpace />} />
             

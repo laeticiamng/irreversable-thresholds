@@ -2,28 +2,15 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { UpgradeModal } from '@/components/UpgradeModal';
-import { useState } from 'react';
 import { Zap, Eye, FileText, Layers, Clock, Target, Shield } from 'lucide-react';
 
 export default function ThreshHome() {
   const { user, isSubscribed } = useAuth();
 
   const features = [
-    {
-      icon: Zap,
-      title: "Seuil → Ressenti",
-      description: "Identifie le moment exact où quelque chose bascule"
-    },
-    {
-      icon: Eye,
-      title: "Types de seuils",
-      description: "Trop, pas assez, rupture, évidence, saturation..."
-    },
-    {
-      icon: FileText,
-      title: "Export rapport",
-      description: "PDF structuré pour la trace ou la collaboration"
-    }
+    { icon: Zap, title: "Seuil → Ressenti", description: "Identifie le moment exact où quelque chose bascule" },
+    { icon: Eye, title: "Types de seuils", description: "Trop, pas assez, rupture, évidence, saturation..." },
+    { icon: FileText, title: "Export rapport", description: "PDF structuré pour la trace ou la collaboration" }
   ];
 
   const useCases = [
@@ -46,10 +33,7 @@ export default function ThreshHome() {
       {/* Navigation */}
       <nav className="border-b border-amber-500/20">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link 
-            to="/thresh" 
-            className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors"
-          >
+          <Link to="/thresh" className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors">
             THRESH
           </Link>
           <div className="flex items-center gap-4">
@@ -76,9 +60,7 @@ export default function ThreshHome() {
       {/* Hero */}
       <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="font-display text-5xl md:text-6xl tracking-wide text-amber-500 mb-6">
-            THRESH
-          </h1>
+          <h1 className="font-display text-5xl md:text-6xl tracking-wide text-amber-500 mb-6">THRESH</h1>
           <p className="text-xl text-muted-foreground font-body mb-4 max-w-2xl mx-auto">
             Repère les seuils invisibles avant qu'ils ne soient franchis.
           </p>
@@ -120,18 +102,13 @@ export default function ThreshHome() {
       {/* Thresh Types Grid */}
       <section className="py-16 px-6 border-t border-amber-500/10 bg-card/30">
         <div className="max-w-4xl mx-auto">
-          <h2 className="font-display text-2xl text-center text-amber-500 mb-4">
-            Types de seuils invisibles
-          </h2>
+          <h2 className="font-display text-2xl text-center text-amber-500 mb-4">Types de seuils invisibles</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
             Chaque seuil a sa nature propre. THRESH t'aide à les identifier et les nommer.
           </p>
           <div className="grid md:grid-cols-3 gap-4">
             {threshTypes.map((type, index) => (
-              <div 
-                key={index} 
-                className="p-6 border border-amber-500/20 bg-card/50 hover:bg-card/80 transition-colors"
-              >
+              <div key={index} className="p-6 border border-amber-500/20 bg-card/50 hover:bg-card/80 transition-colors">
                 <div className="flex items-center gap-3 mb-3">
                   <type.icon className="w-4 h-4 text-amber-500" />
                   <h3 className="font-display text-amber-500">{type.name}</h3>
@@ -146,9 +123,7 @@ export default function ThreshHome() {
       {/* Use Cases */}
       <section className="py-16 px-6 border-t border-amber-500/10">
         <div className="max-w-4xl mx-auto">
-          <h2 className="font-display text-2xl text-center text-amber-500 mb-12">
-            Cas d'usage
-          </h2>
+          <h2 className="font-display text-2xl text-center text-amber-500 mb-12">Cas d'usage</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {useCases.map((useCase, index) => (
               <div key={index} className="p-6 border border-amber-500/20 bg-card/30">
@@ -170,9 +145,7 @@ export default function ThreshHome() {
       {/* Why Pay */}
       <section className="py-16 px-6 border-t border-amber-500/10 bg-card/30">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-display text-2xl text-amber-500 mb-6">
-            Pourquoi passer Pro ?
-          </h2>
+          <h2 className="font-display text-2xl text-amber-500 mb-6">Pourquoi passer Pro ?</h2>
           <div className="grid md:grid-cols-4 gap-6 mb-8">
             <div className="p-4">
               <div className="text-2xl mb-2">∞</div>
@@ -199,8 +172,6 @@ export default function ThreshHome() {
                 </Button>
               }
             />
-              Débloquer Pro — 9,90€/mois
-            </Button>
           )}
         </div>
       </section>
@@ -213,22 +184,12 @@ export default function ThreshHome() {
               Outil de lucidité. Pas de promesse. Pas de décision à ta place.
             </p>
             <div className="flex items-center gap-6">
-              <Link to="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                Territoires
-              </Link>
-              <Link to="/manifesto" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                Manifeste
-              </Link>
+              <Link to="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Territoires</Link>
+              <Link to="/manifesto" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Manifeste</Link>
             </div>
           </div>
         </div>
       </footer>
-
-      <UpgradeModal 
-        open={showUpgrade} 
-        onOpenChange={setShowUpgrade}
-        module="thresh"
-      />
     </div>
   );
 }
