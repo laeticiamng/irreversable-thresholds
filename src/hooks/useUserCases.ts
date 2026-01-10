@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Case } from '@/types/database';
+import { Case, ModuleType } from '@/types/database';
+import { toast } from 'sonner';
 
 /**
  * Hook for fetching cases by user ID (across all workspaces)
@@ -36,25 +37,91 @@ export function useUserCases(userId: string | undefined) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user_cases', userId] });
+      toast.success('Dossier supprimé');
+    },
+    onError: () => {
+      toast.error('Erreur lors de la suppression');
+    },
+  });
+
+  const archiveCase = useMutation({
+    mutationFn: async (caseId: string) => {
+      const { error } = await supabase
+        .from('cases')
+        .update({ status: 'archived' })
+        .eq('id', caseId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_cases', userId] });
+      toast.success('Dossier archivé');
+    },
+    onError: () => {
+      toast.error('Erreur lors de l\'archivage');
+    },
+  });
+
+  const restoreCase = useMutation({
+    mutationFn: async (caseId: string) => {
+      const { error } = await supabase
+        .from('cases')
+        .update({ status: 'active' })
+        .eq('id', caseId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_cases', userId] });
+      toast.success('Dossier restauré');
+    },
+    onError: () => {
+      toast.error('Erreur lors de la restauration');
+    },
+  });
+
+  const updateCase = useMutation({
+    mutationFn: async ({ caseId, updates }: { caseId: string; updates: { title?: string; description?: string; status?: string } }) => {
+      const { error } = await supabase
+        .from('cases')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', caseId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_cases', userId] });
     },
   });
 
   const getActiveCases = () => cases.filter(c => c.status === 'active');
   const getArchivedCases = () => cases.filter(c => c.status === 'archived');
-  const getCasesByModule = (module: string) => {
-    // Filter by module based on metadata or case title pattern
+  
+  const getCasesByModule = (module: ModuleType) => {
     return cases.filter(c => {
-      const meta = c.metadata as Record<string, unknown>;
+      const meta = c.metadata as Record<string, unknown> | null;
       return meta?.module === module;
     });
+  };
+
+  const searchCases = (query: string) => {
+    const lowerQuery = query.toLowerCase();
+    return cases.filter(c => 
+      c.title.toLowerCase().includes(lowerQuery) ||
+      c.description?.toLowerCase().includes(lowerQuery)
+    );
   };
 
   return {
     cases,
     isLoading,
     deleteCase,
+    archiveCase,
+    restoreCase,
+    updateCase,
     getActiveCases,
     getArchivedCases,
     getCasesByModule,
+    searchCases,
   };
 }

@@ -321,13 +321,29 @@ export default function Account() {
         {/* Danger Zone */}
         <section className="p-6 border border-destructive/20 bg-destructive/5 space-y-4">
           <h2 className="font-display text-lg tracking-wide text-destructive/80">Zone sensible</h2>
-          <Button 
-            variant="outline"
-            onClick={handleSignOut}
-            className="border-destructive/30 text-destructive hover:bg-destructive/10"
-          >
-            Se déconnecter
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button 
+              variant="outline"
+              onClick={handleSignOut}
+              className="border-destructive/30 text-destructive hover:bg-destructive/10"
+            >
+              Se déconnecter
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                if (window.confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
+                  toast.info('Pour supprimer votre compte, contactez le support.');
+                }
+              }}
+              className="border-destructive/50 text-destructive/70 hover:bg-destructive/10"
+            >
+              Supprimer mon compte
+            </Button>
+          </div>
+          <p className="text-xs text-destructive/50">
+            La suppression du compte est définitive et supprime toutes vos données.
+          </p>
         </section>
 
         {/* Footer */}

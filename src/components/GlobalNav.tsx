@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { GlobalSearch } from '@/components/GlobalSearch';
 import { 
   LayoutDashboard, 
   Target, 
@@ -113,6 +114,9 @@ export function GlobalNav() {
 
             {/* Right side actions */}
             <div className="flex items-center gap-2">
+              {/* Global Search */}
+              <GlobalSearch />
+
               {/* Notifications */}
               <NotificationBell />
 
