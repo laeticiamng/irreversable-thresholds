@@ -1,8 +1,9 @@
+import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function About() {
+const About = forwardRef<HTMLDivElement>((_, ref) => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div ref={ref} className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -183,4 +184,8 @@ export default function About() {
       </main>
     </div>
   );
-}
+});
+
+About.displayName = 'About';
+
+export default About;

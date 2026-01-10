@@ -15,6 +15,8 @@ import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
 import { AIAssistButton } from '@/components/ai/AIAssistButton';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
+import { TagManager } from '@/components/tags/TagManager';
+import { ShareCaseModal } from '@/components/collaboration/ShareCaseModal';
 import { useAIFormPrefill, type ThreshFormData } from '@/hooks/useAIFormPrefill';
 import { Plus, ArrowLeft, Leaf } from 'lucide-react';
 import type { AIProposal } from '@/hooks/useAIAssist';
@@ -137,8 +139,18 @@ export default function ThreshCaseDetail() {
                   </>
                 )}
               </div>
+              
+              {/* Tags */}
+              <div className="mt-4">
+                <TagManager caseId={caseId!} />
+              </div>
             </div>
             <div className="flex items-center gap-3">
+              <ShareCaseModal 
+                caseId={caseId!}
+                caseTitle={currentCase.title}
+                isOwner={currentCase.user_id === user?.id}
+              />
               <AIAssistButton onClick={() => setShowAIPanel(true)} />
               {activeTab !== 'silva' && (
                 <Button 
