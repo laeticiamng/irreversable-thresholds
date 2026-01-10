@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { GlobalNav } from '@/components/GlobalNav';
 import { StatsCharts } from '@/components/dashboard/StatsCharts';
+import { CalendarView } from '@/components/dashboard/CalendarView';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -333,6 +334,8 @@ export default function Dashboard() {
                   <span className="text-xl font-display text-muted-foreground/40">∞</span>
                   <span className="text-xs text-muted-foreground/50">durée</span>
                 </div>
+              </div>
+            </Link>
           </div>
 
           {/* Statistics Section */}
@@ -349,7 +352,14 @@ export default function Dashboard() {
               absences={absences}
             />
           </div>
-            </Link>
+
+          {/* Calendar View */}
+          <div className="mt-12">
+            <CalendarView 
+              irreversaThresholds={irreversaThresholds}
+              threshThresholds={threshThresholds}
+              absences={absences}
+            />
           </div>
 
           {/* Recent Activity / Pro Benefits */}

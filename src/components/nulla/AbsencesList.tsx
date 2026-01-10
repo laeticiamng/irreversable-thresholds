@@ -1,5 +1,6 @@
 import { Absence } from '@/types/database';
 import { Button } from '@/components/ui/button';
+import { AbsenceActions } from './AbsenceActions';
 
 const CATEGORY_LABELS: Record<string, string> = {
   ressource: 'Ressource',
@@ -22,10 +23,20 @@ const IMPACT_LABELS: Record<string, { label: string; color: string; bg: string }
 interface AbsencesListProps {
   absences: Absence[];
   onAddAbsence: () => void;
+  onEdit?: (data: {
+    id: string;
+    title?: string;
+    description?: string;
+    category?: string;
+    impactLevel?: string;
+    counterfactual?: string;
+    evidenceNeeded?: string;
+  }) => void;
+  onDelete?: (id: string) => void;
   isAtLimit: boolean;
 }
 
-export function AbsencesList({ absences, onAddAbsence, isAtLimit }: AbsencesListProps) {
+export function AbsencesList({ absences, onAddAbsence, onEdit, onDelete, isAtLimit }: AbsencesListProps) {
   if (absences.length === 0) {
     return (
       <div className="text-center py-24 border border-dashed border-nulla/20">
@@ -74,7 +85,17 @@ export function AbsencesList({ absences, onAddAbsence, isAtLimit }: AbsencesList
                   </span>
                 </div>
               </div>
+              {onEdit && onDelete && (
+                <AbsenceActions 
+                  absence={absence as any}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                />
+              )}
             </div>
+
+            {/* Description */}
+            <p className="text-sm text-muted-foreground mb-4">{absence.description}</p>
 
             {/* Effects */}
             {absence.effects && absence.effects.length > 0 && (

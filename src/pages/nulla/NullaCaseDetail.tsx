@@ -31,7 +31,7 @@ export default function NullaCaseDetail() {
   const { caseId } = useParams<{ caseId: string }>();
   const navigate = useNavigate();
   const { user, loading: authLoading, isSubscribed } = useAuth();
-  const { absences, isLoading, addAbsence, addEffect } = useAbsencesDB(user?.id);
+  const { absences, isLoading, addAbsence, addEffect, deleteAbsence, updateAbsence } = useAbsencesDB(user?.id);
   const { cases } = useUserCases(user?.id);
   const { plan, canExport, isPro } = useSubscription(user?.id);
 
@@ -214,6 +214,8 @@ export default function NullaCaseDetail() {
           <AbsencesList 
             absences={caseAbsences}
             onAddAbsence={() => setShowAddAbsence(true)}
+            onEdit={(data) => updateAbsence.mutateAsync(data)}
+            onDelete={(id) => deleteAbsence.mutateAsync(id)}
             isAtLimit={isAtLimit}
           />
         )}
