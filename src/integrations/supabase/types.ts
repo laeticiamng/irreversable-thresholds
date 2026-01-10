@@ -153,6 +153,80 @@ export type Database = {
           },
         ]
       }
+      case_collaborators: {
+        Row: {
+          accepted_at: string | null
+          case_id: string
+          id: string
+          invited_at: string
+          invited_by: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          case_id: string
+          id?: string
+          invited_at?: string
+          invited_by: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          case_id?: string
+          id?: string
+          invited_at?: string
+          invited_by?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_collaborators_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_tags: {
+        Row: {
+          case_id: string
+          created_at: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_tags_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cases: {
         Row: {
           created_at: string
@@ -510,6 +584,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tags: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       templates: {
         Row: {
