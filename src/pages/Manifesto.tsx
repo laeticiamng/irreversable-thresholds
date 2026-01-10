@@ -1,8 +1,9 @@
+import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Manifesto() {
+const Manifesto = forwardRef<HTMLDivElement>((_, ref) => {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div ref={ref} className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="border-b border-border/50">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -176,4 +177,8 @@ export default function Manifesto() {
       </footer>
     </div>
   );
-}
+});
+
+Manifesto.displayName = 'Manifesto';
+
+export default Manifesto;

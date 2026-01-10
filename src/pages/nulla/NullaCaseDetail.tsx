@@ -16,6 +16,8 @@ import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
 import { AIAssistButton } from '@/components/ai/AIAssistButton';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
+import { TagManager } from '@/components/tags/TagManager';
+import { ShareCaseModal } from '@/components/collaboration/ShareCaseModal';
 import { useAIFormPrefill, type NullaFormData } from '@/hooks/useAIFormPrefill';
 import { Leaf, Folder } from 'lucide-react';
 import type { AIProposal } from '@/hooks/useAIAssist';
@@ -115,7 +117,7 @@ export default function NullaCaseDetail() {
       <div className="border-b border-border/50 bg-card/20">
         <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex items-start justify-between gap-4">
-            <div>
+            <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <Folder className="w-4 h-4 text-nulla/60" />
                 <span className="text-xs text-muted-foreground uppercase tracking-wide">Dossier</span>
@@ -126,15 +128,27 @@ export default function NullaCaseDetail() {
               {currentCase?.description && (
                 <p className="text-sm text-muted-foreground mb-2">{currentCase.description}</p>
               )}
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mb-3">
                 {highImpactCount} absence{highImpactCount !== 1 ? 's' : ''} critique{highImpactCount !== 1 ? 's' : ''} · {totalEffects} effet{totalEffects !== 1 ? 's' : ''} documenté{totalEffects !== 1 ? 's' : ''}
               </p>
+              
+              {/* Tags */}
+              {caseId && <TagManager caseId={caseId} />}
             </div>
-            {plan === 'free' && (
-              <span className="text-xs px-3 py-1 bg-nulla/10 text-nulla border border-nulla/20">
-                Free: {caseAbsences.length}/{NULLA_FREE_LIMITS.absencesPerCase} absences
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {caseId && currentCase && (
+                <ShareCaseModal 
+                  caseId={caseId}
+                  caseTitle={currentCase.title}
+                  isOwner={currentCase.user_id === user?.id}
+                />
+              )}
+              {plan === 'free' && (
+                <span className="text-xs px-3 py-1 bg-nulla/10 text-nulla border border-nulla/20">
+                  Free: {caseAbsences.length}/{NULLA_FREE_LIMITS.absencesPerCase} absences
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -12,6 +12,8 @@ import { UpgradeModal } from '@/components/UpgradeModal';
 import { GlobalNav } from '@/components/GlobalNav';
 import { StatsCharts } from '@/components/dashboard/StatsCharts';
 import { CalendarView } from '@/components/dashboard/CalendarView';
+import { AdvancedAnalytics } from '@/components/dashboard/AdvancedAnalytics';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -26,10 +28,12 @@ import {
   Eye,
   Leaf,
   Plus,
-  BarChart3
+  BarChart3,
+  TrendingUp
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { Case } from '@/types/database';
 
 export default function Dashboard() {
   const { user, signOut, isSubscribed } = useAuth();
@@ -342,28 +346,51 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {/* Statistics Section */}
+          {/* Analytics Section */}
           <div className="mt-12">
-            <div className="flex items-center gap-2 mb-6">
-              <BarChart3 className="w-4 h-4 text-primary" />
-              <h3 className="font-display text-xs tracking-[0.3em] text-muted-foreground/50 uppercase">
-                Statistiques globales
-              </h3>
-            </div>
-            <StatsCharts 
-              irreversaThresholds={irreversaThresholds}
-              threshThresholds={threshThresholds}
-              absences={absences}
-            />
-          </div>
+            <Tabs defaultValue="overview" className="w-full">
+              <div className="flex items-center justify-between mb-6">
+                <TabsList className="bg-card/50 border border-border/30">
+                  <TabsTrigger value="overview" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4" />
+                    Vue d'ensemble
+                  </TabsTrigger>
+                  <TabsTrigger value="advanced" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" />
+                    Analytics avancées
+                  </TabsTrigger>
+                  <TabsTrigger value="calendar" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Calendrier
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-          {/* Calendar View */}
-          <div className="mt-12">
-            <CalendarView 
-              irreversaThresholds={irreversaThresholds}
-              threshThresholds={threshThresholds}
-              absences={absences}
-            />
+              <TabsContent value="overview">
+                <StatsCharts 
+                  irreversaThresholds={irreversaThresholds}
+                  threshThresholds={threshThresholds}
+                  absences={absences}
+                />
+              </TabsContent>
+
+              <TabsContent value="advanced">
+                <AdvancedAnalytics 
+                  cases={cases as Case[]}
+                  thresholds={irreversaThresholds}
+                  invisibleThresholds={threshThresholds}
+                  absences={absences}
+                />
+              </TabsContent>
+
+              <TabsContent value="calendar">
+                <CalendarView 
+                  irreversaThresholds={irreversaThresholds}
+                  threshThresholds={threshThresholds}
+                  absences={absences}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
 
           {/* Recent Activity / Pro Benefits */}

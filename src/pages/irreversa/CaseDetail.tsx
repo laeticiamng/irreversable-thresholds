@@ -16,11 +16,13 @@ import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
 import { AIAssistButton } from '@/components/ai/AIAssistButton';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
+import { TagManager } from '@/components/tags/TagManager';
+import { ShareCaseModal } from '@/components/collaboration/ShareCaseModal';
 import { useAIFormPrefill, type IrreversaFormData } from '@/hooks/useAIFormPrefill';
 import { DOMAIN_LABELS } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Leaf, Folder } from 'lucide-react';
+import { Leaf, Folder, Users } from 'lucide-react';
 import type { AIProposal } from '@/hooks/useAIAssist';
 
 type TabType = 'timeline' | 'consequences' | 'thresholds' | 'exports' | 'silva';
@@ -115,7 +117,7 @@ export default function CaseDetail() {
       <div className="border-b border-border/50 bg-card/20">
         <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex items-start justify-between gap-4">
-            <div>
+            <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <Folder className="w-4 h-4 text-primary/60" />
                 <span className="text-xs text-muted-foreground uppercase tracking-wide">Dossier</span>
@@ -126,15 +128,27 @@ export default function CaseDetail() {
               {currentCase?.description && (
                 <p className="text-sm text-muted-foreground mb-2">{currentCase.description}</p>
               )}
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mb-3">
                 {caseThresholds.filter(t => t.is_crossed).length} seuils franchis · {caseThresholds.filter(t => !t.is_crossed).length} en attente
               </p>
+              
+              {/* Tags */}
+              {caseId && <TagManager caseId={caseId} />}
             </div>
-            {plan === 'free' && (
-              <span className="text-xs px-3 py-1 bg-primary/10 text-primary border border-primary/20">
-                Free: {caseThresholds.length}/{limits.thresholdsPerCase} seuils
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {caseId && currentCase && (
+                <ShareCaseModal 
+                  caseId={caseId}
+                  caseTitle={currentCase.title}
+                  isOwner={currentCase.user_id === user?.id}
+                />
+              )}
+              {plan === 'free' && (
+                <span className="text-xs px-3 py-1 bg-primary/10 text-primary border border-primary/20">
+                  Free: {caseThresholds.length}/{limits.thresholdsPerCase} seuils
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
