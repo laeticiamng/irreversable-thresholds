@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Calendar } from '@/components/ui/calendar';
 import { Threshold, InvisibleThreshold, Absence } from '@/types/database';
-import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Target, Eye, XCircle, CalendarDays } from 'lucide-react';
+import { Target, Eye, XCircle, CalendarDays, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface CalendarViewProps {
@@ -20,8 +21,23 @@ interface DayEvent {
 }
 
 export function CalendarView({ irreversaThresholds, threshThresholds, absences }: CalendarViewProps) {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+
+  // Navigate to the event's case
+  const handleEventClick = (event: DayEvent) => {
+    const item = event.item;
+    if ('case_id' in item && item.case_id) {
+      if (event.type === 'crossed' || event.type === 'created_irreversa') {
+        navigate(`/irreversa/cases/${item.case_id}`);
+      } else if (event.type === 'sensed' || event.type === 'created_thresh') {
+        navigate(`/thresh/cases/${item.case_id}`);
+      } else if (event.type === 'created_absence') {
+        navigate(`/nulla/cases/${item.case_id}`);
+      }
+    }
+  };
 
   // Build events map for all days
   const eventsMap = useMemo(() => {
@@ -191,23 +207,30 @@ export function CalendarView({ irreversaThresholds, threshThresholds, absences }
             </p>
           ) : (
             <div className="space-y-3 max-h-[200px] overflow-y-auto">
-              {selectedDayEvents.map((event, i) => (
-                <div 
-                  key={i}
-                  className="p-3 border border-border/30 bg-card/30"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    {getEventIcon(event.type)}
-                    <Badge variant="outline" className={`text-[10px] ${getEventBadgeColor(event.type)}`}>
-                      {getEventLabel(event.type)}
-                    </Badge>
+              {selectedDayEvents.map((event, i) => {
+                const hasCase = 'case_id' in event.item && event.item.case_id;
+                return (
+                  <div 
+                    key={i}
+                    className={`p-3 border border-border/30 bg-card/30 ${hasCase ? 'cursor-pointer hover:bg-card/50 transition-colors' : ''}`}
+                    onClick={() => hasCase && handleEventClick(event)}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      {getEventIcon(event.type)}
+                      <Badge variant="outline" className={`text-[10px] ${getEventBadgeColor(event.type)}`}>
+                        {getEventLabel(event.type)}
+                      </Badge>
+                      {hasCase && (
+                        <ExternalLink className="w-3 h-3 text-muted-foreground ml-auto" />
+                      )}
+                    </div>
+                    <p className="text-sm text-foreground">{event.item.title}</p>
+                    <p className="text-xs text-muted-foreground/60 mt-1">
+                      {format(event.date, 'HH:mm', { locale: fr })}
+                    </p>
                   </div>
-                  <p className="text-sm text-foreground">{event.item.title}</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">
-                    {format(event.date, 'HH:mm', { locale: fr })}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

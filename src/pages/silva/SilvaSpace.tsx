@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
 import { useSilvaSpaces } from '@/hooks/useSilvaSpaces';
+import { useSilvaSessions } from '@/hooks/useSilvaSessions';
 import { useCases } from '@/hooks/useCases';
 import { UpgradeModal } from '@/components/UpgradeModal';
-import { Leaf, Moon, X, FileText, Trash2, Lock } from 'lucide-react';
+import { Leaf, Moon, X, FileText, Trash2, Lock, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -27,10 +28,14 @@ export default function SilvaSpace() {
     updateFormatMode,
     isLoading 
   } = useSilvaSpaces(user?.id);
+  const { startSession, endSession } = useSilvaSessions(user?.id);
+  const sessionIdRef = useRef<string | null>(null);
 
   const [content, setContent] = useState('');
   const [silenceMode, setSilenceMode] = useState(false);
   const [currentSpaceId, setCurrentSpaceId] = useState<string | null>(null);
+  const [sessionDuration, setSessionDuration] = useState(0);
+  const sessionStartRef = useRef<Date | null>(null);
 
   // Get current case info
   const currentCase = caseId ? cases.find(c => c.id === caseId) : null;
@@ -77,12 +82,46 @@ export default function SilvaSpace() {
     initSpace();
   }, [user, caseId, isCaseMode, isSubscribed, getGlobalSpace, getCaseSpace, createSpace, navigate]);
 
-  // Auth redirect
+  // Auth redirect and session tracking
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/exposition');
+      return;
     }
+
+    // Start session on mount
+    if (user) {
+      startSession.mutateAsync().then(session => {
+        if (session) {
+          sessionIdRef.current = session.id;
+          sessionStartRef.current = new Date();
+        }
+      });
+    }
+
+    // End session on unmount
+    return () => {
+      if (sessionIdRef.current && sessionStartRef.current) {
+        const duration = Math.floor((Date.now() - sessionStartRef.current.getTime()) / 1000);
+        endSession.mutate(duration);
+        sessionIdRef.current = null;
+      }
+    };
   }, [user, authLoading, navigate]);
+
+  // Track session duration
+  useEffect(() => {
+    if (!sessionStartRef.current) return;
+    
+    const interval = setInterval(() => {
+      if (sessionStartRef.current) {
+        const elapsed = Math.floor((Date.now() - sessionStartRef.current.getTime()) / 1000);
+        setSessionDuration(elapsed);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [currentSpaceId]);
 
   // Handle content change with autosave
   const handleContentChange = useCallback((value: string) => {
