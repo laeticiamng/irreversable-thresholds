@@ -102,11 +102,11 @@ export default function CaseDetail() {
     >
       {/* Header */}
       <header className="border-b border-primary/20">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link to="/irreversa/cases" className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors">
-            ← Mes dossiers
+            ← Dossiers
           </Link>
-          <span className="font-display text-lg tracking-[0.15em] text-primary">IRREVERSA</span>
+          <span className="font-display text-base sm:text-lg tracking-[0.15em] text-primary">IRREVERSA</span>
           <Link to="/dashboard" className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors">
             Dashboard
           </Link>
@@ -115,27 +115,27 @@ export default function CaseDetail() {
 
       {/* Case header */}
       <div className="border-b border-border/50 bg-card/20">
-        <div className="max-w-5xl mx-auto px-6 py-6">
-          <div className="flex items-start justify-between gap-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <Folder className="w-4 h-4 text-primary/60" />
                 <span className="text-xs text-muted-foreground uppercase tracking-wide">Dossier</span>
               </div>
-              <h1 className="font-display text-2xl tracking-wide text-foreground mb-2">
+              <h1 className="font-display text-xl sm:text-2xl tracking-wide text-foreground mb-2">
                 {currentCase?.title || 'Dossier IRREVERSA'}
               </h1>
               {currentCase?.description && (
-                <p className="text-sm text-muted-foreground mb-2">{currentCase.description}</p>
+                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{currentCase.description}</p>
               )}
               <p className="text-sm text-muted-foreground mb-3">
-                {caseThresholds.filter(t => t.is_crossed).length} seuils franchis · {caseThresholds.filter(t => !t.is_crossed).length} en attente
+                {caseThresholds.filter(t => t.is_crossed).length} franchis · {caseThresholds.filter(t => !t.is_crossed).length} en attente
               </p>
               
               {/* Tags */}
               {caseId && <TagManager caseId={caseId} />}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {caseId && currentCase && (
                 <ShareCaseModal 
                   caseId={caseId}
@@ -144,8 +144,8 @@ export default function CaseDetail() {
                 />
               )}
               {plan === 'free' && (
-                <span className="text-xs px-3 py-1 bg-primary/10 text-primary border border-primary/20">
-                  Free: {caseThresholds.length}/{limits.thresholdsPerCase} seuils
+                <span className="text-xs px-2 sm:px-3 py-1 bg-primary/10 text-primary border border-primary/20">
+                  {caseThresholds.length}/{limits.thresholdsPerCase}
                 </span>
               )}
             </div>
@@ -155,14 +155,14 @@ export default function CaseDetail() {
 
       {/* Tabs */}
       <div className="border-b border-border/50 sticky top-0 bg-background z-10">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex items-center gap-6 overflow-x-auto">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto scrollbar-hide">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  relative py-4 text-xs font-display tracking-[0.15em] uppercase transition-colors whitespace-nowrap flex items-center gap-1.5
+                  relative py-3 sm:py-4 text-[10px] sm:text-xs font-display tracking-[0.1em] sm:tracking-[0.15em] uppercase transition-colors whitespace-nowrap flex items-center gap-1 sm:gap-1.5
                   ${activeTab === tab.id 
                     ? tab.id === 'silva' ? 'text-silva' : 'text-primary' 
                     : 'text-muted-foreground hover:text-foreground'
@@ -186,8 +186,8 @@ export default function CaseDetail() {
 
       {/* Sticky CTA (hide on SILVA tab) */}
       {activeTab !== 'silva' && (
-        <div className="sticky top-[57px] z-10 bg-background border-b border-border/30">
-          <div className="max-w-5xl mx-auto px-6 py-3 flex justify-between items-center">
+        <div className="sticky top-[49px] sm:top-[57px] z-10 bg-background border-b border-border/30">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-2 sm:py-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
             <AIAssistButton onClick={() => setShowAIPanel(true)} />
             {isAtThresholdLimit ? (
               <UpgradeModal 
@@ -210,7 +210,7 @@ export default function CaseDetail() {
       )}
 
       {/* Tab content */}
-      <main className="max-w-5xl mx-auto px-6 py-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {activeTab === 'timeline' && (
           <ThresholdTimeline thresholds={caseThresholds} />
         )}
@@ -252,10 +252,10 @@ export default function CaseDetail() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/30 py-6 mt-12">
-        <div className="max-w-5xl mx-auto px-6 text-center">
+      <footer className="border-t border-border/30 py-6 mt-8 sm:mt-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-xs text-muted-foreground/50">
-            Outil de structuration. Pas de promesse. Pas de décision à ta place.
+            Outil de structuration. Pas de promesse.
           </p>
         </div>
       </footer>
