@@ -3,17 +3,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
-import { useCases } from '@/hooks/useCases';
+import { useUserCases } from '@/hooks/useUserCases';
 import { UpgradeModal } from '@/components/UpgradeModal';
-import { Search, Plus, Calendar, FolderOpen } from 'lucide-react';
+import { GlobalNav } from '@/components/GlobalNav';
+import { Search, Plus, Calendar, FolderOpen, Archive, RotateCcw } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export default function ThreshCases() {
   const navigate = useNavigate();
   const { user, loading: authLoading, isSubscribed } = useAuth();
-  const { cases, isLoading } = useCases(user?.id);
+  const { cases, isLoading, archiveCase, restoreCase } = useUserCases(user?.id);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -21,11 +23,16 @@ export default function ThreshCases() {
     }
   }, [user, authLoading, navigate]);
 
-  const threshCases = cases.filter(c => 
-    c.metadata && typeof c.metadata === 'object' && (c.metadata as Record<string, unknown>).module === 'thresh'
-  );
+  const threshCases = cases.filter(c => {
+    const meta = c.metadata as Record<string, unknown> | null;
+    return meta?.module === 'thresh';
+  });
 
-  const filteredCases = threshCases.filter(c =>
+  const activeCases = threshCases.filter(c => c.status === 'active');
+  const archivedCases = threshCases.filter(c => c.status === 'archived');
+  const displayedCases = showArchived ? archivedCases : activeCases;
+
+  const filteredCases = displayedCases.filter(c =>
     c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -40,18 +47,29 @@ export default function ThreshCases() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Navigation */}
-      <nav className="border-b border-amber-500/20">
+      <GlobalNav />
+
+      {/* Sub-navigation */}
+      <nav className="border-b border-amber-500/20 pt-14">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/thresh/home" className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors">
             THRESH
           </Link>
           <div className="flex items-center gap-4">
+            <Button
+              variant={showArchived ? 'outline' : 'ghost'}
+              size="sm"
+              onClick={() => setShowArchived(!showArchived)}
+              className="text-xs"
+            >
+              <Archive className="w-3 h-3 mr-1" />
+              {showArchived ? `Actifs (${activeCases.length})` : `Archives (${archivedCases.length})`}
+            </Button>
             {!isSubscribed && (
               <UpgradeModal 
                 trigger={
                   <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
-                    Débloquer Pro
+                    Pro
                   </Button>
                 }
               />
@@ -65,9 +83,11 @@ export default function ThreshCases() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-display text-3xl tracking-wide text-foreground mb-2">Mes dossiers THRESH</h1>
+            <h1 className="font-display text-3xl tracking-wide text-foreground mb-2">
+              {showArchived ? 'Dossiers archivés' : 'Mes dossiers THRESH'}
+            </h1>
             <p className="text-muted-foreground text-sm">
-              {threshCases.length} dossier{threshCases.length !== 1 ? 's' : ''}
+              {filteredCases.length} dossier{filteredCases.length !== 1 ? 's' : ''} {showArchived ? 'archivé(s)' : 'actif(s)'}
             </p>
           </div>
           <Link to="/thresh/cases/new">
@@ -136,7 +156,34 @@ export default function ThreshCases() {
                         )}
                       </div>
                     </div>
-                    <div className="text-amber-500/40 group-hover:text-amber-500 transition-colors">→</div>
+                    <div className="flex items-center gap-2">
+                      {showArchived ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            restoreCase.mutate(caseItem.id);
+                          }}
+                          className="text-amber-500 hover:text-amber-400"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            archiveCase.mutate(caseItem.id);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground"
+                        >
+                          <Archive className="w-4 h-4" />
+                        </Button>
+                      )}
+                      <div className="text-amber-500/40 group-hover:text-amber-500 transition-colors">→</div>
+                    </div>
                   </div>
                 </div>
               </Link>
