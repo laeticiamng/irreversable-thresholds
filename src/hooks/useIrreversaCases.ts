@@ -163,6 +163,72 @@ export function useIrreversaCases(userId: string | undefined) {
     },
   });
 
+  // Delete threshold
+  const deleteThreshold = useMutation({
+    mutationFn: async (thresholdId: string) => {
+      // First delete all consequences
+      await supabase
+        .from('threshold_consequences')
+        .delete()
+        .eq('threshold_id', thresholdId);
+      
+      const { error } = await supabase
+        .from('thresholds')
+        .delete()
+        .eq('id', thresholdId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+    },
+  });
+
+  // Update threshold
+  const updateThreshold = useMutation({
+    mutationFn: async ({
+      id,
+      title,
+      description,
+      category,
+      severity,
+      whatCannotBeUndone,
+      whatChangesAfter,
+      conditions,
+      notes,
+    }: {
+      id: string;
+      title?: string;
+      description?: string;
+      category?: ThresholdCategory;
+      severity?: Severity;
+      whatCannotBeUndone?: string;
+      whatChangesAfter?: string;
+      conditions?: string;
+      notes?: string;
+    }) => {
+      const updates: Record<string, unknown> = {};
+      if (title !== undefined) updates.title = title;
+      if (description !== undefined) updates.description = description;
+      if (category !== undefined) updates.category = category;
+      if (severity !== undefined) updates.severity = severity;
+      if (whatCannotBeUndone !== undefined) updates.what_cannot_be_undone = whatCannotBeUndone;
+      if (whatChangesAfter !== undefined) updates.what_changes_after = whatChangesAfter;
+      if (conditions !== undefined) updates.conditions = conditions;
+      if (notes !== undefined) updates.notes = notes;
+
+      const { error } = await supabase
+        .from('thresholds')
+        .update(updates)
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+    },
+  });
+
   // Get thresholds by case
   const getThresholdsByCase = (caseId: string) => 
     thresholds.filter(t => t.case_id === caseId);
@@ -189,6 +255,8 @@ export function useIrreversaCases(userId: string | undefined) {
     crossThreshold,
     addConsequence,
     deleteConsequence,
+    deleteThreshold,
+    updateThreshold,
     getThresholdsByCase,
     getPendingThresholds,
     getCrossedThresholds,

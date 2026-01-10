@@ -24,7 +24,7 @@ import Silva from "./pages/territories/Silva";
 // IRREVERSA Module
 import IrreversaHome from "./pages/irreversa/IrreversaHome";
 import IrreversaCases from "./pages/irreversa/IrreversaCases";
-import CreateCase from "./pages/irreversa/CreateCase";
+import IrreversaCreateCase from "./pages/irreversa/CreateCase";
 import CaseDetail from "./pages/irreversa/CaseDetail";
 
 // NULLA Module
@@ -46,6 +46,9 @@ import SilvaSpaces from "./pages/silva/SilvaSpaces";
 // Other modules
 import NullaModule from "./pages/NullaModule";
 import ThreshModule from "./pages/ThreshModule";
+
+// Unified case creation
+import CreateCase from "./pages/CreateCase";
 
 const queryClient = new QueryClient();
 
@@ -83,7 +86,7 @@ function AnimatedRoutes() {
           {/* IRREVERSA Module (full implementation) */}
           <Route path="/irreversa/home" element={<IrreversaHome />} />
           <Route path="/irreversa/cases" element={<IrreversaCases />} />
-          <Route path="/irreversa/cases/new" element={<CreateCase />} />
+          <Route path="/irreversa/cases/new" element={<IrreversaCreateCase />} />
           <Route path="/irreversa/cases/:caseId" element={<CaseDetail />} />
           <Route path="/irreversa/space" element={<IrreversaHome />} />
           
@@ -97,7 +100,7 @@ function AnimatedRoutes() {
           {/* THRESH Module */}
           <Route path="/thresh/home" element={<ThreshHome />} />
           <Route path="/thresh/cases" element={<ThreshCases />} />
-          <Route path="/thresh/cases/new" element={<CreateThreshCase />} />
+          <Route path="/thresh/cases/new" element={<CreateCase />} />
           <Route path="/thresh/cases/:caseId" element={<ThreshCaseDetail />} />
           <Route path="/thresh/space" element={<ThreshModule />} />
           
@@ -105,6 +108,9 @@ function AnimatedRoutes() {
           <Route path="/silva/home" element={<SilvaHome />} />
           <Route path="/silva/space" element={<SilvaSpace />} />
           <Route path="/silva/spaces" element={<SilvaSpaces />} />
+          
+          {/* Unified case creation */}
+          <Route path="/cases/new" element={<CreateCase />} />
           
           {/* Dashboard & Account */}
           <Route path="/dashboard" element={<Dashboard />} />
