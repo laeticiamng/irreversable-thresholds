@@ -22,7 +22,7 @@ export default function Irreversa() {
         description: "Un engagement prononcé. Non pas une promesse (modifiable), mais un fait attesté. La date est inscrite. Les mots sont fixés. Aucune réécriture possible. Le seuil existe désormais dans le temps, immuable."
       }}
       operationalLink={{
-        path: "/thresholds",
+        path: "/irreversa/space",
         label: "Espace opérationnel →"
       }}
     />
