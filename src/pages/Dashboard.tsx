@@ -66,6 +66,15 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  // Auto-start tour for new users who haven't completed it
+  useEffect(() => {
+    if (mounted && !hasCompletedTour && cases.length === 0 && irreversaThresholds.length === 0) {
+      // Small delay to let the page render first
+      const timer = setTimeout(() => startTour(), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [mounted, hasCompletedTour, cases.length, irreversaThresholds.length, startTour]);
+
   // Compute stats
   const crossedIrreversa = irreversaThresholds.filter(t => t.is_crossed).length;
   const pendingIrreversa = irreversaThresholds.filter(t => !t.is_crossed).length;

@@ -140,12 +140,41 @@ export function ExportBackup() {
       <p className="text-sm text-muted-foreground">
         Exporte toutes tes données au format JSON pour une sauvegarde locale.
       </p>
-      <div className="flex gap-3">
+      
+      {/* Summary before export */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 bg-muted/20 rounded border border-border/30">
+        <div className="text-center">
+          <span className="text-lg font-display text-foreground">{cases.length}</span>
+          <p className="text-[10px] text-muted-foreground">Dossiers</p>
+        </div>
+        <div className="text-center">
+          <span className="text-lg font-display text-primary">{irreversaThresholds.length}</span>
+          <p className="text-[10px] text-muted-foreground">IRREVERSA</p>
+        </div>
+        <div className="text-center">
+          <span className="text-lg font-display text-amber-500">{threshThresholds.length}</span>
+          <p className="text-[10px] text-muted-foreground">THRESH</p>
+        </div>
+        <div className="text-center">
+          <span className="text-lg font-display text-nulla">{absences.length}</span>
+          <p className="text-[10px] text-muted-foreground">NULLA</p>
+        </div>
+        <div className="text-center">
+          <span className="text-lg font-display text-silva">{silvaSpaces.length}</span>
+          <p className="text-[10px] text-muted-foreground">SILVA</p>
+        </div>
+        <div className="text-center">
+          <span className="text-lg font-display text-foreground">{tags.length}</span>
+          <p className="text-[10px] text-muted-foreground">Tags</p>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-3">
         <Button
           onClick={handleExportBackup}
           disabled={isExporting}
           variant="outline"
-          className="border-primary/30 text-primary hover:bg-primary/10"
+          className="border-primary/30 text-primary hover:bg-primary/10 flex-1"
         >
           {isExporting ? (
             <>

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { GlobalNav } from '@/components/GlobalNav';
 import { ExportBackup } from '@/components/exports/ExportBackup';
+import { TagsList } from '@/components/tags/TagsList';
 import {
   Select,
   SelectContent,
@@ -31,7 +32,8 @@ import {
   Volume2,
   Mail,
   Compass,
-  Database
+  Database,
+  Tag
 } from 'lucide-react';
 
 export default function Settings() {
@@ -363,6 +365,17 @@ export default function Settings() {
               </SelectContent>
             </Select>
           </div>
+        </section>
+
+        {/* Tags Section */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full border border-border/50 flex items-center justify-center">
+              <Tag className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <h2 className="font-display text-lg tracking-wide">Tags</h2>
+          </div>
+          <TagsList />
         </section>
 
         {/* Data Backup Section */}
