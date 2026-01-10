@@ -91,11 +91,21 @@ export default function Home() {
         </Link>
       </main>
 
-      {/* Footer */}
+      {/* Footer with Dashboard link */}
       <footer className="border-t border-border py-6">
-        <p className="text-center text-xs text-muted-foreground font-body">
-          Pour ceux qui acceptent la réalité telle qu'elle est.
-        </p>
+        <div className="max-w-5xl mx-auto px-6 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground font-body">
+            Pour ceux qui acceptent la réalité telle qu'elle est.
+          </p>
+          {user && (
+            <Link 
+              to="/dashboard" 
+              className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Vue synthèse →
+            </Link>
+          )}
+        </div>
       </footer>
     </div>
   );
