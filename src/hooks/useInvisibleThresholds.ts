@@ -16,7 +16,7 @@ export function useInvisibleThresholds(userId: string | undefined) {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as InvisibleThreshold[];
+      return data as (InvisibleThreshold & { tags?: string[]; intensity?: number; context?: string })[];
     },
     enabled: !!userId,
   });
@@ -25,11 +25,19 @@ export function useInvisibleThresholds(userId: string | undefined) {
     mutationFn: async ({ 
       title, 
       description, 
-      threshType 
+      threshType,
+      caseId,
+      tags,
+      intensity,
+      context,
     }: { 
       title: string; 
       description: string; 
-      threshType: ThreshType;
+      threshType?: ThreshType;
+      caseId?: string;
+      tags?: string[];
+      intensity?: number;
+      context?: string;
     }) => {
       if (!userId) throw new Error('User not authenticated');
       const { data, error } = await supabase
@@ -38,7 +46,11 @@ export function useInvisibleThresholds(userId: string | undefined) {
           user_id: userId, 
           title, 
           description, 
-          thresh_type: threshType 
+          thresh_type: threshType || 'evidence',
+          case_id: caseId || null,
+          tags: tags || [],
+          intensity: intensity || null,
+          context: context || null,
         })
         .select()
         .single();
@@ -65,6 +77,20 @@ export function useInvisibleThresholds(userId: string | undefined) {
     },
   });
 
+  const deleteThreshold = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('invisible_thresholds')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invisible_thresholds', userId] });
+    },
+  });
+
   const getPendingThresholds = () => thresholds.filter(t => !t.sensed_at);
   const getSensedThresholds = () => thresholds.filter(t => t.sensed_at);
 
@@ -73,6 +99,7 @@ export function useInvisibleThresholds(userId: string | undefined) {
     isLoading,
     addThreshold,
     markAsSensed,
+    deleteThreshold,
     getPendingThresholds,
     getSensedThresholds,
   };

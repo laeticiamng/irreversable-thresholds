@@ -203,30 +203,39 @@ export type Database = {
       invisible_thresholds: {
         Row: {
           case_id: string | null
+          context: string | null
           created_at: string
           description: string
           id: string
+          intensity: number | null
           sensed_at: string | null
+          tags: string[] | null
           thresh_type: Database["public"]["Enums"]["thresh_type"]
           title: string
           user_id: string
         }
         Insert: {
           case_id?: string | null
+          context?: string | null
           created_at?: string
           description: string
           id?: string
+          intensity?: number | null
           sensed_at?: string | null
+          tags?: string[] | null
           thresh_type: Database["public"]["Enums"]["thresh_type"]
           title: string
           user_id: string
         }
         Update: {
           case_id?: string | null
+          context?: string | null
           created_at?: string
           description?: string
           id?: string
+          intensity?: number | null
           sensed_at?: string | null
+          tags?: string[] | null
           thresh_type?: Database["public"]["Enums"]["thresh_type"]
           title?: string
           user_id?: string
