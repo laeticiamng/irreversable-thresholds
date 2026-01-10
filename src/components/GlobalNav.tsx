@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { 
   LayoutDashboard, 
   Target, 
@@ -10,7 +11,8 @@ import {
   Leaf, 
   User,
   Menu,
-  X
+  X,
+  Settings
 } from 'lucide-react';
 
 const navItems = [
@@ -109,19 +111,39 @@ export function GlobalNav() {
               })}
             </div>
 
-            {/* Account */}
-            <Link 
-              to="/account"
-              className={`
-                p-2 rounded-full border transition-colors
-                ${location.pathname === '/account' 
-                  ? 'border-primary/50 text-primary' 
-                  : 'border-border/50 text-muted-foreground hover:text-foreground hover:border-border'
-                }
-              `}
-            >
-              <User className="w-4 h-4" />
-            </Link>
+            {/* Right side actions */}
+            <div className="flex items-center gap-2">
+              {/* Notifications */}
+              <NotificationBell />
+
+              {/* Settings */}
+              <Link 
+                to="/settings"
+                className={`
+                  p-2 rounded-full border transition-colors
+                  ${location.pathname === '/settings' 
+                    ? 'border-primary/50 text-primary' 
+                    : 'border-border/50 text-muted-foreground hover:text-foreground hover:border-border'
+                  }
+                `}
+              >
+                <Settings className="w-4 h-4" />
+              </Link>
+
+              {/* Account */}
+              <Link 
+                to="/account"
+                className={`
+                  p-2 rounded-full border transition-colors
+                  ${location.pathname === '/account' 
+                    ? 'border-primary/50 text-primary' 
+                    : 'border-border/50 text-muted-foreground hover:text-foreground hover:border-border'
+                  }
+                `}
+              >
+                <User className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
@@ -173,7 +195,21 @@ export function GlobalNav() {
               );
             })}
             
-            <div className="pt-2 border-t border-border/30 mt-2">
+            <div className="pt-2 border-t border-border/30 mt-2 space-y-1">
+              <Link
+                to="/settings"
+                onClick={() => setMobileOpen(false)}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+                  ${location.pathname === '/settings' 
+                    ? 'bg-card/50 text-primary' 
+                    : 'text-muted-foreground hover:bg-card/30 hover:text-foreground'
+                  }
+                `}
+              >
+                <Settings className="w-4 h-4" />
+                <span className="text-sm font-display tracking-wider">Paramètres</span>
+              </Link>
               <Link
                 to="/account"
                 onClick={() => setMobileOpen(false)}
