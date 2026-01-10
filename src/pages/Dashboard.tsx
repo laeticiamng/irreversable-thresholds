@@ -8,6 +8,7 @@ import { useSilvaSpaces } from '@/hooks/useSilvaSpaces';
 import { useCases } from '@/hooks/useCases';
 import { Button } from '@/components/ui/button';
 import { UpgradeModal } from '@/components/UpgradeModal';
+import { GlobalNav } from '@/components/GlobalNav';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -87,23 +88,7 @@ export default function Dashboard() {
 
   return (
     <div className={`min-h-screen bg-background transition-opacity duration-[2000ms] ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Minimal Header */}
-      <header className="fixed top-0 left-0 right-0 z-10 border-b border-border/30 bg-background/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="text-xs font-display tracking-[0.3em] text-muted-foreground uppercase hover:text-foreground transition-colors">
-            ← Accueil
-          </Link>
-          <span className="text-xs font-mono text-muted-foreground/50">
-            {formatTime(time)}
-          </span>
-          <button
-            onClick={() => signOut()}
-            className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Déconnexion
-          </button>
-        </div>
-      </header>
+      <GlobalNav />
 
       {/* Main Dashboard Grid */}
       <main className="pt-20 pb-12 px-6">
