@@ -8,19 +8,17 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+      (_event, sess) => {
+        setSession(sess);
+        setUser(sess?.user ?? null);
         setLoading(false);
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session: sess } }) => {
+      setSession(sess);
+      setUser(sess?.user ?? null);
       setLoading(false);
     });
 
@@ -52,6 +50,28 @@ export function useAuth() {
     return { error };
   };
 
+  const checkSubscription = async () => {
+    if (!session?.access_token) return null;
+
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error('Error checking subscription:', error);
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Failed to check subscription:', err);
+      return null;
+    }
+  };
+
   return {
     user,
     session,
@@ -59,5 +79,6 @@ export function useAuth() {
     signUp,
     signIn,
     signOut,
+    checkSubscription,
   };
 }

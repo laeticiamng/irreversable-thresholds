@@ -3,11 +3,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { UpgradeModal } from '@/components/UpgradeModal';
 
 export default function IrreversaHome() {
   const { user } = useAuth();
   const { isPro } = useSubscription(user?.id);
-
   const useCases = [
     "Je signe un contrat / une dette",
     "Je démissionne / je change de pays",
@@ -99,9 +99,13 @@ export default function IrreversaHome() {
               <p className="text-xs text-muted-foreground mb-3">
                 Tu paies pour garder l'historique complet + exporter un rapport clair.
               </p>
-              <Button variant="ghost" className="text-primary border border-primary/30">
-                Débloquer Pro
-              </Button>
+              <UpgradeModal 
+                trigger={
+                  <Button variant="ghost" className="text-primary border border-primary/30">
+                    Débloquer Pro — 9,90€/mois
+                  </Button>
+                }
+              />
             </div>
           )}
         </section>
