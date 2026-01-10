@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Threshold } from '@/types/threshold';
+import { Threshold } from '@/types/database';
 import { Button } from '@/components/ui/button';
 
 interface CrossingCeremonyProps {
@@ -32,57 +32,27 @@ export function CrossingCeremony({ threshold, onConfirm, onCancel }: CrossingCer
             <div className="w-20 h-20 mx-auto border border-destructive/50 rounded-full flex items-center justify-center">
               <span className="text-destructive text-3xl font-display">!</span>
             </div>
-            
             <div className="space-y-4">
-              <h2 className="font-display text-2xl tracking-wide text-foreground">
-                Point de non-retour
-              </h2>
-              <p className="text-muted-foreground text-sm font-body leading-relaxed">
-                Vous vous apprêtez à franchir un seuil irréversible. 
-                Cette action ne pourra pas être annulée, corrigée ou effacée.
-              </p>
+              <h2 className="font-display text-2xl tracking-wide text-foreground">Point de non-retour</h2>
+              <p className="text-muted-foreground text-sm font-body">Cette action ne pourra pas être annulée.</p>
             </div>
-
             <div className="border border-border p-6 text-left">
-              <h3 className="font-display text-lg text-foreground mb-2">
-                {threshold.title}
-              </h3>
-              <p className="text-muted-foreground text-sm font-body">
-                {threshold.description}
-              </p>
+              <h3 className="font-display text-lg text-foreground mb-2">{threshold.title}</h3>
+              <p className="text-muted-foreground text-sm font-body">{threshold.description}</p>
             </div>
-
             <div className="flex gap-4 justify-center pt-4">
-              <Button variant="stone" onClick={onCancel}>
-                Reculer
-              </Button>
-              <Button variant="monument" onClick={() => setStage('confirm')}>
-                Je comprends
-              </Button>
+              <Button variant="stone" onClick={onCancel}>Reculer</Button>
+              <Button variant="monument" onClick={() => setStage('confirm')}>Je comprends</Button>
             </div>
           </div>
         )}
 
         {stage === 'confirm' && (
           <div className="text-center space-y-8">
-            <div className="space-y-4">
-              <h2 className="font-display text-2xl tracking-wide text-foreground">
-                Seconde confirmation
-              </h2>
-              <p className="text-muted-foreground text-sm font-body">
-                Êtes-vous absolument certain ? Cette décision est définitive.
-              </p>
-            </div>
-
+            <h2 className="font-display text-2xl tracking-wide text-foreground">Seconde confirmation</h2>
             <div className="flex gap-4 justify-center pt-4">
-              <Button variant="stone" onClick={onCancel}>
-                Non, je recule
-              </Button>
-              <Button 
-                variant="seal" 
-                onClick={() => setStage('typing')}
-                disabled={countdown > 0}
-              >
+              <Button variant="stone" onClick={onCancel}>Non, je recule</Button>
+              <Button variant="seal" onClick={() => setStage('typing')} disabled={countdown > 0}>
                 {countdown > 0 ? `Attendre ${countdown}s` : 'Oui, je confirme'}
               </Button>
             </div>
@@ -91,36 +61,19 @@ export function CrossingCeremony({ threshold, onConfirm, onCancel }: CrossingCer
 
         {stage === 'typing' && (
           <div className="text-center space-y-8">
-            <div className="space-y-4">
-              <h2 className="font-display text-2xl tracking-wide text-foreground">
-                Scellement final
-              </h2>
-              <p className="text-muted-foreground text-sm font-body">
-                Tapez exactement : <span className="text-primary font-medium">"{CONFIRMATION_PHRASE}"</span>
-              </p>
-            </div>
-
+            <h2 className="font-display text-2xl tracking-wide text-foreground">Scellement final</h2>
+            <p className="text-muted-foreground text-sm">Tapez : <span className="text-primary">"{CONFIRMATION_PHRASE}"</span></p>
             <input
               type="text"
               value={typedPhrase}
               onChange={(e) => setTypedPhrase(e.target.value)}
               placeholder={CONFIRMATION_PHRASE}
-              className="w-full bg-transparent border-b-2 border-border py-4 text-center text-xl font-display text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-transparent border-b-2 border-border py-4 text-center text-xl font-display text-foreground focus:outline-none focus:border-primary"
               autoFocus
             />
-
             <div className="flex gap-4 justify-center pt-4">
-              <Button variant="stone" onClick={onCancel}>
-                Abandonner
-              </Button>
-              <Button 
-                variant="seal" 
-                onClick={onConfirm}
-                disabled={!isConfirmed}
-                className={isConfirmed ? 'animate-pulse-subtle' : ''}
-              >
-                Franchir définitivement
-              </Button>
+              <Button variant="stone" onClick={onCancel}>Abandonner</Button>
+              <Button variant="seal" onClick={onConfirm} disabled={!isConfirmed}>Franchir définitivement</Button>
             </div>
           </div>
         )}
