@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import Index from "./pages/Index";
 import Exposition from "./pages/Exposition";
 import Manifesto from "./pages/Manifesto";
@@ -139,6 +140,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <OfflineIndicator />
           <AnimatedRoutes />
         </BrowserRouter>
       </TooltipProvider>
