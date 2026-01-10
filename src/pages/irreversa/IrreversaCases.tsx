@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,10 +9,14 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { DOMAIN_LABELS, Case } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { UpgradeModal } from '@/components/UpgradeModal';
+import { useToast } from '@/hooks/use-toast';
 
 export default function IrreversaCases() {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+  const { user, loading: authLoading, checkSubscription } = useAuth();
   const { personalWorkspace, getOrCreatePersonalWorkspace } = useWorkspaces(user?.id);
   const [workspaceId, setWorkspaceId] = useState<string | undefined>();
   const { cases, isLoading, getActiveCases } = useCases(workspaceId);
@@ -20,6 +24,19 @@ export default function IrreversaCases() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [domainFilter, setDomainFilter] = useState<string>('all');
+
+  // Handle Stripe success redirect
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      toast({
+        title: "🎉 Bienvenue Pro !",
+        description: "Votre abonnement est actif. Profitez de tous les avantages.",
+      });
+      checkSubscription();
+      // Clean URL
+      navigate('/irreversa/cases', { replace: true });
+    }
+  }, [searchParams]);
 
   // Ensure we have a workspace
   useEffect(() => {
@@ -92,13 +109,13 @@ export default function IrreversaCases() {
           </div>
           
           {isAtLimit ? (
-            <Button 
-              variant="outline" 
-              className="border-primary/30 text-primary"
-              onClick={() => {/* TODO: upgrade modal */}}
-            >
-              🔒 Passer Pro pour plus de dossiers
-            </Button>
+            <UpgradeModal 
+              trigger={
+                <Button variant="outline" className="border-primary/30 text-primary">
+                  🔒 Passer Pro pour plus de dossiers
+                </Button>
+              }
+            />
           ) : (
             <Link to="/irreversa/cases/new">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">

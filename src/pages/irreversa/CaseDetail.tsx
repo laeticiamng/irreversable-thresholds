@@ -9,7 +9,8 @@ import { ConsequencesView } from '@/components/irreversa/ConsequencesView';
 import { ThresholdsList } from '@/components/irreversa/ThresholdsList';
 import { ExportsTab } from '@/components/irreversa/ExportsTab';
 import { AddThresholdModal } from '@/components/irreversa/AddThresholdModal';
-import { Threshold, DOMAIN_LABELS } from '@/types/database';
+import { UpgradeModal } from '@/components/UpgradeModal';
+import { DOMAIN_LABELS } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -122,13 +123,13 @@ export default function CaseDetail() {
       <div className="sticky top-[57px] z-10 bg-background border-b border-border/30">
         <div className="max-w-5xl mx-auto px-6 py-3 flex justify-end">
           {isAtThresholdLimit ? (
-            <Button 
-              variant="outline" 
-              className="border-primary/30 text-primary"
-              onClick={() => {/* TODO: upgrade */}}
-            >
-              🔒 Passer Pro pour plus de seuils
-            </Button>
+            <UpgradeModal 
+              trigger={
+                <Button variant="outline" className="border-primary/30 text-primary">
+                  🔒 Passer Pro pour plus de seuils
+                </Button>
+              }
+            />
           ) : (
             <Button 
               onClick={() => setShowAddThreshold(true)}
