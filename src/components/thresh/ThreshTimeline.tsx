@@ -200,8 +200,7 @@ export function ThreshTimeline({ entries, isSubscribed, onEdit, onDelete }: Thre
                       <span>{format(new Date(entry.created_at), 'PPP à HH:mm', { locale: fr })}</span>
                       {entry.intensity && (
                         <span className={`font-medium ${getIntensityColor(entry.intensity)}`}>
-                          ●●●●●.slice(0, entry.intensity).replace(/●/g, '⬤ ').trim()
-                          Intensité {entry.intensity}/5
+                          {'⬤ '.repeat(entry.intensity).trim()} Intensité {entry.intensity}/5
                         </span>
                       )}
                     </div>

@@ -34,6 +34,7 @@ import CaseDetail from "./pages/irreversa/CaseDetail";
 import NullaHome from "./pages/nulla/NullaHome";
 import NullaCases from "./pages/nulla/NullaCases";
 import NullaCaseDetail from "./pages/nulla/NullaCaseDetail";
+import CreateNullaCase from "./pages/nulla/CreateNullaCase";
 
 // THRESH Module
 import ThreshHome from "./pages/thresh/ThreshHome";
@@ -96,7 +97,7 @@ function AnimatedRoutes() {
           {/* NULLA Module */}
           <Route path="/nulla/home" element={<NullaHome />} />
           <Route path="/nulla/cases" element={<NullaCases />} />
-          <Route path="/nulla/cases/new" element={<CreateCase />} />
+          <Route path="/nulla/cases/new" element={<CreateNullaCase />} />
           <Route path="/nulla/cases/:caseId" element={<NullaCaseDetail />} />
           <Route path="/nulla/space" element={<NullaModule />} />
           
