@@ -128,6 +128,21 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Onboarding CTA */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-8">
+        <Link
+          to="/onboarding"
+          className="block w-full p-4 sm:p-6 border border-dashed border-primary/30 hover:border-primary/60 bg-primary/5 hover:bg-primary/10 transition-all duration-500 text-center group"
+        >
+          <p className="font-display text-sm tracking-[0.15em] text-primary/70 group-hover:text-primary transition-colors">
+            ✨ NOUVEAU ICI ?
+          </p>
+          <p className="text-muted-foreground text-xs mt-2">
+            Découvrez les 4 territoires et comment les utiliser
+          </p>
+        </Link>
+      </div>
+
       {/* Footer - Silent */}
       <footer className="border-t border-border/20 py-6 sm:py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -135,6 +150,12 @@ export default function Home() {
             Pour ceux qui acceptent la réalité telle qu'elle est.
           </p>
           <nav className="flex items-center gap-4 sm:gap-6">
+            <Link
+              to="/onboarding"
+              className="text-xs font-body text-primary/50 hover:text-primary transition-colors"
+            >
+              Premiers pas
+            </Link>
             <Link
               to="/suite"
               className="text-xs font-body text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"

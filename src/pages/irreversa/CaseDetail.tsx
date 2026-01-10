@@ -11,6 +11,9 @@ import { ExportsTab } from '@/components/irreversa/ExportsTab';
 import { AddThresholdModal } from '@/components/irreversa/AddThresholdModal';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
+import { AIAssistButton } from '@/components/ai/AIAssistButton';
+import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
+import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
 import { DOMAIN_LABELS } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -33,6 +36,8 @@ export default function CaseDetail() {
 
   const [activeTab, setActiveTab] = useState<TabType>('timeline');
   const [showAddThreshold, setShowAddThreshold] = useState(false);
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [showAIHistory, setShowAIHistory] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -132,7 +137,8 @@ export default function CaseDetail() {
       {/* Sticky CTA (hide on SILVA tab) */}
       {activeTab !== 'silva' && (
         <div className="sticky top-[57px] z-10 bg-background border-b border-border/30">
-          <div className="max-w-5xl mx-auto px-6 py-3 flex justify-end">
+          <div className="max-w-5xl mx-auto px-6 py-3 flex justify-between items-center">
+            <AIAssistButton onClick={() => setShowAIPanel(true)} />
             {isAtThresholdLimit ? (
               <UpgradeModal 
                 trigger={
@@ -207,6 +213,35 @@ export default function CaseDetail() {
         <AddThresholdModal
           caseId={caseId}
           onClose={() => setShowAddThreshold(false)}
+        />
+      )}
+
+      {/* AI Panel */}
+      <AIAssistPanel
+        open={showAIPanel}
+        onOpenChange={setShowAIPanel}
+        module="irreversa"
+        caseId={caseId}
+        caseContext={{ title: 'Dossier IRREVERSA' }}
+        userInput={{ thresholds: caseThresholds }}
+        isSubscribed={isSubscribed}
+        onAccept={(proposal) => {
+          console.log('Accepted proposal:', proposal);
+          setShowAIPanel(false);
+        }}
+        onViewHistory={() => {
+          setShowAIPanel(false);
+          setShowAIHistory(true);
+        }}
+      />
+
+      {/* AI History */}
+      {user && (
+        <AIHistoryModal
+          open={showAIHistory}
+          onOpenChange={setShowAIHistory}
+          caseId={caseId}
+          userId={user.id}
         />
       )}
     </div>
