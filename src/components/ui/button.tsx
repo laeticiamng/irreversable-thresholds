@@ -15,11 +15,15 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md",
         ghost: "hover:bg-accent hover:text-accent-foreground rounded-md",
         link: "text-primary underline-offset-4 hover:underline",
-        // IRREVERSA specific variants
+        // IRREVERSA variants
         monument: "bg-transparent border border-foreground/20 text-foreground/80 hover:border-primary hover:text-primary font-display tracking-[0.15em] uppercase text-xs",
         seal: "bg-gradient-to-r from-primary to-accent text-primary-foreground font-display tracking-[0.1em] uppercase shadow-lg hover:shadow-xl hover:scale-[1.02]",
         stone: "bg-secondary text-foreground/70 border border-border hover:bg-muted hover:text-foreground font-body",
         crossed: "bg-primary/10 text-primary border border-primary/30 cursor-default pointer-events-none font-display tracking-widest uppercase text-xs",
+        // NULLA variants
+        void: "bg-transparent border border-nulla/30 text-nulla hover:border-nulla hover:text-nulla font-display tracking-[0.15em] uppercase text-xs",
+        absence: "bg-nulla/10 text-nulla border border-nulla/20 font-display tracking-[0.1em] uppercase",
+        nullify: "bg-transparent text-nulla-muted hover:text-nulla font-body text-xs border-b border-transparent hover:border-nulla/30",
       },
       size: {
         default: "h-10 px-4 py-2",

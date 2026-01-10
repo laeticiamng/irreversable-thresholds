@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* IRREVERSA Design System - The weight of permanence */
+    /* Dual System Design - IRREVERSA (warm) + NULLA (cold) */
     
     /* Core palette - obsidian and aged ivory */
     --background: 0 0% 4%;
@@ -18,7 +18,7 @@
     --popover: 0 0% 8%;
     --popover-foreground: 40 20% 88%;
     
-    /* Primary - aged bronze/amber */
+    /* Primary - aged bronze/amber (IRREVERSA) */
     --primary: 35 60% 50%;
     --primary-foreground: 0 0% 4%;
     
@@ -34,6 +34,11 @@
     --accent: 38 70% 45%;
     --accent-foreground: 0 0% 4%;
     
+    /* NULLA - cold silver/blue */
+    --nulla: 220 15% 55%;
+    --nulla-foreground: 0 0% 4%;
+    --nulla-muted: 220 10% 35%;
+    
     /* States */
     --destructive: 0 50% 40%;
     --destructive-foreground: 40 20% 88%;
@@ -45,7 +50,7 @@
     
     --radius: 2px;
     
-    /* Custom tokens for IRREVERSA */
+    /* Custom tokens */
     --stone: 30 5% 25%;
     --stone-foreground: 40 15% 70%;
     --sealed: 35 80% 40%;
@@ -55,16 +60,18 @@
     /* Shadows */
     --shadow-monument: 0 20px 60px -10px hsl(0 0% 0% / 0.8);
     --shadow-seal: 0 0 30px hsl(35 60% 50% / 0.15);
+    --shadow-void: 0 0 60px hsl(220 15% 55% / 0.1);
     
     /* Gradients */
     --gradient-stone: linear-gradient(180deg, hsl(0 0% 8%) 0%, hsl(0 0% 4%) 100%);
     --gradient-seal: linear-gradient(135deg, hsl(35 60% 50%) 0%, hsl(30 70% 35%) 100%);
+    --gradient-void: linear-gradient(180deg, hsl(0 0% 6%) 0%, hsl(0 0% 2%) 100%);
     
-    /* Typography scale */
+    /* Typography */
     --font-display: 'Cormorant Garamond', serif;
     --font-body: 'Inter', sans-serif;
     
-    /* Sidebar - keeping defaults but dark */
+    /* Sidebar */
     --sidebar-background: 0 0% 5%;
     --sidebar-foreground: 40 20% 88%;
     --sidebar-primary: 35 60% 50%;
@@ -94,6 +101,87 @@
     font-family: var(--font-display);
     font-weight: 500;
     letter-spacing: 0.02em;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  
+  .font-body {
+    font-family: var(--font-body);
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-carved {
+    font-family: var(--font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .sealed {
+    background: var(--gradient-seal);
+    box-shadow: var(--shadow-seal);
+  }
+  
+  .surface-stone {
+    background: var(--gradient-stone);
+    box-shadow: var(--shadow-monument);
+  }
+  
+  .surface-void {
+    background: var(--gradient-void);
+    box-shadow: var(--shadow-void);
+  }
+  
+  @keyframes seal {
+    0% { opacity: 0; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  
+  .animate-seal {
+    animation: seal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  
+  @keyframes fade-up {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-fade-up {
+    animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  .animate-pulse-subtle {
+    animation: pulse-subtle 3s ease-in-out infinite;
+  }
+  
+  @keyframes void-breathe {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+  }
+  
+  .animate-void-breathe {
+    animation: void-breathe 6s ease-in-out infinite;
+  }
+  
+  @keyframes expand-void {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .animate-expand-void {
+    animation: expand-void 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 }
 
