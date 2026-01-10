@@ -22,7 +22,7 @@ export default function Nulla() {
         description: "Je n'ai jamais reçu de validation de la part de X. Cette absence n'est pas à combler. Elle structure : elle empêche certaines certitudes, elle force une autonomie, elle préserve une distance. L'observer suffit."
       }}
       operationalLink={{
-        path: "/absences",
+        path: "/nulla/space",
         label: "Espace opérationnel →"
       }}
     />

@@ -136,6 +136,12 @@ export default function Home() {
           </p>
           <nav className="flex items-center gap-4 sm:gap-6">
             <Link
+              to="/suite"
+              className="text-xs font-body text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+            >
+              La Suite
+            </Link>
+            <Link
               to="/about"
               className="text-xs font-body text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
             >
