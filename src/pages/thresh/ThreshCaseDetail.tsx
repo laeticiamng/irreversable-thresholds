@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,7 +15,9 @@ import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
 import { AIAssistButton } from '@/components/ai/AIAssistButton';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
+import { useAIFormPrefill, type ThreshFormData } from '@/hooks/useAIFormPrefill';
 import { Plus, ArrowLeft, Leaf } from 'lucide-react';
+import type { AIProposal } from '@/hooks/useAIAssist';
 
 const FREE_THRESHOLD_LIMIT = 5;
 
@@ -29,6 +32,20 @@ export default function ThreshCaseDetail() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showAIHistory, setShowAIHistory] = useState(false);
+
+  // AI form prefill hook
+  const { 
+    prefillData, 
+    handleAIAccept, 
+    clearPrefill 
+  } = useAIFormPrefill<ThreshFormData>();
+
+  // Handle AI proposal acceptance
+  const onAIAccept = (proposal: AIProposal) => {
+    handleAIAccept(proposal, 'thresh');
+    setShowAIPanel(false);
+    setShowAddModal(true);
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -67,7 +84,11 @@ export default function ThreshCaseDetail() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen flex flex-col bg-background"
+    >
       {/* Navigation */}
       <nav className="border-b border-amber-500/20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -207,10 +228,14 @@ export default function ThreshCaseDetail() {
 
       <AddThresholdModal
         open={showAddModal}
-        onOpenChange={setShowAddModal}
+        onOpenChange={(open) => {
+          setShowAddModal(open);
+          if (!open) clearPrefill();
+        }}
         caseId={caseId!}
         onAdd={addThreshold.mutateAsync}
         isSubscribed={isSubscribed}
+        prefillData={prefillData}
       />
 
       {/* AI Panel */}
@@ -222,10 +247,7 @@ export default function ThreshCaseDetail() {
         caseContext={{ title: currentCase.title }}
         userInput={{ thresholds: caseThresholds }}
         isSubscribed={isSubscribed}
-        onAccept={(proposal) => {
-          console.log('Accepted proposal:', proposal);
-          setShowAIPanel(false);
-        }}
+        onAccept={onAIAccept}
         onViewHistory={() => {
           setShowAIPanel(false);
           setShowAIHistory(true);
@@ -241,6 +263,6 @@ export default function ThreshCaseDetail() {
           userId={user.id}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

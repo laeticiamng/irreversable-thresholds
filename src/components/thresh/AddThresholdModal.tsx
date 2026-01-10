@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,7 @@ import { ThreshType, THRESH_TYPE_LABELS, Template } from '@/types/database';
 import { useTemplates } from '@/hooks/useTemplates';
 import { Sparkles, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import type { ThreshFormData } from '@/hooks/useAIFormPrefill';
 
 interface AddThresholdModalProps {
   open: boolean;
@@ -16,18 +18,31 @@ interface AddThresholdModalProps {
   caseId: string;
   onAdd: (data: { title: string; description: string; threshType: ThreshType; caseId?: string }) => Promise<unknown>;
   isSubscribed: boolean;
+  prefillData?: Partial<ThreshFormData> | null;
 }
 
-export function AddThresholdModal({ open, onOpenChange, caseId, onAdd, isSubscribed }: AddThresholdModalProps) {
+export function AddThresholdModal({ open, onOpenChange, caseId, onAdd, isSubscribed, prefillData }: AddThresholdModalProps) {
   const { templates } = useTemplates('thresh');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [threshType, setThreshType] = useState<ThreshType | ''>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [isPrefilled, setIsPrefilled] = useState(false);
 
   // Filter available templates based on subscription
   const availableTemplates = templates.filter(t => isSubscribed || !t.is_premium);
+
+  // Handle prefill data
+  useEffect(() => {
+    if (prefillData && open) {
+      if (prefillData.title) setTitle(prefillData.title);
+      if (prefillData.description) setDescription(prefillData.description);
+      if (prefillData.threshType) setThreshType(prefillData.threshType as ThreshType);
+      setIsPrefilled(true);
+      setShowTemplates(false);
+    }
+  }, [prefillData, open]);
 
   const handleTemplateSelect = (template: Template) => {
     const structure = template.structure as Record<string, unknown>;
@@ -67,6 +82,7 @@ export function AddThresholdModal({ open, onOpenChange, caseId, onAdd, isSubscri
     setDescription('');
     setThreshType('');
     setShowTemplates(false);
+    setIsPrefilled(false);
   };
 
   useEffect(() => {
@@ -79,8 +95,9 @@ export function AddThresholdModal({ open, onOpenChange, caseId, onAdd, isSubscri
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg border-amber-500/20 bg-background">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl text-amber-500">
-            Ajouter un seuil
+          <DialogTitle className="font-display text-xl text-amber-500 flex items-center gap-2">
+            {isPrefilled && <Sparkles className="w-5 h-5" />}
+            {isPrefilled ? 'Seuil pré-rempli par l\'IA' : 'Ajouter un seuil'}
           </DialogTitle>
         </DialogHeader>
 
@@ -192,7 +209,7 @@ export function AddThresholdModal({ open, onOpenChange, caseId, onAdd, isSubscri
                 disabled={isSubmitting || !title.trim() || !threshType}
                 className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider"
               >
-                {isSubmitting ? 'Ajout...' : 'Ajouter'}
+                {isSubmitting ? 'Ajout...' : isPrefilled ? 'Valider le seuil' : 'Ajouter'}
               </Button>
             </div>
           </form>
