@@ -130,12 +130,20 @@ export default function Home() {
           <p className="text-muted-foreground/40 font-body text-xs text-center sm:text-left">
             Pour ceux qui acceptent la réalité telle qu'elle est.
           </p>
-          <Link
-            to="/manifesto"
-            className="text-xs font-body text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
-          >
-            Manifeste
-          </Link>
+          <nav className="flex items-center gap-4 sm:gap-6">
+            <Link
+              to="/about"
+              className="text-xs font-body text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+            >
+              À propos
+            </Link>
+            <Link
+              to="/manifesto"
+              className="text-xs font-body text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors"
+            >
+              Manifeste
+            </Link>
+          </nav>
         </div>
       </footer>
     </div>

@@ -21,6 +21,10 @@ export default function Irreversa() {
         title: "« J'ai dit oui »",
         description: "Un engagement prononcé. Non pas une promesse (modifiable), mais un fait attesté. La date est inscrite. Les mots sont fixés. Aucune réécriture possible. Le seuil existe désormais dans le temps, immuable."
       }}
+      operationalLink={{
+        path: "/thresholds",
+        label: "Espace opérationnel →"
+      }}
     />
   );
 }

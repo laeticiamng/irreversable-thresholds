@@ -15,6 +15,10 @@ interface TerritoryPageProps {
   };
   symbol?: string;
   accentClass?: string;
+  operationalLink?: {
+    path: string;
+    label: string;
+  };
 }
 
 const territoryColors: Record<string, { text: string; border: string; bg: string }> = {
@@ -32,9 +36,9 @@ export default function TerritoryPage({
   digitalObject,
   example,
   symbol = '◆',
+  operationalLink,
 }: TerritoryPageProps) {
   const colors = territoryColors[territory];
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
@@ -138,10 +142,20 @@ export default function TerritoryPage({
           </section>
 
           {/* Silent footer */}
-          <section className="pt-8 text-center">
+          <section className="pt-8 text-center space-y-6">
             <p className="text-muted-foreground/40 font-body text-xs">
               Ce territoire existe. C'est tout ce qu'il promet.
             </p>
+            
+            {/* Discrete operational link - only for exposed users */}
+            {operationalLink && (
+              <Link
+                to={operationalLink.path}
+                className="inline-block text-xs font-body text-muted-foreground/30 hover:text-muted-foreground/60 transition-colors border-b border-transparent hover:border-muted-foreground/30"
+              >
+                {operationalLink.label}
+              </Link>
+            )}
           </section>
         </div>
       </main>

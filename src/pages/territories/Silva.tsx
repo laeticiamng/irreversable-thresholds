@@ -21,6 +21,10 @@ export default function Silva() {
         title: "« Entrer dans SILVA »",
         description: "J'entre. Rien ne se passe. Le temps passe. Je ne peux rien faire pendant 30 secondes. Puis je peux poser un geste. Puis j'attends encore. SILVA ne m'aide pas. SILVA me confronte à la durée."
       }}
+      operationalLink={{
+        path: "/silva/space",
+        label: "Entrer dans SILVA →"
+      }}
     />
   );
 }
