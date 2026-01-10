@@ -61,3 +61,12 @@ export const EFFECT_LABELS: Record<AbsenceEffect['effect_type'], string> = {
   forces: 'Force à contourner',
   preserves: 'Préserve',
 };
+
+export interface SilvaSession {
+  id: string;
+  user_id: string;
+  started_at: string;
+  ended_at: string | null;
+  duration_seconds: number | null;
+  created_at: string;
+}

@@ -1,13 +1,18 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSilvaConstraints } from '@/hooks/useSilvaConstraints';
+import { useSilvaSessions } from '@/hooks/useSilvaSessions';
+import { useAuth } from '@/hooks/useAuth';
 
 // SILVA - A digital milieu that does nothing but structures through presence
 // No actions, no functionality, no results - only constraint through being
 
 export default function SilvaSpace() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [phase, setPhase] = useState(0);
   const [showMessage, setShowMessage] = useState(false);
+  const sessionStarted = useRef(false);
   
   const { 
     timeInSpace, 
@@ -22,11 +27,50 @@ export default function SilvaSpace() {
     enforceSlowness: true,
   });
 
+  const {
+    startSession,
+    endSession,
+  } = useSilvaSessions(user?.id);
+
+  // Start session on mount (only once)
+  useEffect(() => {
+    if (user && !sessionStarted.current) {
+      sessionStarted.current = true;
+      startSession.mutate();
+    }
+  }, [user]);
+
+  // End session on unmount or navigation
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (timeInSpace > 0) {
+        endSession.mutate(timeInSpace);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      if (timeInSpace > 0 && sessionStarted.current) {
+        endSession.mutate(timeInSpace);
+      }
+    };
+  }, [timeInSpace]);
+
+  // Handle exit
+  const handleExit = () => {
+    if (timeInSpace > 0) {
+      endSession.mutate(timeInSpace);
+    }
+    navigate('/');
+  };
+
   // Phases change very slowly - like seasons
   useEffect(() => {
     const phaseInterval = setInterval(() => {
       setPhase(prev => (prev + 1) % 4);
-    }, 60000); // Change every minute
+    }, 60000);
     return () => clearInterval(phaseInterval);
   }, []);
 
@@ -138,12 +182,12 @@ export default function SilvaSpace() {
           canAct ? 'opacity-30 hover:opacity-60' : 'opacity-0 pointer-events-none'
         }`}
       >
-        <Link 
-          to="/" 
-          className="text-xs font-display tracking-[0.2em] text-silva-foreground/50 py-2 px-3 -ml-3 block"
+        <button 
+          onClick={handleExit}
+          className="text-xs font-display tracking-[0.2em] text-silva-foreground/50 py-2 px-3 -ml-3 block bg-transparent border-none cursor-pointer"
         >
           ← sortir
-        </Link>
+        </button>
       </div>
 
       {/* Time spent - appears very late, very faint */}
