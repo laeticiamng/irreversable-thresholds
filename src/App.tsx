@@ -14,6 +14,7 @@ import ThreshLanding from "./pages/ThreshLanding";
 import ThresholdsList from "./pages/ThresholdsList";
 import SilvaLanding from "./pages/SilvaLanding";
 import SilvaSpace from "./pages/SilvaSpace";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,8 @@ const App = () => (
           {/* SILVA */}
           <Route path="/silva" element={<SilvaLanding />} />
           <Route path="/silva/space" element={<SilvaSpace />} />
+          {/* Dashboard */}
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
