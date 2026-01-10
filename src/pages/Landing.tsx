@@ -7,6 +7,9 @@ export default function Landing() {
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link to="/" className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors">
+            ← Retour
+          </Link>
           <span className="font-display text-lg tracking-[0.15em] text-foreground">
             IRREVERSA
           </span>

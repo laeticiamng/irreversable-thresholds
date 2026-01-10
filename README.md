@@ -1,73 +1,68 @@
-# Welcome to your Lovable project
+# Quatre Territoires
 
-## Project info
+> Pour ceux qui acceptent la réalité telle qu'elle est.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+---
 
-## How can I edit this code?
+## Manifeste
 
-There are several ways of editing your application.
+Ceci n'est pas une application de productivité.  
+Ceci n'est pas un outil d'optimisation.  
+Ceci n'est pas un système de suivi.
 
-**Use Lovable**
+C'est un espace de confrontation au réel — structuré autour de quatre territoires qui ne promettent rien, ne conseillent rien, ne corrigent rien.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Les quatre territoires
 
-**Use your preferred IDE**
+### IRREVERSA
+Les seuils que l'on franchit. Ce qui est fait ne peut être défait. Aucune suppression, aucun retour arrière. L'irréversible comme structure.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### NULLA  
+Ce qui n'existe pas. Les absences qui structurent. On ne crée pas ce qui manque — on observe ses effets.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### THRESH
+Les seuils invisibles. Ressentis, pas mesurés. Sans déclencheur, sans quantification. Le moment où "c'est trop" sans pouvoir dire pourquoi.
 
-Follow these steps:
+### SILVA
+Le milieu. Un espace qui ne fait rien. Pas de fonctionnalité, pas de résultat. Il modifie les comportements uniquement par sa présence structurelle.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Ce que ce projet n'est PAS
 
-# Step 3: Install the necessary dependencies.
-npm i
+- ❌ Un SaaS
+- ❌ Un système de gamification
+- ❌ Un outil de bien-être
+- ❌ Une plateforme de productivité
+- ❌ Un produit optimisé pour la croissance
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+## Stack technique
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
+- React + TypeScript + Vite
 - Tailwind CSS
+- shadcn/ui
+- Lovable Cloud (backend)
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Statut
 
-## Can I connect a custom domain to my Lovable project?
+**Phase actuelle** : Exploration structurelle
 
-Yes, you can!
+- [x] Identité visuelle (minimalisme monumental)
+- [x] Les quatre territoires navigables
+- [x] IRREVERSA : seuils franchissables (append-only)
+- [x] NULLA : absences et effets observables
+- [x] THRESH : seuils invisibles, ressentis
+- [x] SILVA : milieu numérique contraignant
+- [x] Vue synthèse contemplative
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Licence
+
+Ce projet existe. C'est tout ce qu'il promet.
