@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.customer-portal]
 verify_jwt = false
+
+[functions.get-payment-history]
+verify_jwt = false
+
+[functions.ai-assist]
+verify_jwt = false

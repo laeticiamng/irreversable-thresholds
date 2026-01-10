@@ -96,6 +96,63 @@ export type Database = {
           },
         ]
       }
+      ai_activity_log: {
+        Row: {
+          accepted_items: Json | null
+          action: string
+          case_id: string | null
+          created_at: string
+          id: string
+          input_snapshot: Json
+          module: string
+          output_snapshot: Json
+          rejected_items: Json | null
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          accepted_items?: Json | null
+          action: string
+          case_id?: string | null
+          created_at?: string
+          id?: string
+          input_snapshot?: Json
+          module: string
+          output_snapshot?: Json
+          rejected_items?: Json | null
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          accepted_items?: Json | null
+          action?: string
+          case_id?: string | null
+          created_at?: string
+          id?: string
+          input_snapshot?: Json
+          module?: string
+          output_snapshot?: Json
+          rejected_items?: Json | null
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_activity_log_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_activity_log_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cases: {
         Row: {
           created_at: string
@@ -536,6 +593,8 @@ export type Database = {
       }
       user_subscriptions: {
         Row: {
+          ai_actions_reset_at: string | null
+          ai_actions_used: number
           created_at: string
           expires_at: string | null
           id: string
@@ -545,6 +604,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_actions_reset_at?: string | null
+          ai_actions_used?: number
           created_at?: string
           expires_at?: string | null
           id?: string
@@ -554,6 +615,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_actions_reset_at?: string | null
+          ai_actions_used?: number
           created_at?: string
           expires_at?: string | null
           id?: string
