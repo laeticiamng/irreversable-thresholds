@@ -101,29 +101,29 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-4"
     >
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="bg-background border border-nulla/20 w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4"
+        className="bg-background border border-nulla/20 w-full max-w-2xl max-h-[90vh] overflow-y-auto m-0 sm:m-4"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border/50">
-          <h2 className="font-display text-xl text-nulla">
-            {prefillData ? '✨ Absence pré-remplie par l\'IA' : 'Déclarer une absence'}
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border/50">
+          <h2 className="font-display text-lg sm:text-xl text-nulla">
+            {prefillData ? '✨ Absence pré-remplie' : 'Déclarer une absence'}
           </h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Templates section */}
         {showTemplates && templates.length > 0 && (
-          <div className="p-6 border-b border-border/50 bg-card/30">
+          <div className="p-4 sm:p-6 border-b border-border/50 bg-card/30">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-display text-muted-foreground">Utiliser un template</h3>
+              <h3 className="text-sm font-display text-muted-foreground">Templates</h3>
               <button 
                 onClick={() => setShowTemplates(false)}
                 className="text-xs text-muted-foreground hover:text-foreground"
@@ -131,7 +131,7 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
                 Passer
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {freeTemplates.map(t => (
                 <button
                   key={t.id}
@@ -139,7 +139,7 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
                   className="p-3 text-left border border-nulla/20 hover:bg-nulla/10 transition-colors"
                 >
                   <span className="text-sm text-foreground">{t.name}</span>
-                  <span className="block text-xs text-muted-foreground mt-1">{t.description}</span>
+                  <span className="block text-xs text-muted-foreground mt-1 line-clamp-1">{t.description}</span>
                 </button>
               ))}
               {premiumTemplates.slice(0, 2).map(t => (
@@ -149,9 +149,9 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
                   className="p-3 text-left border border-nulla/10 opacity-60 relative"
                   disabled
                 >
-                  <span className="absolute top-2 right-2 text-xs px-1.5 py-0.5 bg-nulla/20 text-nulla">PRO</span>
+                  <span className="absolute top-2 right-2 text-[10px] px-1.5 py-0.5 bg-nulla/20 text-nulla">PRO</span>
                   <span className="text-sm text-foreground">{t.name}</span>
-                  <span className="block text-xs text-muted-foreground mt-1">{t.description}</span>
+                  <span className="block text-xs text-muted-foreground mt-1 line-clamp-1">{t.description}</span>
                 </button>
               ))}
             </div>
@@ -159,7 +159,7 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title" className="font-display">
@@ -260,7 +260,7 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
           </div>
 
           {/* Micro-copy */}
-          <div className="p-4 bg-card/50 border border-border/30">
+          <div className="p-3 sm:p-4 bg-card/50 border border-border/30">
             <p className="text-xs text-muted-foreground">
               💡 <strong>Rappel :</strong> Décris une absence factuelle. 
               Aucun conseil — uniquement la clarté.
@@ -268,16 +268,16 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-border/50">
-            <Button type="button" variant="ghost" onClick={onClose}>
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-border/50">
+            <Button type="button" variant="ghost" onClick={onClose} className="order-2 sm:order-none">
               Annuler
             </Button>
             <Button 
               type="submit" 
               disabled={loading || !title.trim() || !effect.trim()}
-              className="bg-nulla hover:bg-nulla/90 text-primary-foreground"
+              className="bg-nulla hover:bg-nulla/90 text-primary-foreground order-1 sm:order-none"
             >
-              {loading ? 'Création...' : prefillData ? 'Valider l\'absence' : 'Créer l\'absence'}
+              {loading ? 'Création...' : prefillData ? 'Valider' : 'Créer'}
             </Button>
           </div>
         </form>

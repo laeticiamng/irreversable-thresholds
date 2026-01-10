@@ -67,23 +67,23 @@ export function AddThresholdModal({ caseId, onClose, prefillData }: AddThreshold
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-3 sm:p-4"
     >
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="bg-background border border-primary/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8"
+        className="bg-background border border-primary/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 md:p-8"
       >
-        <h2 className="font-display text-2xl text-primary mb-2">
-          {prefillData ? '✨ Seuil pré-rempli par l\'IA' : 'Ajouter un seuil'}
+        <h2 className="font-display text-xl sm:text-2xl text-primary mb-2">
+          {prefillData ? '✨ Seuil pré-rempli' : 'Ajouter un seuil'}
         </h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          {prefillData ? 'Vérifie et ajuste les informations avant de valider.' : 'Écris des faits, pas des conseils. L\'objectif est la clarté.'}
+        <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
+          {prefillData ? 'Vérifie et ajuste avant de valider.' : 'Écris des faits, pas des conseils.'}
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div>
             <label className="block text-sm font-display text-foreground mb-2">
               Seuil — intitulé <span className="text-destructive">*</span>
@@ -135,7 +135,7 @@ export function AddThresholdModal({ caseId, onClose, prefillData }: AddThreshold
             />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-display text-foreground mb-2">Gravité</label>
               <select
@@ -158,11 +158,11 @@ export function AddThresholdModal({ caseId, onClose, prefillData }: AddThreshold
             </div>
           </div>
 
-          <div className="flex gap-4 pt-4">
-            <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground">
-              {isSubmitting ? 'Création...' : prefillData ? 'Valider le seuil' : 'Ajouter le seuil'}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
+            <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground order-1 sm:order-none">
+              {isSubmitting ? 'Création...' : prefillData ? 'Valider' : 'Ajouter'}
             </Button>
-            <Button type="button" variant="ghost" onClick={onClose}>Annuler</Button>
+            <Button type="button" variant="ghost" onClick={onClose} className="order-2 sm:order-none">Annuler</Button>
           </div>
         </form>
       </motion.div>

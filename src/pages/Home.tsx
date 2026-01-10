@@ -290,6 +290,53 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Quick Actions for returning users */}
+      <motion.div 
+        className="max-w-4xl mx-auto px-4 sm:px-6 pb-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+      >
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          <Link to="/irreversa/home" className="group">
+            <motion.div
+              className="p-3 sm:p-4 border border-primary/20 bg-primary/5 text-center hover:bg-primary/10"
+              whileHover={{ scale: 1.02 }}
+            >
+              <span className="text-xs sm:text-sm font-display text-primary/80 group-hover:text-primary">IRREVERSA</span>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 hidden sm:block">Seuils franchis</p>
+            </motion.div>
+          </Link>
+          <Link to="/thresh/home" className="group">
+            <motion.div
+              className="p-3 sm:p-4 border border-amber-500/20 bg-amber-500/5 text-center hover:bg-amber-500/10"
+              whileHover={{ scale: 1.02 }}
+            >
+              <span className="text-xs sm:text-sm font-display text-amber-500/80 group-hover:text-amber-500">THRESH</span>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 hidden sm:block">Seuils ressentis</p>
+            </motion.div>
+          </Link>
+          <Link to="/nulla/home" className="group">
+            <motion.div
+              className="p-3 sm:p-4 border border-nulla/20 bg-nulla/5 text-center hover:bg-nulla/10"
+              whileHover={{ scale: 1.02 }}
+            >
+              <span className="text-xs sm:text-sm font-display text-nulla/80 group-hover:text-nulla">NULLA</span>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 hidden sm:block">Absences</p>
+            </motion.div>
+          </Link>
+          <Link to="/silva/home" className="group">
+            <motion.div
+              className="p-3 sm:p-4 border border-silva/20 bg-silva/5 text-center hover:bg-silva/10"
+              whileHover={{ scale: 1.02 }}
+            >
+              <span className="text-xs sm:text-sm font-display text-silva/80 group-hover:text-silva">SILVA</span>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 hidden sm:block">Espace neutre</p>
+            </motion.div>
+          </Link>
+        </div>
+      </motion.div>
+
       {/* Onboarding CTA */}
       <motion.div 
         className="max-w-4xl mx-auto px-4 sm:px-6 pb-8"
