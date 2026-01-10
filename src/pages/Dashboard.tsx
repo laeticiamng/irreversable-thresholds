@@ -6,6 +6,7 @@ import { useAbsencesDB } from '@/hooks/useAbsencesDB';
 import { useInvisibleThresholds } from '@/hooks/useInvisibleThresholds';
 import { useSilvaSpaces } from '@/hooks/useSilvaSpaces';
 import { useUserCases } from '@/hooks/useUserCases';
+import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 import { Button } from '@/components/ui/button';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { GlobalNav } from '@/components/GlobalNav';
@@ -38,6 +39,9 @@ export default function Dashboard() {
   const { thresholds: threshThresholds } = useInvisibleThresholds(user?.id);
   const { spaces: silvaSpaces } = useSilvaSpaces(user?.id);
   const { cases } = useUserCases(user?.id);
+  
+  // Enable realtime sync for all data
+  useRealtimeSync({ userId: user?.id, enabled: !!user });
   
   const [mounted, setMounted] = useState(false);
   const [time, setTime] = useState(new Date());

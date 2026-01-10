@@ -11,6 +11,7 @@ import Manifesto from "./pages/Manifesto";
 import About from "./pages/About";
 import Dashboard from "./pages/Dashboard";
 import Account from "./pages/Account";
+import Settings from "./pages/Settings";
 import Onboarding from "./pages/Onboarding";
 import Suite from "./pages/Suite";
 import NotFound from "./pages/NotFound";
@@ -112,8 +113,9 @@ function AnimatedRoutes() {
           {/* Unified case creation */}
           <Route path="/cases/new" element={<CreateCase />} />
           
-          {/* Dashboard & Account */}
+          {/* Dashboard, Settings & Account */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/account" element={<Account />} />
           
           {/* Legacy redirects */}

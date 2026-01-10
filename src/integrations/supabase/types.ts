@@ -307,6 +307,53 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          action_url: string | null
+          case_id: string | null
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          module: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          case_id?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          module?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          case_id?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          module?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -590,6 +637,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          default_module: string | null
+          display_density: string | null
+          email_notifications: boolean | null
+          id: string
+          notifications_enabled: boolean | null
+          show_animations: boolean | null
+          sound_enabled: boolean | null
+          theme: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          default_module?: string | null
+          display_density?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          notifications_enabled?: boolean | null
+          show_animations?: boolean | null
+          sound_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          default_module?: string | null
+          display_density?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          notifications_enabled?: boolean | null
+          show_animations?: boolean | null
+          sound_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_subscriptions: {
         Row: {
