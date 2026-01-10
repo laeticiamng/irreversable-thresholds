@@ -51,6 +51,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        nulla: {
+          DEFAULT: "hsl(var(--nulla))",
+          foreground: "hsl(var(--nulla-foreground))",
+          muted: "hsl(var(--nulla-muted))",
+        },
         stone: {
           DEFAULT: "hsl(var(--stone))",
           foreground: "hsl(var(--stone-foreground))",
