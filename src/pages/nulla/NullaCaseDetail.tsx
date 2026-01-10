@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,7 +15,9 @@ import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
 import { AIAssistButton } from '@/components/ai/AIAssistButton';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
+import { useAIFormPrefill, type NullaFormData } from '@/hooks/useAIFormPrefill';
 import { Leaf } from 'lucide-react';
+import type { AIProposal } from '@/hooks/useAIAssist';
 
 type TabType = 'matrix' | 'map' | 'absences' | 'exports' | 'silva';
 
@@ -34,6 +37,20 @@ export default function NullaCaseDetail() {
   const [showAddAbsence, setShowAddAbsence] = useState(false);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showAIHistory, setShowAIHistory] = useState(false);
+
+  // AI form prefill hook
+  const { 
+    prefillData, 
+    handleAIAccept, 
+    clearPrefill 
+  } = useAIFormPrefill<NullaFormData>();
+
+  // Handle AI proposal acceptance
+  const onAIAccept = (proposal: AIProposal) => {
+    handleAIAccept(proposal, 'nulla');
+    setShowAIPanel(false);
+    setShowAddAbsence(true);
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -71,7 +88,11 @@ export default function NullaCaseDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-background"
+    >
       {/* Header */}
       <header className="border-b border-nulla/20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -212,15 +233,20 @@ export default function NullaCaseDetail() {
         </div>
       </footer>
 
-      {/* Add absence modal */}
+      {/* Add absence modal - with prefill support */}
       {showAddAbsence && (
         <AddAbsenceModal
           caseId={caseId}
-          onClose={() => setShowAddAbsence(false)}
+          onClose={() => {
+            setShowAddAbsence(false);
+            clearPrefill();
+          }}
           onSubmit={async (data) => {
             await addAbsence.mutateAsync(data);
             setShowAddAbsence(false);
+            clearPrefill();
           }}
+          prefillData={prefillData}
         />
       )}
 
@@ -233,10 +259,7 @@ export default function NullaCaseDetail() {
         caseContext={{ title: 'Dossier NULLA' }}
         userInput={{ absences: caseAbsences }}
         isSubscribed={isSubscribed}
-        onAccept={(proposal) => {
-          console.log('Accepted proposal:', proposal);
-          setShowAIPanel(false);
-        }}
+        onAccept={onAIAccept}
         onViewHistory={() => {
           setShowAIPanel(false);
           setShowAIHistory(true);
@@ -252,6 +275,6 @@ export default function NullaCaseDetail() {
           userId={user.id}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

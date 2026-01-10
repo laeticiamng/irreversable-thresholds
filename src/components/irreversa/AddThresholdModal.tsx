@@ -1,27 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
 import { useIrreversaCases } from '@/hooks/useIrreversaCases';
 import { CATEGORY_LABELS, SEVERITY_LABELS, ThresholdCategory, Severity } from '@/types/database';
+import type { IrreversaFormData } from '@/hooks/useAIFormPrefill';
 
 interface AddThresholdModalProps {
   caseId?: string;
   onClose: () => void;
+  prefillData?: Partial<IrreversaFormData> | null;
 }
 
-export function AddThresholdModal({ caseId, onClose }: AddThresholdModalProps) {
+export function AddThresholdModal({ caseId, onClose, prefillData }: AddThresholdModalProps) {
   const { user } = useAuth();
   const { createThreshold } = useIrreversaCases(user?.id);
 
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<ThresholdCategory>('autre');
-  const [whatCannotBeUndone, setWhatCannotBeUndone] = useState('');
-  const [whatChangesAfter, setWhatChangesAfter] = useState('');
-  const [severity, setSeverity] = useState<Severity>('moderate');
-  const [conditions, setConditions] = useState('');
+  const [title, setTitle] = useState(prefillData?.title || '');
+  const [category, setCategory] = useState<ThresholdCategory>((prefillData?.category as ThresholdCategory) || 'autre');
+  const [whatCannotBeUndone, setWhatCannotBeUndone] = useState(prefillData?.whatCannotBeUndone || '');
+  const [whatChangesAfter, setWhatChangesAfter] = useState(prefillData?.whatChangesAfter || '');
+  const [severity, setSeverity] = useState<Severity>((prefillData?.severity as Severity) || 'moderate');
+  const [conditions, setConditions] = useState(prefillData?.conditions || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Update form when prefillData changes
+  useEffect(() => {
+    if (prefillData) {
+      if (prefillData.title) setTitle(prefillData.title);
+      if (prefillData.category) setCategory(prefillData.category as ThresholdCategory);
+      if (prefillData.whatCannotBeUndone) setWhatCannotBeUndone(prefillData.whatCannotBeUndone);
+      if (prefillData.whatChangesAfter) setWhatChangesAfter(prefillData.whatChangesAfter);
+      if (prefillData.severity) setSeverity(prefillData.severity as Severity);
+      if (prefillData.conditions) setConditions(prefillData.conditions);
+    }
+  }, [prefillData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,11 +63,24 @@ export function AddThresholdModal({ caseId, onClose }: AddThresholdModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-background border border-primary/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8">
-        <h2 className="font-display text-2xl text-primary mb-2">Ajouter un seuil</h2>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+    >
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="bg-background border border-primary/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8"
+      >
+        <h2 className="font-display text-2xl text-primary mb-2">
+          {prefillData ? '✨ Seuil pré-rempli par l\'IA' : 'Ajouter un seuil'}
+        </h2>
         <p className="text-sm text-muted-foreground mb-6">
-          Écris des faits, pas des conseils. L'objectif est la clarté.
+          {prefillData ? 'Vérifie et ajuste les informations avant de valider.' : 'Écris des faits, pas des conseils. L\'objectif est la clarté.'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,12 +160,12 @@ export function AddThresholdModal({ caseId, onClose }: AddThresholdModalProps) {
 
           <div className="flex gap-4 pt-4">
             <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground">
-              {isSubmitting ? 'Création...' : 'Ajouter le seuil'}
+              {isSubmitting ? 'Création...' : prefillData ? 'Valider le seuil' : 'Ajouter le seuil'}
             </Button>
             <Button type="button" variant="ghost" onClick={onClose}>Annuler</Button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

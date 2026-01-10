@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { X } from 'lucide-react';
 import { useTemplates } from '@/hooks/useTemplates';
+import type { NullaFormData } from '@/hooks/useAIFormPrefill';
 
 const CATEGORY_OPTIONS = [
   { value: 'ressource', label: 'Ressource' },
@@ -28,20 +30,32 @@ interface AddAbsenceModalProps {
   caseId?: string;
   onClose: () => void;
   onSubmit: (data: { title: string; description: string }) => Promise<void>;
+  prefillData?: Partial<NullaFormData> | null;
 }
 
-export function AddAbsenceModal({ caseId, onClose, onSubmit }: AddAbsenceModalProps) {
+export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddAbsenceModalProps) {
   const { templates } = useTemplates('nulla');
   const [loading, setLoading] = useState(false);
   
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('autre');
-  const [effect, setEffect] = useState('');
-  const [impactLevel, setImpactLevel] = useState('moderate');
-  const [counterfactual, setCounterfactual] = useState('');
+  const [title, setTitle] = useState(prefillData?.title || '');
+  const [category, setCategory] = useState(prefillData?.category || 'autre');
+  const [effect, setEffect] = useState(prefillData?.effect || '');
+  const [impactLevel, setImpactLevel] = useState(prefillData?.impactLevel || 'moderate');
+  const [counterfactual, setCounterfactual] = useState(prefillData?.counterfactual || '');
   const [evidenceNeeded, setEvidenceNeeded] = useState('');
+  const [showTemplates, setShowTemplates] = useState(!prefillData);
 
-  const [showTemplates, setShowTemplates] = useState(true);
+  // Update form when prefillData changes
+  useEffect(() => {
+    if (prefillData) {
+      if (prefillData.title) setTitle(prefillData.title);
+      if (prefillData.category) setCategory(prefillData.category);
+      if (prefillData.effect) setEffect(prefillData.effect);
+      if (prefillData.impactLevel) setImpactLevel(prefillData.impactLevel);
+      if (prefillData.counterfactual) setCounterfactual(prefillData.counterfactual);
+      setShowTemplates(false);
+    }
+  }, [prefillData]);
 
   const handleTemplateSelect = (template: any) => {
     const structure = template.structure as any;
@@ -71,11 +85,23 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit }: AddAbsenceModalPr
   const premiumTemplates = templates.filter(t => t.is_premium);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-background border border-nulla/20 w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+    >
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="bg-background border border-nulla/20 w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border/50">
-          <h2 className="font-display text-xl text-nulla">Déclarer une absence</h2>
+          <h2 className="font-display text-xl text-nulla">
+            {prefillData ? '✨ Absence pré-remplie par l\'IA' : 'Déclarer une absence'}
+          </h2>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X className="w-5 h-5" />
           </button>
@@ -239,11 +265,11 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit }: AddAbsenceModalPr
               disabled={loading || !title.trim() || !effect.trim()}
               className="bg-nulla hover:bg-nulla/90 text-primary-foreground"
             >
-              {loading ? 'Création...' : 'Créer l\'absence'}
+              {loading ? 'Création...' : prefillData ? 'Valider l\'absence' : 'Créer l\'absence'}
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
