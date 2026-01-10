@@ -11,6 +11,9 @@ import { ThresholdsTimeline } from '@/components/thresh/ThresholdsTimeline';
 import { ThreshExportsTab } from '@/components/thresh/ThreshExportsTab';
 import { AddThresholdModal } from '@/components/thresh/AddThresholdModal';
 import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
+import { AIAssistButton } from '@/components/ai/AIAssistButton';
+import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
+import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
 import { Plus, ArrowLeft, Leaf } from 'lucide-react';
 
 const FREE_THRESHOLD_LIMIT = 5;
@@ -24,6 +27,8 @@ export default function ThreshCaseDetail() {
   
   const [activeTab, setActiveTab] = useState('thresholds');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [showAIHistory, setShowAIHistory] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -112,16 +117,19 @@ export default function ThreshCaseDetail() {
                 )}
               </div>
             </div>
-            {activeTab !== 'silva' && (
-              <Button 
-                onClick={handleAddThreshold}
-                disabled={!canAddThreshold}
-                className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Ajouter un seuil
-              </Button>
-            )}
+            <div className="flex items-center gap-3">
+              <AIAssistButton onClick={() => setShowAIPanel(true)} />
+              {activeTab !== 'silva' && (
+                <Button 
+                  onClick={handleAddThreshold}
+                  disabled={!canAddThreshold}
+                  className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Ajouter un seuil
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -204,6 +212,35 @@ export default function ThreshCaseDetail() {
         onAdd={addThreshold.mutateAsync}
         isSubscribed={isSubscribed}
       />
+
+      {/* AI Panel */}
+      <AIAssistPanel
+        open={showAIPanel}
+        onOpenChange={setShowAIPanel}
+        module="thresh"
+        caseId={caseId}
+        caseContext={{ title: currentCase.title }}
+        userInput={{ thresholds: caseThresholds }}
+        isSubscribed={isSubscribed}
+        onAccept={(proposal) => {
+          console.log('Accepted proposal:', proposal);
+          setShowAIPanel(false);
+        }}
+        onViewHistory={() => {
+          setShowAIPanel(false);
+          setShowAIHistory(true);
+        }}
+      />
+
+      {/* AI History */}
+      {user && (
+        <AIHistoryModal
+          open={showAIHistory}
+          onOpenChange={setShowAIHistory}
+          caseId={caseId}
+          userId={user.id}
+        />
+      )}
     </div>
   );
 }

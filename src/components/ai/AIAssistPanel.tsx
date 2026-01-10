@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Check, X, Edit2, History, AlertCircle, Loader2, Lock } from 'lucide-react';
+import { Sparkles, Check, X, Edit2, History, AlertCircle, Loader2, Lock, HelpCircle } from 'lucide-react';
 import { useAIAssist, AIModule, AIAction, AI_ACTIONS_CONFIG, AIProposal } from '@/hooks/useAIAssist';
-import { UpgradeModal } from '@/components/UpgradeModal';
+import { AIUpgradePrompt } from '@/components/ai/AIUpgradePrompt';
+import { AI_MICROCOPY, AI_ACTION_HELP } from '@/lib/ai-microcopy';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AIAssistPanelProps {
   open: boolean;
@@ -48,6 +49,8 @@ export function AIAssistPanel({
   const [selectedAction, setSelectedAction] = useState<AIAction | null>(null);
   const [editingProposal, setEditingProposal] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<'limit' | 'pro_action'>('limit');
 
   const actions = getActionsForModule(module);
 
@@ -197,14 +200,18 @@ export function AIAssistPanel({
                 <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm text-destructive">{error}</p>
-                  {error.includes('Pro') && (
-                    <UpgradeModal
-                      trigger={
-                        <Button size="sm" variant="outline" className="mt-2 text-xs">
-                          Passer Pro
-                        </Button>
-                      }
-                    />
+                  {(error.includes('Pro') || error.includes('Limite')) && (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="mt-2 text-xs"
+                      onClick={() => {
+                        setUpgradeReason(error.includes('Pro') ? 'pro_action' : 'limit');
+                        setShowUpgradePrompt(true);
+                      }}
+                    >
+                      Passer Pro
+                    </Button>
                   )}
                 </div>
               </div>
@@ -328,8 +335,21 @@ export function AIAssistPanel({
                 )}
               </div>
             </section>
+            {/* Disclaimer */}
+            <p className="text-[10px] text-center text-muted-foreground/60 pt-2">
+              {AI_MICROCOPY.help.disclaimer}
+            </p>
           </div>
         </ScrollArea>
+
+        {/* Upgrade Prompt Modal */}
+        <AIUpgradePrompt
+          open={showUpgradePrompt}
+          onOpenChange={setShowUpgradePrompt}
+          reason={upgradeReason}
+          actionsUsed={usage?.actionsUsed || 0}
+          limit={usage?.limit || 5}
+        />
       </SheetContent>
     </Sheet>
   );

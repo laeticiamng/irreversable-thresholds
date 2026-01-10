@@ -11,6 +11,9 @@ import { AbsencesList } from '@/components/nulla/AbsencesList';
 import { NullaExportsTab } from '@/components/nulla/NullaExportsTab';
 import { AddAbsenceModal } from '@/components/nulla/AddAbsenceModal';
 import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
+import { AIAssistButton } from '@/components/ai/AIAssistButton';
+import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
+import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
 import { Leaf } from 'lucide-react';
 
 type TabType = 'matrix' | 'map' | 'absences' | 'exports' | 'silva';
@@ -29,6 +32,8 @@ export default function NullaCaseDetail() {
 
   const [activeTab, setActiveTab] = useState<TabType>('matrix');
   const [showAddAbsence, setShowAddAbsence] = useState(false);
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [showAIHistory, setShowAIHistory] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -135,7 +140,8 @@ export default function NullaCaseDetail() {
       {/* Sticky CTA (hide on SILVA tab) */}
       {activeTab !== 'silva' && (
         <div className="sticky top-[57px] z-10 bg-background border-b border-border/30">
-          <div className="max-w-5xl mx-auto px-6 py-3 flex justify-end">
+          <div className="max-w-5xl mx-auto px-6 py-3 flex justify-between items-center">
+            <AIAssistButton onClick={() => setShowAIPanel(true)} />
             {isAtLimit ? (
               <UpgradeModal 
                 trigger={
@@ -215,6 +221,35 @@ export default function NullaCaseDetail() {
             await addAbsence.mutateAsync(data);
             setShowAddAbsence(false);
           }}
+        />
+      )}
+
+      {/* AI Panel */}
+      <AIAssistPanel
+        open={showAIPanel}
+        onOpenChange={setShowAIPanel}
+        module="nulla"
+        caseId={caseId}
+        caseContext={{ title: 'Dossier NULLA' }}
+        userInput={{ absences: caseAbsences }}
+        isSubscribed={isSubscribed}
+        onAccept={(proposal) => {
+          console.log('Accepted proposal:', proposal);
+          setShowAIPanel(false);
+        }}
+        onViewHistory={() => {
+          setShowAIPanel(false);
+          setShowAIHistory(true);
+        }}
+      />
+
+      {/* AI History */}
+      {user && (
+        <AIHistoryModal
+          open={showAIHistory}
+          onOpenChange={setShowAIHistory}
+          caseId={caseId}
+          userId={user.id}
         />
       )}
     </div>
