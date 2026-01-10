@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,10 +15,12 @@ import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
 import { AIAssistButton } from '@/components/ai/AIAssistButton';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
+import { useAIFormPrefill, type IrreversaFormData } from '@/hooks/useAIFormPrefill';
 import { DOMAIN_LABELS } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Leaf } from 'lucide-react';
+import type { AIProposal } from '@/hooks/useAIAssist';
 
 type TabType = 'timeline' | 'consequences' | 'thresholds' | 'exports' | 'silva';
 
@@ -38,6 +41,21 @@ export default function CaseDetail() {
   const [showAddThreshold, setShowAddThreshold] = useState(false);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showAIHistory, setShowAIHistory] = useState(false);
+  
+  // AI form prefill hook
+  const { 
+    prefillData, 
+    showFormWithPrefill, 
+    handleAIAccept, 
+    clearPrefill 
+  } = useAIFormPrefill<IrreversaFormData>();
+
+  // Handle AI proposal acceptance
+  const onAIAccept = (proposal: AIProposal) => {
+    handleAIAccept(proposal, 'irreversa');
+    setShowAIPanel(false);
+    setShowAddThreshold(true);
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -68,7 +86,11 @@ export default function CaseDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-background"
+    >
       {/* Header */}
       <header className="border-b border-primary/20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -208,11 +230,15 @@ export default function CaseDetail() {
         </div>
       </footer>
 
-      {/* Add threshold modal */}
+      {/* Add threshold modal - with prefill support */}
       {showAddThreshold && (
         <AddThresholdModal
           caseId={caseId}
-          onClose={() => setShowAddThreshold(false)}
+          onClose={() => {
+            setShowAddThreshold(false);
+            clearPrefill();
+          }}
+          prefillData={prefillData}
         />
       )}
 
@@ -225,10 +251,7 @@ export default function CaseDetail() {
         caseContext={{ title: 'Dossier IRREVERSA' }}
         userInput={{ thresholds: caseThresholds }}
         isSubscribed={isSubscribed}
-        onAccept={(proposal) => {
-          console.log('Accepted proposal:', proposal);
-          setShowAIPanel(false);
-        }}
+        onAccept={onAIAccept}
         onViewHistory={() => {
           setShowAIPanel(false);
           setShowAIHistory(true);
@@ -244,6 +267,6 @@ export default function CaseDetail() {
           userId={user.id}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

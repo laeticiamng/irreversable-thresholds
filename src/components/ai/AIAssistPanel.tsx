@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Check, X, Edit2, History, AlertCircle, Loader2, Lock, HelpCircle } from 'lucide-react';
+import { Sparkles, Check, X, Edit2, History, AlertCircle, Loader2, Lock, HelpCircle, ArrowRight } from 'lucide-react';
 import { useAIAssist, AIModule, AIAction, AI_ACTIONS_CONFIG, AIProposal } from '@/hooks/useAIAssist';
 import { AIUpgradePrompt } from '@/components/ai/AIUpgradePrompt';
 import { AI_MICROCOPY, AI_ACTION_HELP } from '@/lib/ai-microcopy';
@@ -218,95 +219,122 @@ export function AIAssistPanel({
             )}
 
             {/* 3. Proposals */}
-            {proposals.length > 0 && (
-              <section>
-                <h3 className="text-xs font-display tracking-wider text-muted-foreground mb-3">
-                  PROPOSITIONS IA
-                </h3>
-                <div className="space-y-3">
-                  {proposals.map((proposal, index) => (
-                    <div
-                      key={proposal.id}
-                      className={`p-4 border rounded-lg ${
-                        proposal.status === 'accepted' ? 'border-green-500/50 bg-green-500/5' :
-                        proposal.status === 'rejected' ? 'border-destructive/50 bg-destructive/5 opacity-50' :
-                        proposal.status === 'modified' ? 'border-amber-500/50 bg-amber-500/5' :
-                        'border-border/50 bg-card/50'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge variant="secondary" className="text-xs">
-                          Proposition {index + 1}
-                        </Badge>
-                        {proposal.status !== 'pending' && (
-                          <Badge 
-                            variant={proposal.status === 'accepted' ? 'default' : 'outline'}
-                            className={`text-[10px] ${
-                              proposal.status === 'accepted' ? 'bg-green-500' :
-                              proposal.status === 'modified' ? 'bg-amber-500' : ''
-                            }`}
-                          >
-                            {proposal.status === 'accepted' ? '✓ Accepté' :
-                             proposal.status === 'rejected' ? '✗ Refusé' : '✎ Modifié'}
+            <AnimatePresence mode="wait">
+              {proposals.length > 0 && (
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                >
+                  <h3 className="text-xs font-display tracking-wider text-muted-foreground mb-3">
+                    PROPOSITIONS IA
+                  </h3>
+                  <div className="space-y-3">
+                    {proposals.map((proposal, index) => (
+                      <motion.div
+                        key={proposal.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ delay: index * 0.1, type: 'spring', stiffness: 300, damping: 25 }}
+                        className={`p-4 border rounded-lg transition-colors ${
+                          proposal.status === 'accepted' ? 'border-green-500/50 bg-green-500/5' :
+                          proposal.status === 'rejected' ? 'border-destructive/50 bg-destructive/5 opacity-50' :
+                          proposal.status === 'modified' ? 'border-amber-500/50 bg-amber-500/5' :
+                          'border-border/50 bg-card/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <Badge variant="secondary" className="text-xs">
+                            Proposition {index + 1}
                           </Badge>
-                        )}
-                      </div>
-
-                      {editingProposal === proposal.id ? (
-                        <div className="space-y-2">
-                          <Textarea
-                            value={editContent}
-                            onChange={(e) => setEditContent(e.target.value)}
-                            className="font-mono text-xs min-h-[150px]"
-                          />
-                          <div className="flex gap-2">
-                            <Button size="sm" onClick={() => handleSaveEdit(proposal.id)}>
-                              Sauvegarder
-                            </Button>
-                            <Button size="sm" variant="ghost" onClick={() => setEditingProposal(null)}>
-                              Annuler
-                            </Button>
-                          </div>
+                          {proposal.status !== 'pending' && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                            >
+                              <Badge 
+                                variant={proposal.status === 'accepted' ? 'default' : 'outline'}
+                                className={`text-[10px] ${
+                                  proposal.status === 'accepted' ? 'bg-green-500' :
+                                  proposal.status === 'modified' ? 'bg-amber-500' : ''
+                                }`}
+                              >
+                                {proposal.status === 'accepted' ? '✓ Accepté' :
+                                 proposal.status === 'rejected' ? '✗ Refusé' : '✎ Modifié'}
+                              </Badge>
+                            </motion.div>
+                          )}
                         </div>
-                      ) : (
-                        <>
-                          <ProposalContent content={proposal.modifiedContent || proposal.content} />
-                          
-                          {proposal.status === 'pending' && (
-                            <div className="flex gap-2 mt-3 pt-3 border-t border-border/30">
-                              <Button
-                                size="sm"
-                                variant="default"
-                                className="flex-1 bg-green-600 hover:bg-green-700"
-                                onClick={() => handleAccept(proposal)}
-                              >
-                                <Check className="w-3 h-3 mr-1" />
-                                Accepter
+
+                        {editingProposal === proposal.id ? (
+                          <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-2"
+                          >
+                            <Textarea
+                              value={editContent}
+                              onChange={(e) => setEditContent(e.target.value)}
+                              className="font-mono text-xs min-h-[150px]"
+                            />
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={() => handleSaveEdit(proposal.id)}>
+                                Sauvegarder
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleStartEdit(proposal)}
-                              >
-                                <Edit2 className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="text-destructive hover:text-destructive"
-                                onClick={() => rejectProposal(proposal.id)}
-                              >
-                                <X className="w-3 h-3" />
+                              <Button size="sm" variant="ghost" onClick={() => setEditingProposal(null)}>
+                                Annuler
                               </Button>
                             </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
+                          </motion.div>
+                        ) : (
+                          <>
+                            <ProposalContent content={proposal.modifiedContent || proposal.content} />
+                            
+                            {proposal.status === 'pending' && (
+                              <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="flex gap-2 mt-3 pt-3 border-t border-border/30"
+                              >
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  className="flex-1 bg-green-600 hover:bg-green-700"
+                                  onClick={() => handleAccept(proposal)}
+                                >
+                                  <Check className="w-3 h-3 mr-1" />
+                                  Accepter
+                                  <ArrowRight className="w-3 h-3 ml-1" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleStartEdit(proposal)}
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => rejectProposal(proposal.id)}
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </motion.div>
+                            )}
+                          </>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.section>
+              )}
+            </AnimatePresence>
 
             {/* 4. Usage & History */}
             <section className="pt-4 border-t border-border/30">
