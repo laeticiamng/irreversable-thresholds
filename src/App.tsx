@@ -14,6 +14,8 @@ import Absences from "./pages/Absences";
 import ThresholdsList from "./pages/ThresholdsList";
 import SilvaSpace from "./pages/SilvaSpace";
 import Dashboard from "./pages/Dashboard";
+import IrreversaModule from "./pages/IrreversaModule";
+import Suite from "./pages/Suite";
 import NotFound from "./pages/NotFound";
 
 // Territory pages
@@ -43,8 +45,9 @@ const App = () => (
             <Route path="/silva" element={<Silva />} />
             
             {/* Operational pages (for exposed users) */}
-            <Route path="/pending" element={<Pending />} />
-            <Route path="/archive" element={<Archive />} />
+            <Route path="/irreversa/space" element={<IrreversaModule />} />
+            <Route path="/pending" element={<IrreversaModule />} />
+            <Route path="/archive" element={<IrreversaModule />} />
             <Route path="/absences" element={<Absences />} />
             <Route path="/thresholds" element={<ThresholdsList />} />
             <Route path="/silva/space" element={<SilvaSpace />} />

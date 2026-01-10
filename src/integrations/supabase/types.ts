@@ -51,6 +51,7 @@ export type Database = {
       }
       absences: {
         Row: {
+          case_id: string | null
           created_at: string
           description: string
           id: string
@@ -58,6 +59,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          case_id?: string | null
           created_at?: string
           description: string
           id?: string
@@ -65,16 +67,124 @@ export type Database = {
           user_id: string
         }
         Update: {
+          case_id?: string | null
           created_at?: string
           description?: string
           id?: string
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "absences_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cases: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          status: string
+          template_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          template_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cases_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exports: {
+        Row: {
+          case_id: string | null
+          created_at: string
+          export_type: string
+          file_url: string | null
+          id: string
+          metadata: Json | null
+          module: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string
+          export_type: string
+          file_url?: string | null
+          id?: string
+          metadata?: Json | null
+          module: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string
+          export_type?: string
+          file_url?: string | null
+          id?: string
+          metadata?: Json | null
+          module?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exports_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exports_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invisible_thresholds: {
         Row: {
+          case_id: string | null
           created_at: string
           description: string
           id: string
@@ -84,6 +194,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          case_id?: string | null
           created_at?: string
           description: string
           id?: string
@@ -93,6 +204,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          case_id?: string | null
           created_at?: string
           description?: string
           id?: string
@@ -101,7 +213,15 @@ export type Database = {
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invisible_thresholds_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -121,8 +241,50 @@ export type Database = {
         }
         Relationships: []
       }
+      signals: {
+        Row: {
+          case_id: string
+          content: string
+          created_at: string
+          id: string
+          intensity: number | null
+          occurred_at: string | null
+          signal_type: string
+          user_id: string
+        }
+        Insert: {
+          case_id: string
+          content: string
+          created_at?: string
+          id?: string
+          intensity?: number | null
+          occurred_at?: string | null
+          signal_type?: string
+          user_id: string
+        }
+        Update: {
+          case_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          intensity?: number | null
+          occurred_at?: string | null
+          signal_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signals_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       silva_sessions: {
         Row: {
+          case_id: string | null
           created_at: string
           duration_seconds: number | null
           ended_at: string | null
@@ -131,6 +293,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          case_id?: string | null
           created_at?: string
           duration_seconds?: number | null
           ended_at?: string | null
@@ -139,6 +302,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          case_id?: string | null
           created_at?: string
           duration_seconds?: number | null
           ended_at?: string | null
@@ -146,10 +310,52 @@ export type Database = {
           started_at?: string
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "silva_sessions_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_premium: boolean
+          module: string
+          name: string
+          slug: string
+          structure: Json
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_premium?: boolean
+          module: string
+          name: string
+          slug: string
+          structure?: Json
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_premium?: boolean
+          module?: string
+          name?: string
+          slug?: string
+          structure?: Json
+        }
         Relationships: []
       }
       thresholds: {
         Row: {
+          case_id: string | null
           created_at: string
           crossed_at: string | null
           description: string
@@ -159,6 +365,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          case_id?: string | null
           created_at?: string
           crossed_at?: string | null
           description: string
@@ -168,6 +375,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          case_id?: string | null
           created_at?: string
           crossed_at?: string | null
           description?: string
@@ -176,6 +384,82 @@ export type Database = {
           title?: string
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "thresholds_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_workspace_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["workspace_role"]
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["workspace_role"]
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["workspace_role"]
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_workspace_roles_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_personal: boolean
+          name: string
+          owner_id: string
+          settings: Json | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_personal?: boolean
+          name: string
+          owner_id: string
+          settings?: Json | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_personal?: boolean
+          name?: string
+          owner_id?: string
+          settings?: Json | null
+          slug?: string
+          updated_at?: string
+        }
         Relationships: []
       }
     }
@@ -183,7 +467,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_workspace_role: {
+        Args: {
+          _roles: Database["public"]["Enums"]["workspace_role"][]
+          _user_id: string
+          _workspace_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       absence_effect_type: "prevents" | "enables" | "forces" | "preserves"
@@ -195,6 +486,7 @@ export type Database = {
         | "saturation"
         | "acceptabilite"
         | "tolerance"
+      workspace_role: "owner" | "admin" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -332,6 +624,7 @@ export const Constants = {
         "acceptabilite",
         "tolerance",
       ],
+      workspace_role: ["owner", "admin", "editor", "viewer"],
     },
   },
 } as const
