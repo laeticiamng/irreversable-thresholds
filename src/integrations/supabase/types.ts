@@ -52,25 +52,37 @@ export type Database = {
       absences: {
         Row: {
           case_id: string | null
+          category: string | null
+          counterfactual: string | null
           created_at: string
           description: string
+          evidence_needed: string | null
           id: string
+          impact_level: string | null
           title: string
           user_id: string
         }
         Insert: {
           case_id?: string | null
+          category?: string | null
+          counterfactual?: string | null
           created_at?: string
           description: string
+          evidence_needed?: string | null
           id?: string
+          impact_level?: string | null
           title: string
           user_id: string
         }
         Update: {
           case_id?: string | null
+          category?: string | null
+          counterfactual?: string | null
           created_at?: string
           description?: string
+          evidence_needed?: string | null
           id?: string
+          impact_level?: string | null
           title?: string
           user_id?: string
         }
