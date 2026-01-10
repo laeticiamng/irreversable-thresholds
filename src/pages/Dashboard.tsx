@@ -384,9 +384,9 @@ export default function Dashboard() {
           {/* Analytics Section */}
           <div className="mt-12">
             <Tabs defaultValue="overview" className="w-full">
-              <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-                <TabsList className="bg-card/50 border border-border/30">
-                  <TabsTrigger value="overview" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <TabsList className="bg-card/50 border border-border/30 flex-wrap h-auto p-1">
+                  <TabsTrigger value="overview" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
                     <BarChart3 className="w-4 h-4" />
                     Vue d'ensemble
                   </TabsTrigger>

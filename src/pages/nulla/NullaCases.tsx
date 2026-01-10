@@ -90,14 +90,14 @@ export default function NullaCases() {
 
       {/* Sub-header */}
       <header className="border-b border-nulla/20 pt-14">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
           <Link to="/nulla/home" className="font-display text-lg tracking-[0.15em] text-nulla hover:text-nulla/80 transition-colors">
             NULLA
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             {plan === 'free' && (
-              <span className="text-xs px-3 py-1 bg-nulla/10 text-nulla border border-nulla/20">
-                Free: {activeCases.length}/{limits.cases} dossier
+              <span className="text-xs px-2 sm:px-3 py-1 bg-nulla/10 text-nulla border border-nulla/20">
+                Free: {activeCases.length}/{limits.cases}
               </span>
             )}
             <Button
@@ -113,11 +113,11 @@ export default function NullaCases() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-display text-3xl tracking-wide text-foreground mb-2">
+            <h1 className="font-display text-2xl sm:text-3xl tracking-wide text-foreground mb-2">
               {showArchived ? 'Dossiers archivés' : 'Mes dossiers NULLA'}
             </h1>
             <p className="text-muted-foreground text-sm">
@@ -204,12 +204,12 @@ export default function NullaCases() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-nulla/20 py-6 mt-12">
-        <div className="max-w-5xl mx-auto px-6 flex justify-between items-center">
-          <Link to="/" className="text-xs font-display tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors">
+      <footer className="border-t border-nulla/20 py-6 mt-8 sm:mt-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs">
+          <Link to="/" className="font-display tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors">
             ← Territoires
           </Link>
-          <span className="text-xs text-muted-foreground/50">
+          <span className="text-muted-foreground/50">
             Outil de lucidité
           </span>
         </div>

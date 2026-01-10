@@ -63,22 +63,23 @@ export default function ThreshHome() {
         <GlobalNav />
         
         <div className="border-b border-amber-500/20 pt-14">
-          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
             <span className="font-display text-lg tracking-[0.15em] text-amber-500">THRESH</span>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
               {!isSubscribed && (
-                <span className="text-xs text-amber-500/60">Free: {FREE_ENTRY_LIMIT - thresholds.length} entrées restantes</span>
+                <span className="text-xs text-amber-500/60 w-full sm:w-auto order-last sm:order-first">Free: {FREE_ENTRY_LIMIT - thresholds.length} entrées restantes</span>
               )}
               <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
+                  size="sm"
                   onClick={() => setShowFocusMode(true)} 
                   className="border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
                 >
-                  <Focus className="w-4 h-4 mr-2" />Focus
+                  <Focus className="w-4 h-4 sm:mr-2" /><span className="hidden sm:inline">Focus</span>
                 </Button>
-                <Button onClick={() => setShowCapture(true)} disabled={!canAddEntry} className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider">
-                  <Zap className="w-4 h-4 mr-2" />Capture rapide
+                <Button size="sm" onClick={() => setShowCapture(true)} disabled={!canAddEntry} className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider">
+                  <Zap className="w-4 h-4 sm:mr-2" /><span className="hidden sm:inline">Capture rapide</span><span className="sm:hidden">Capture</span>
                 </Button>
               </div>
               {!isSubscribed && <UpgradeModal trigger={<Button variant="ghost" size="sm" className="text-amber-500">Pro</Button>} />}
@@ -86,21 +87,21 @@ export default function ThreshHome() {
           </div>
         </div>
 
-        <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-8">
+        <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="bg-card/50 border border-amber-500/20 mb-8">
-              <TabsTrigger value="timeline" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
-                <Clock className="w-4 h-4 mr-2" />Timeline
+            <TabsList className="bg-card/50 border border-amber-500/20 mb-6 sm:mb-8 flex-wrap h-auto p-1">
+              <TabsTrigger value="timeline" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500 text-xs sm:text-sm">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Timeline</span><span className="sm:hidden">Time</span>
               </TabsTrigger>
-              <TabsTrigger value="patterns" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
-                <BarChart3 className="w-4 h-4 mr-2" />Patterns
+              <TabsTrigger value="patterns" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500 text-xs sm:text-sm">
+                <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />Patterns
               </TabsTrigger>
-              <TabsTrigger value="advanced" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
-                <Activity className="w-4 h-4 mr-2" />Avancés
+              <TabsTrigger value="advanced" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500 text-xs sm:text-sm">
+                <Activity className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Avancés</span><span className="sm:hidden">Adv</span>
                 {!isSubscribed && <span className="text-[10px] px-1 py-0.5 bg-amber-500/20 text-amber-500 rounded ml-1">Pro</span>}
               </TabsTrigger>
-              <TabsTrigger value="synthesis" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
-                <Sparkles className="w-4 h-4 mr-2" />Synthèse
+              <TabsTrigger value="synthesis" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500 text-xs sm:text-sm">
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Synthèse</span><span className="sm:hidden">Synth</span>
               </TabsTrigger>
             </TabsList>
 
@@ -129,8 +130,8 @@ export default function ThreshHome() {
         </main>
 
         <footer className="border-t border-amber-500/20 py-6">
-          <div className="max-w-5xl mx-auto px-6 flex justify-between items-center text-xs text-muted-foreground">
-            <span>Outil de lucidité. Pas de promesse.</span>
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-muted-foreground">
+            <span className="text-center sm:text-left">Outil de lucidité. Pas de promesse.</span>
             <Link to="/thresh/cases" className="hover:text-foreground">Mes dossiers ({threshCases.length})</Link>
           </div>
         </footer>
