@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
-import { useCases } from '@/hooks/useCases';
+import { useUserCases } from '@/hooks/useUserCases';
 import { useInvisibleThresholds } from '@/hooks/useInvisibleThresholds';
 import { GlobalNav } from '@/components/GlobalNav';
 import { UpgradeModal } from '@/components/UpgradeModal';
@@ -11,18 +11,26 @@ import { QuickCaptureModal } from '@/components/thresh/QuickCaptureModal';
 import { ThreshTimeline } from '@/components/thresh/ThreshTimeline';
 import { ThreshPatterns } from '@/components/thresh/ThreshPatterns';
 import { ThreshSynthesis } from '@/components/thresh/ThreshSynthesis';
-import { Zap, Eye, FileText, Clock, BarChart3, Sparkles } from 'lucide-react';
+import { FocusMode } from '@/components/thresh/FocusMode';
+import { Zap, Eye, FileText, Clock, BarChart3, Sparkles, Focus } from 'lucide-react';
 
 const FREE_ENTRY_LIMIT = 20;
 
 export default function ThreshHome() {
   const { user, isSubscribed } = useAuth();
-  const { cases } = useCases(user?.id);
+  const { cases } = useUserCases(user?.id);
   const { thresholds, addThreshold, deleteThreshold } = useInvisibleThresholds(user?.id);
   const [showCapture, setShowCapture] = useState(false);
+  const [showFocusMode, setShowFocusMode] = useState(false);
   const [activeTab, setActiveTab] = useState('timeline');
 
   const canAddEntry = isSubscribed || thresholds.length < FREE_ENTRY_LIMIT;
+  
+  // Filter THRESH cases
+  const threshCases = cases.filter(c => {
+    const meta = c.metadata as Record<string, unknown> | null;
+    return meta?.module === 'thresh';
+  });
 
   const features = [
     { icon: Zap, title: "Capture en 1 minute", description: "Note une bascule ressentie avant qu'elle ne devienne un événement" },
@@ -60,9 +68,18 @@ export default function ThreshHome() {
               {!isSubscribed && (
                 <span className="text-xs text-amber-500/60">Free: {FREE_ENTRY_LIMIT - thresholds.length} entrées restantes</span>
               )}
-              <Button onClick={() => setShowCapture(true)} disabled={!canAddEntry} className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider">
-                <Zap className="w-4 h-4 mr-2" />Capture rapide
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowFocusMode(true)} 
+                  className="border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+                >
+                  <Focus className="w-4 h-4 mr-2" />Focus
+                </Button>
+                <Button onClick={() => setShowCapture(true)} disabled={!canAddEntry} className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider">
+                  <Zap className="w-4 h-4 mr-2" />Capture rapide
+                </Button>
+              </div>
               {!isSubscribed && <UpgradeModal trigger={<Button variant="ghost" size="sm" className="text-amber-500">Pro</Button>} />}
             </div>
           </div>
@@ -97,11 +114,15 @@ export default function ThreshHome() {
         <footer className="border-t border-amber-500/20 py-6">
           <div className="max-w-5xl mx-auto px-6 flex justify-between items-center text-xs text-muted-foreground">
             <span>Outil de lucidité. Pas de promesse.</span>
-            <Link to="/thresh/cases" className="hover:text-foreground">Mes dossiers</Link>
+            <Link to="/thresh/cases" className="hover:text-foreground">Mes dossiers ({threshCases.length})</Link>
           </div>
         </footer>
 
-        <QuickCaptureModal open={showCapture} onOpenChange={setShowCapture} cases={cases} onAdd={handleQuickCapture} isSubscribed={isSubscribed} />
+        <QuickCaptureModal open={showCapture} onOpenChange={setShowCapture} cases={threshCases} onAdd={handleQuickCapture} isSubscribed={isSubscribed} />
+        <FocusMode 
+          open={showFocusMode} 
+          onOpenChange={setShowFocusMode} 
+        />
       </div>
     );
   }
@@ -160,7 +181,11 @@ export default function ThreshHome() {
         </div>
       </footer>
 
-      <QuickCaptureModal open={showCapture} onOpenChange={setShowCapture} cases={cases} onAdd={handleQuickCapture} isSubscribed={isSubscribed} />
+      <QuickCaptureModal open={showCapture} onOpenChange={setShowCapture} cases={threshCases} onAdd={handleQuickCapture} isSubscribed={isSubscribed} />
+      <FocusMode 
+        open={showFocusMode} 
+        onOpenChange={setShowFocusMode} 
+      />
     </div>
   );
 }
