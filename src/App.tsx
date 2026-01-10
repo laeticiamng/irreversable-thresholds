@@ -8,7 +8,6 @@ import Index from "./pages/Index";
 import Exposition from "./pages/Exposition";
 import Manifesto from "./pages/Manifesto";
 import About from "./pages/About";
-import SilvaSpace from "./pages/SilvaSpace";
 import Dashboard from "./pages/Dashboard";
 import Suite from "./pages/Suite";
 import NotFound from "./pages/NotFound";
@@ -35,6 +34,11 @@ import ThreshHome from "./pages/thresh/ThreshHome";
 import ThreshCases from "./pages/thresh/ThreshCases";
 import ThreshCaseDetail from "./pages/thresh/ThreshCaseDetail";
 import CreateThreshCase from "./pages/thresh/CreateThreshCase";
+
+// SILVA Module
+import SilvaHome from "./pages/silva/SilvaHome";
+import SilvaSpace from "./pages/silva/SilvaSpace";
+import SilvaSpaces from "./pages/silva/SilvaSpaces";
 
 // Other modules
 import NullaModule from "./pages/NullaModule";
@@ -82,7 +86,11 @@ const App = () => (
             <Route path="/thresh/cases/new" element={<CreateThreshCase />} />
             <Route path="/thresh/cases/:caseId" element={<ThreshCaseDetail />} />
             <Route path="/thresh/space" element={<ThreshModule />} />
+            
+            {/* SILVA Module */}
+            <Route path="/silva/home" element={<SilvaHome />} />
             <Route path="/silva/space" element={<SilvaSpace />} />
+            <Route path="/silva/spaces" element={<SilvaSpaces />} />
             
             {/* Dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
