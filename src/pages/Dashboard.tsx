@@ -21,7 +21,8 @@ import {
   Zap,
   Target,
   Eye,
-  Leaf
+  Leaf,
+  Plus
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -94,14 +95,22 @@ export default function Dashboard() {
       <main className="pt-20 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
           
-          {/* Title */}
-          <div className="text-center mb-12 space-y-4">
-            <h1 className="font-display text-2xl md:text-3xl tracking-widest text-foreground/80">
-              TABLEAU DE BORD
-            </h1>
-            <p className="text-muted-foreground/60 font-body text-sm max-w-md mx-auto">
-              Vue centralisée de ta suite de lucidité.
-            </p>
+          {/* Title + New Case Button */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
+            <div className="text-center md:text-left space-y-2">
+              <h1 className="font-display text-2xl md:text-3xl tracking-widest text-foreground/80">
+                TABLEAU DE BORD
+              </h1>
+              <p className="text-muted-foreground/60 font-body text-sm max-w-md">
+                Vue centralisée de ta suite de lucidité.
+              </p>
+            </div>
+            <Link to="/cases/new">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-display tracking-wider">
+                <Plus className="w-4 h-4 mr-2" />
+                Nouveau dossier
+              </Button>
+            </Link>
           </div>
 
           {/* Subscription Status Card */}

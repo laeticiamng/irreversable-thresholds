@@ -26,7 +26,7 @@ export default function ThreshCaseDetail() {
   const navigate = useNavigate();
   const { user, loading: authLoading, isSubscribed } = useAuth();
   const { cases, isLoading: casesLoading } = useCases(user?.id);
-  const { thresholds, isLoading: thresholdsLoading, addThreshold, markAsSensed } = useInvisibleThresholds(user?.id);
+  const { thresholds, isLoading: thresholdsLoading, addThreshold, markAsSensed, deleteThreshold, updateThreshold } = useInvisibleThresholds(user?.id);
   
   const [activeTab, setActiveTab] = useState('thresholds');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -182,6 +182,8 @@ export default function ThreshCaseDetail() {
               thresholds={caseThresholds}
               onSense={(id) => markAsSensed.mutate(id)}
               onAddThreshold={handleAddThreshold}
+              onEdit={(data) => updateThreshold.mutateAsync(data)}
+              onDelete={(id) => deleteThreshold.mutateAsync(id)}
             />
           </TabsContent>
 
