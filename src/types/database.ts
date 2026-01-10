@@ -11,7 +11,49 @@ export interface Threshold {
   created_at: string;
   crossed_at: string | null;
   case_id?: string | null;
+  // Enhanced fields
+  category?: ThresholdCategory;
+  severity?: Severity;
+  what_cannot_be_undone?: string | null;
+  what_changes_after?: string | null;
+  conditions?: string | null;
+  notes?: string | null;
+  consequences?: ThresholdConsequence[];
 }
+
+export type ThresholdCategory = 'personnel' | 'travail' | 'finance' | 'relation' | 'organisation' | 'autre';
+export type Severity = 'low' | 'moderate' | 'high';
+
+export const CATEGORY_LABELS: Record<ThresholdCategory, string> = {
+  personnel: 'Personnel',
+  travail: 'Travail',
+  finance: 'Finance',
+  relation: 'Relation',
+  organisation: 'Organisation',
+  autre: 'Autre',
+};
+
+export const SEVERITY_LABELS: Record<Severity, string> = {
+  low: 'Faible',
+  moderate: 'Modérée',
+  high: 'Élevée',
+};
+
+export interface ThresholdConsequence {
+  id: string;
+  threshold_id: string;
+  user_id: string;
+  consequence_type: 'impossible' | 'costly' | 'changed' | 'enabled';
+  description: string;
+  created_at: string;
+}
+
+export const CONSEQUENCE_TYPE_LABELS: Record<ThresholdConsequence['consequence_type'], string> = {
+  impossible: 'Devient impossible',
+  costly: 'Devient très coûteux',
+  changed: 'Change durablement',
+  enabled: 'Devient possible',
+};
 
 export interface Absence {
   id: string;
@@ -54,7 +96,7 @@ export interface SilvaSession {
 }
 
 // =============================================
-// THRESHOLD ENGINE - NEW ENTITIES
+// THRESHOLD ENGINE - ENTITIES
 // =============================================
 
 export interface Workspace {
@@ -79,6 +121,9 @@ export interface UserWorkspaceRole {
   created_at: string;
 }
 
+export type CaseDomain = 'personnel' | 'travail' | 'finance' | 'relation' | 'organisation' | 'autre';
+export type TimeHorizon = '3_months' | '1_year' | '5_years' | 'undefined';
+
 export interface Case {
   id: string;
   workspace_id: string;
@@ -88,9 +133,27 @@ export interface Case {
   status: 'active' | 'archived' | 'closed';
   template_id: string | null;
   metadata: Record<string, unknown>;
+  domain?: CaseDomain;
+  time_horizon?: TimeHorizon | null;
   created_at: string;
   updated_at: string;
 }
+
+export const DOMAIN_LABELS: Record<CaseDomain, string> = {
+  personnel: 'Personnel',
+  travail: 'Travail',
+  finance: 'Finance',
+  relation: 'Relation',
+  organisation: 'Organisation',
+  autre: 'Autre',
+};
+
+export const TIME_HORIZON_LABELS: Record<TimeHorizon, string> = {
+  '3_months': '3 mois',
+  '1_year': '1 an',
+  '5_years': '5 ans',
+  'undefined': 'Non défini',
+};
 
 export type SignalType = 'observation' | 'fait' | 'intuition' | 'tension' | 'contexte';
 
@@ -130,6 +193,25 @@ export interface Template {
   structure: Record<string, unknown>;
   created_at: string;
 }
+
+export type SubscriptionPlan = 'free' | 'pro' | 'team' | 'enterprise';
+
+export interface UserSubscription {
+  id: string;
+  user_id: string;
+  plan: SubscriptionPlan;
+  started_at: string;
+  expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const PLAN_LIMITS: Record<SubscriptionPlan, { cases: number; thresholdsPerCase: number; exports: boolean; premiumTemplates: boolean }> = {
+  free: { cases: 1, thresholdsPerCase: 3, exports: false, premiumTemplates: false },
+  pro: { cases: Infinity, thresholdsPerCase: Infinity, exports: true, premiumTemplates: true },
+  team: { cases: Infinity, thresholdsPerCase: Infinity, exports: true, premiumTemplates: true },
+  enterprise: { cases: Infinity, thresholdsPerCase: Infinity, exports: true, premiumTemplates: true },
+};
 
 // =============================================
 // ENUMS & LABELS

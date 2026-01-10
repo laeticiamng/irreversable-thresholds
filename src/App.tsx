@@ -10,17 +10,24 @@ import Manifesto from "./pages/Manifesto";
 import About from "./pages/About";
 import SilvaSpace from "./pages/SilvaSpace";
 import Dashboard from "./pages/Dashboard";
-import IrreversaModule from "./pages/IrreversaModule";
-import NullaModule from "./pages/NullaModule";
-import ThreshModule from "./pages/ThreshModule";
 import Suite from "./pages/Suite";
 import NotFound from "./pages/NotFound";
 
-// Territory pages
+// Territory concept pages
 import Irreversa from "./pages/territories/Irreversa";
 import Nulla from "./pages/territories/Nulla";
 import Thresh from "./pages/territories/Thresh";
 import Silva from "./pages/territories/Silva";
+
+// IRREVERSA Module (full)
+import IrreversaHome from "./pages/irreversa/IrreversaHome";
+import IrreversaCases from "./pages/irreversa/IrreversaCases";
+import CreateCase from "./pages/irreversa/CreateCase";
+import CaseDetail from "./pages/irreversa/CaseDetail";
+
+// Other modules
+import NullaModule from "./pages/NullaModule";
+import ThreshModule from "./pages/ThreshModule";
 
 const queryClient = new QueryClient();
 
@@ -44,8 +51,14 @@ const App = () => (
             <Route path="/thresh" element={<Thresh />} />
             <Route path="/silva" element={<Silva />} />
             
-            {/* Operational modules (unified) */}
-            <Route path="/irreversa/space" element={<IrreversaModule />} />
+            {/* IRREVERSA Module (full implementation) */}
+            <Route path="/irreversa/home" element={<IrreversaHome />} />
+            <Route path="/irreversa/cases" element={<IrreversaCases />} />
+            <Route path="/irreversa/cases/new" element={<CreateCase />} />
+            <Route path="/irreversa/cases/:caseId" element={<CaseDetail />} />
+            <Route path="/irreversa/space" element={<IrreversaHome />} />
+            
+            {/* Other modules */}
             <Route path="/nulla/space" element={<NullaModule />} />
             <Route path="/thresh/space" element={<ThreshModule />} />
             <Route path="/silva/space" element={<SilvaSpace />} />
@@ -54,13 +67,12 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             
             {/* Legacy redirects */}
-            <Route path="/pending" element={<IrreversaModule />} />
-            <Route path="/archive" element={<IrreversaModule />} />
+            <Route path="/pending" element={<IrreversaCases />} />
+            <Route path="/archive" element={<IrreversaCases />} />
             <Route path="/absences" element={<NullaModule />} />
             <Route path="/thresholds" element={<ThreshModule />} />
             <Route path="/auth" element={<Exposition />} />
             
-            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
