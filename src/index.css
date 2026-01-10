@@ -6,9 +6,93 @@
 
 @layer base {
   :root {
-    /* Quad System Design */
+    /* Light Theme - parchment and ink */
     
-    /* Core palette - obsidian and aged ivory */
+    /* Core palette */
+    --background: 45 30% 96%;
+    --foreground: 30 10% 15%;
+    
+    /* Surfaces */
+    --card: 45 25% 94%;
+    --card-foreground: 30 10% 15%;
+    --popover: 45 20% 92%;
+    --popover-foreground: 30 10% 15%;
+    
+    /* Primary - aged bronze/amber (IRREVERSA) */
+    --primary: 35 65% 40%;
+    --primary-foreground: 45 30% 96%;
+    
+    /* Secondary */
+    --secondary: 40 15% 88%;
+    --secondary-foreground: 30 10% 25%;
+    
+    /* Muted */
+    --muted: 40 20% 90%;
+    --muted-foreground: 30 10% 45%;
+    
+    /* Accent */
+    --accent: 38 70% 45%;
+    --accent-foreground: 45 30% 96%;
+    
+    /* NULLA - cold silver/blue */
+    --nulla: 220 25% 45%;
+    --nulla-foreground: 45 30% 96%;
+    --nulla-muted: 220 15% 70%;
+    
+    /* SILVA - forest green */
+    --silva: 150 35% 30%;
+    --silva-foreground: 45 30% 96%;
+    --silva-muted: 150 20% 85%;
+    
+    /* States */
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 45 30% 96%;
+    
+    /* Borders */
+    --border: 40 15% 85%;
+    --input: 40 15% 88%;
+    --ring: 35 65% 40%;
+    
+    --radius: 2px;
+    
+    /* Custom tokens */
+    --stone: 40 10% 75%;
+    --stone-foreground: 30 10% 30%;
+    --sealed: 35 80% 40%;
+    --pending: 30 10% 25%;
+    --crossed: 35 65% 40%;
+    
+    /* Shadows - lighter */
+    --shadow-monument: 0 20px 60px -10px hsl(30 10% 15% / 0.1);
+    --shadow-seal: 0 0 30px hsl(35 65% 40% / 0.15);
+    --shadow-void: 0 0 60px hsl(220 25% 45% / 0.08);
+    --shadow-silva: 0 0 100px hsl(150 35% 30% / 0.1);
+    
+    /* Gradients - light */
+    --gradient-stone: linear-gradient(180deg, hsl(45 20% 92%) 0%, hsl(45 25% 96%) 100%);
+    --gradient-seal: linear-gradient(135deg, hsl(35 65% 45%) 0%, hsl(30 70% 35%) 100%);
+    --gradient-void: linear-gradient(180deg, hsl(45 15% 94%) 0%, hsl(45 20% 98%) 100%);
+    --gradient-silva: linear-gradient(180deg, hsl(150 15% 94%) 0%, hsl(150 20% 97%) 100%);
+    
+    /* Typography */
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Inter', sans-serif;
+    
+    /* Sidebar */
+    --sidebar-background: 45 25% 95%;
+    --sidebar-foreground: 30 10% 15%;
+    --sidebar-primary: 35 65% 40%;
+    --sidebar-primary-foreground: 45 30% 96%;
+    --sidebar-accent: 40 20% 90%;
+    --sidebar-accent-foreground: 30 10% 15%;
+    --sidebar-border: 40 15% 85%;
+    --sidebar-ring: 35 65% 40%;
+  }
+
+  .dark {
+    /* Dark Theme - obsidian and aged ivory */
+    
+    /* Core palette */
     --background: 0 0% 4%;
     --foreground: 40 20% 88%;
     
