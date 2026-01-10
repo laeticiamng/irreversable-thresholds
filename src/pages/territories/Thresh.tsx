@@ -22,7 +22,7 @@ export default function Thresh() {
         description: "Je sais que c'est trop. Je ne sais pas combien de réunions, combien d'emails, combien de demandes. Mais je sais. Le corps le sait. C'est inscrit ici non comme donnée, mais comme témoignage."
       }}
       operationalLink={{
-        path: "/pending",
+        path: "/thresh/space",
         label: "Espace opérationnel →"
       }}
     />

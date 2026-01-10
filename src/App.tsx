@@ -8,13 +8,11 @@ import Index from "./pages/Index";
 import Exposition from "./pages/Exposition";
 import Manifesto from "./pages/Manifesto";
 import About from "./pages/About";
-import Pending from "./pages/Pending";
-import Archive from "./pages/Archive";
-import Absences from "./pages/Absences";
-import ThresholdsList from "./pages/ThresholdsList";
 import SilvaSpace from "./pages/SilvaSpace";
 import Dashboard from "./pages/Dashboard";
 import IrreversaModule from "./pages/IrreversaModule";
+import NullaModule from "./pages/NullaModule";
+import ThreshModule from "./pages/ThreshModule";
 import Suite from "./pages/Suite";
 import NotFound from "./pages/NotFound";
 
@@ -35,25 +33,31 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/suite" element={<Suite />} />
             <Route path="/exposition" element={<Exposition />} />
             <Route path="/manifesto" element={<Manifesto />} />
             <Route path="/about" element={<About />} />
+            
             {/* Territory concept pages */}
             <Route path="/irreversa" element={<Irreversa />} />
             <Route path="/nulla" element={<Nulla />} />
             <Route path="/thresh" element={<Thresh />} />
             <Route path="/silva" element={<Silva />} />
             
-            {/* Operational pages (for exposed users) */}
+            {/* Operational modules (unified) */}
             <Route path="/irreversa/space" element={<IrreversaModule />} />
-            <Route path="/pending" element={<IrreversaModule />} />
-            <Route path="/archive" element={<IrreversaModule />} />
-            <Route path="/absences" element={<Absences />} />
-            <Route path="/thresholds" element={<ThresholdsList />} />
+            <Route path="/nulla/space" element={<NullaModule />} />
+            <Route path="/thresh/space" element={<ThreshModule />} />
             <Route path="/silva/space" element={<SilvaSpace />} />
+            
+            {/* Dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
             
-            {/* Legacy auth redirect */}
+            {/* Legacy redirects */}
+            <Route path="/pending" element={<IrreversaModule />} />
+            <Route path="/archive" element={<IrreversaModule />} />
+            <Route path="/absences" element={<NullaModule />} />
+            <Route path="/thresholds" element={<ThreshModule />} />
             <Route path="/auth" element={<Exposition />} />
             
             {/* Catch-all */}
