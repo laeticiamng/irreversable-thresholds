@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useSilvaSpaces } from '@/hooks/useSilvaSpaces';
+import { GlobalNav } from '@/components/GlobalNav';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { Leaf, Moon, FileText, HelpCircle } from 'lucide-react';
 
@@ -39,28 +40,10 @@ export default function SilvaHome() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Navigation - très minimal */}
-      <nav className="border-b border-border/30">
-        <div className="max-w-3xl mx-auto px-8 py-6 flex items-center justify-between">
-          <Link to="/silva" className="font-display text-lg tracking-[0.2em] text-foreground/60 hover:text-foreground transition-colors">
-            SILVA
-          </Link>
-          <div className="flex items-center gap-6">
-            {!isSubscribed && (
-              <UpgradeModal 
-                trigger={
-                  <Button variant="ghost" size="sm" className="text-foreground/40 hover:text-foreground text-xs">
-                    Pro
-                  </Button>
-                }
-              />
-            )}
-          </div>
-        </div>
-      </nav>
+      <GlobalNav />
 
       {/* Hero - beaucoup d'espace */}
-      <section className="flex-1 flex flex-col items-center justify-center px-8 py-24">
+      <section className="flex-1 flex flex-col items-center justify-center px-8 py-24 pt-32">
         <div className="max-w-xl mx-auto text-center">
           {/* Icon très discret */}
           <div className="w-16 h-16 mx-auto mb-12 rounded-full border border-border/30 flex items-center justify-center">
@@ -155,8 +138,8 @@ export default function SilvaHome() {
           <p className="text-xs text-foreground/20">
             Espace neutre. Aucun score. Aucun conseil.
           </p>
-          <Link to="/" className="text-xs text-foreground/20 hover:text-foreground/40 transition-colors">
-            Territoires
+          <Link to="/silva/spaces" className="text-xs text-foreground/20 hover:text-foreground/40 transition-colors">
+            Mes espaces
           </Link>
         </div>
       </footer>

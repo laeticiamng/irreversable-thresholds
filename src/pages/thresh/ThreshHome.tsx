@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useCases } from '@/hooks/useCases';
 import { useInvisibleThresholds } from '@/hooks/useInvisibleThresholds';
+import { GlobalNav } from '@/components/GlobalNav';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { QuickCaptureModal } from '@/components/thresh/QuickCaptureModal';
 import { ThreshTimeline } from '@/components/thresh/ThreshTimeline';
@@ -19,7 +20,7 @@ export default function ThreshHome() {
   const { cases } = useCases(user?.id);
   const { thresholds, addThreshold, deleteThreshold } = useInvisibleThresholds(user?.id);
   const [showCapture, setShowCapture] = useState(false);
-  const [activeTab, setActiveTab] = useState('landing');
+  const [activeTab, setActiveTab] = useState('timeline');
 
   const canAddEntry = isSubscribed || thresholds.length < FREE_ENTRY_LIMIT;
 
@@ -50,9 +51,11 @@ export default function ThreshHome() {
   if (user && thresholds.length > 0) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <nav className="border-b border-amber-500/20">
+        <GlobalNav />
+        
+        <div className="border-b border-amber-500/20 pt-14">
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link to="/thresh/home" className="font-display text-lg tracking-[0.15em] text-amber-500">THRESH</Link>
+            <span className="font-display text-lg tracking-[0.15em] text-amber-500">THRESH</span>
             <div className="flex items-center gap-4">
               {!isSubscribed && (
                 <span className="text-xs text-amber-500/60">Free: {FREE_ENTRY_LIMIT - thresholds.length} entrées restantes</span>
@@ -63,7 +66,7 @@ export default function ThreshHome() {
               {!isSubscribed && <UpgradeModal trigger={<Button variant="ghost" size="sm" className="text-amber-500">Pro</Button>} />}
             </div>
           </div>
-        </nav>
+        </div>
 
         <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -94,7 +97,7 @@ export default function ThreshHome() {
         <footer className="border-t border-amber-500/20 py-6">
           <div className="max-w-5xl mx-auto px-6 flex justify-between items-center text-xs text-muted-foreground">
             <span>Outil de lucidité. Pas de promesse.</span>
-            <Link to="/" className="hover:text-foreground">Territoires</Link>
+            <Link to="/thresh/cases" className="hover:text-foreground">Mes dossiers</Link>
           </div>
         </footer>
 
@@ -106,17 +109,9 @@ export default function ThreshHome() {
   // Landing page
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <nav className="border-b border-amber-500/20">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/thresh" className="font-display text-lg tracking-[0.15em] text-amber-500">THRESH</Link>
-          <div className="flex items-center gap-4">
-            {!isSubscribed && <UpgradeModal trigger={<Button variant="ghost" size="sm" className="text-amber-500">Débloquer Pro</Button>} />}
-            {user && <Link to="/thresh/cases"><Button variant="ghost" size="sm" className="text-muted-foreground">Mes dossiers</Button></Link>}
-          </div>
-        </div>
-      </nav>
+      <GlobalNav />
 
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 pt-32">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-display text-5xl md:text-6xl tracking-wide text-amber-500 mb-6">THRESH</h1>
           <p className="text-xl text-muted-foreground font-body mb-4 max-w-2xl mx-auto">Note une bascule ressentie avant qu'elle ne devienne un événement.</p>
@@ -160,7 +155,6 @@ export default function ThreshHome() {
         <div className="max-w-4xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground/60">Outil de lucidité. Pas de promesse. Pas de décision à ta place.</p>
           <div className="flex items-center gap-6">
-            <Link to="/" className="text-xs text-muted-foreground hover:text-foreground">Territoires</Link>
             <Link to="/manifesto" className="text-xs text-muted-foreground hover:text-foreground">Manifeste</Link>
           </div>
         </div>
