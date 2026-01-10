@@ -56,6 +56,11 @@ export default {
           foreground: "hsl(var(--nulla-foreground))",
           muted: "hsl(var(--nulla-muted))",
         },
+        silva: {
+          DEFAULT: "hsl(var(--silva))",
+          foreground: "hsl(var(--silva-foreground))",
+          muted: "hsl(var(--silva-muted))",
+        },
         stone: {
           DEFAULT: "hsl(var(--stone))",
           foreground: "hsl(var(--stone-foreground))",

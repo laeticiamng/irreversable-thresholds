@@ -9,9 +9,9 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="border-b border-border">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <span className="text-xs font-display tracking-[0.3em] text-muted-foreground uppercase">
-            Trois outils. Une rigueur.
+            Quatre territoires
           </span>
           {user ? (
             <button
@@ -28,12 +28,12 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main - Three systems */}
-      <main className="flex-1 flex flex-col lg:flex-row">
+      {/* Main - Four systems in a grid */}
+      <main className="flex-1 grid grid-cols-1 md:grid-cols-2">
         {/* IRREVERSA */}
         <Link 
           to="/irreversa" 
-          className="flex-1 flex items-center justify-center p-12 border-b lg:border-b-0 lg:border-r border-border hover:bg-card/50 transition-all duration-500 group"
+          className="flex items-center justify-center p-12 border-b md:border-b md:border-r border-border hover:bg-card/50 transition-all duration-500 group min-h-[40vh]"
         >
           <div className="text-center space-y-4 max-w-xs">
             <h2 className="font-display text-3xl tracking-wide text-foreground group-hover:text-primary transition-colors">
@@ -48,7 +48,7 @@ export default function Home() {
         {/* NULLA */}
         <Link 
           to="/nulla" 
-          className="flex-1 flex items-center justify-center p-12 border-b lg:border-b-0 lg:border-r border-border hover:bg-card/50 transition-all duration-500 group"
+          className="flex items-center justify-center p-12 border-b border-border hover:bg-card/50 transition-all duration-500 group min-h-[40vh]"
         >
           <div className="text-center space-y-4 max-w-xs">
             <h2 className="font-display text-3xl tracking-wide text-foreground group-hover:text-nulla transition-colors">
@@ -63,7 +63,7 @@ export default function Home() {
         {/* THRESH */}
         <Link 
           to="/thresh" 
-          className="flex-1 flex items-center justify-center p-12 hover:bg-card/50 transition-all duration-500 group"
+          className="flex items-center justify-center p-12 md:border-r border-border hover:bg-card/50 transition-all duration-500 group min-h-[40vh]"
         >
           <div className="text-center space-y-4 max-w-xs">
             <h2 className="font-display text-3xl tracking-wide text-foreground group-hover:text-amber-500 transition-colors">
@@ -71,6 +71,21 @@ export default function Home() {
             </h2>
             <p className="text-muted-foreground font-body text-sm">
               Les seuils invisibles. Ressentis, pas mesurés.
+            </p>
+          </div>
+        </Link>
+
+        {/* SILVA */}
+        <Link 
+          to="/silva" 
+          className="flex items-center justify-center p-12 hover:bg-silva/5 transition-all duration-1000 group min-h-[40vh]"
+        >
+          <div className="text-center space-y-4 max-w-xs">
+            <h2 className="font-display text-3xl tracking-wide text-foreground group-hover:text-silva-foreground transition-colors duration-1000">
+              SILVA
+            </h2>
+            <p className="text-muted-foreground font-body text-sm">
+              Le milieu. Un espace qui ne fait rien.
             </p>
           </div>
         </Link>

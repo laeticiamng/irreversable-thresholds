@@ -12,6 +12,8 @@ import NullaLanding from "./pages/NullaLanding";
 import Absences from "./pages/Absences";
 import ThreshLanding from "./pages/ThreshLanding";
 import ThresholdsList from "./pages/ThresholdsList";
+import SilvaLanding from "./pages/SilvaLanding";
+import SilvaSpace from "./pages/SilvaSpace";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,9 @@ const App = () => (
           {/* THRESH */}
           <Route path="/thresh" element={<ThreshLanding />} />
           <Route path="/thresholds" element={<ThresholdsList />} />
+          {/* SILVA */}
+          <Route path="/silva" element={<SilvaLanding />} />
+          <Route path="/silva/space" element={<SilvaSpace />} />
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
