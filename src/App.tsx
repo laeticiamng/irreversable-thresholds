@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Exposition from "./pages/Exposition";
 import Manifesto from "./pages/Manifesto";
+import About from "./pages/About";
 import Pending from "./pages/Pending";
 import Archive from "./pages/Archive";
 import Absences from "./pages/Absences";
@@ -32,7 +33,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/exposition" element={<Exposition />} />
           <Route path="/manifesto" element={<Manifesto />} />
-          
+          <Route path="/about" element={<About />} />
           {/* Territory concept pages */}
           <Route path="/irreversa" element={<Irreversa />} />
           <Route path="/nulla" element={<Nulla />} />
