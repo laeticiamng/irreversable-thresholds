@@ -10,8 +10,10 @@ import { VulnerabilityMap } from '@/components/nulla/VulnerabilityMap';
 import { AbsencesList } from '@/components/nulla/AbsencesList';
 import { NullaExportsTab } from '@/components/nulla/NullaExportsTab';
 import { AddAbsenceModal } from '@/components/nulla/AddAbsenceModal';
+import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
+import { Leaf } from 'lucide-react';
 
-type TabType = 'matrix' | 'map' | 'absences' | 'exports';
+type TabType = 'matrix' | 'map' | 'absences' | 'exports' | 'silva';
 
 // Free plan limits for NULLA
 const NULLA_FREE_LIMITS = {
@@ -21,7 +23,7 @@ const NULLA_FREE_LIMITS = {
 export default function NullaCaseDetail() {
   const { caseId } = useParams<{ caseId: string }>();
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isSubscribed } = useAuth();
   const { absences, isLoading, addAbsence, addEffect } = useAbsencesDB(user?.id);
   const { plan, canExport, isPro } = useSubscription(user?.id);
 
@@ -55,11 +57,12 @@ export default function NullaCaseDetail() {
   const highImpactCount = caseAbsences.filter(a => (a as any).impact_level === 'high').length;
   const totalEffects = caseAbsences.reduce((sum, a) => sum + (a.effects?.length || 0), 0);
 
-  const tabs: { id: TabType; label: string }[] = [
+  const tabs: { id: TabType; label: string; icon?: React.ReactNode; proOnly?: boolean }[] = [
     { id: 'matrix', label: 'Matrice' },
     { id: 'map', label: 'Carte' },
     { id: 'absences', label: `Absences (${caseAbsences.length})` },
     { id: 'exports', label: 'Exports' },
+    { id: 'silva', label: 'SILVA', icon: <Leaf className="w-3 h-3" />, proOnly: true },
   ];
 
   return (
@@ -71,7 +74,9 @@ export default function NullaCaseDetail() {
             ← Mes dossiers
           </Link>
           <span className="font-display text-lg tracking-[0.15em] text-nulla">NULLA</span>
-          <div className="w-24" />
+          <Link to="/dashboard" className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors">
+            Dashboard
+          </Link>
         </div>
       </header>
 
@@ -99,22 +104,27 @@ export default function NullaCaseDetail() {
       {/* Tabs */}
       <div className="border-b border-border/50 sticky top-0 bg-background z-10">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 overflow-x-auto">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  relative py-4 text-xs font-display tracking-[0.15em] uppercase transition-colors
+                  relative py-4 text-xs font-display tracking-[0.15em] uppercase transition-colors whitespace-nowrap flex items-center gap-1.5
                   ${activeTab === tab.id 
-                    ? 'text-nulla' 
+                    ? tab.id === 'silva' ? 'text-silva' : 'text-nulla' 
                     : 'text-muted-foreground hover:text-foreground'
                   }
+                  ${tab.proOnly && !isSubscribed ? 'opacity-50' : ''}
                 `}
               >
+                {tab.icon}
                 {tab.label}
+                {tab.proOnly && !isSubscribed && (
+                  <span className="text-[10px] px-1 py-0.5 bg-muted/30 text-muted-foreground rounded ml-1">Pro</span>
+                )}
                 {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-px bg-nulla" />
+                  <span className={`absolute bottom-0 left-0 right-0 h-px ${tab.id === 'silva' ? 'bg-silva' : 'bg-nulla'}`} />
                 )}
               </button>
             ))}
@@ -122,27 +132,29 @@ export default function NullaCaseDetail() {
         </div>
       </div>
 
-      {/* Sticky CTA */}
-      <div className="sticky top-[57px] z-10 bg-background border-b border-border/30">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex justify-end">
-          {isAtLimit ? (
-            <UpgradeModal 
-              trigger={
-                <Button variant="outline" className="border-nulla/30 text-nulla">
-                  🔒 Passer Pro pour plus d'absences
-                </Button>
-              }
-            />
-          ) : (
-            <Button 
-              onClick={() => setShowAddAbsence(true)}
-              className="bg-nulla hover:bg-nulla/90 text-primary-foreground"
-            >
-              + Ajouter une absence
-            </Button>
-          )}
+      {/* Sticky CTA (hide on SILVA tab) */}
+      {activeTab !== 'silva' && (
+        <div className="sticky top-[57px] z-10 bg-background border-b border-border/30">
+          <div className="max-w-5xl mx-auto px-6 py-3 flex justify-end">
+            {isAtLimit ? (
+              <UpgradeModal 
+                trigger={
+                  <Button variant="outline" className="border-nulla/30 text-nulla">
+                    🔒 Passer Pro pour plus d'absences
+                  </Button>
+                }
+              />
+            ) : (
+              <Button 
+                onClick={() => setShowAddAbsence(true)}
+                className="bg-nulla hover:bg-nulla/90 text-primary-foreground"
+              >
+                + Ajouter une absence
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Tab content */}
       <main className="max-w-5xl mx-auto px-6 py-8">
@@ -172,6 +184,15 @@ export default function NullaCaseDetail() {
             absences={caseAbsences}
             canExport={canExport}
             isPro={isPro}
+          />
+        )}
+
+        {activeTab === 'silva' && user && caseId && (
+          <SilvaCaseTab
+            caseId={caseId}
+            caseTitle="Dossier NULLA"
+            userId={user.id}
+            isSubscribed={isSubscribed}
           />
         )}
       </main>
