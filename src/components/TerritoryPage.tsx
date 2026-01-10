@@ -43,9 +43,9 @@ export default function TerritoryPage({
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="border-b border-border/50">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link 
-            to="/" 
+            to="/"
             className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Retour
@@ -162,14 +162,14 @@ export default function TerritoryPage({
 
       {/* Footer */}
       <footer className="border-t border-border/30 py-6 sm:py-8">
-        <div className="max-w-4xl mx-auto px-6 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link 
             to="/manifesto"
             className="text-xs font-body text-muted-foreground/50 hover:text-muted-foreground transition-colors"
           >
             Manifeste
           </Link>
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
             {['IRREVERSA', 'NULLA', 'THRESH', 'SILVA'].filter(t => t !== territory).map(t => (
               <Link
                 key={t}

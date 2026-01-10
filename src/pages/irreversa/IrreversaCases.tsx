@@ -85,22 +85,22 @@ export default function IrreversaCases() {
       <GlobalNav />
       
       <header className="border-b border-primary/20 pt-14">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
           <Link to="/irreversa/home" className="font-display text-lg tracking-[0.15em] text-primary">
             IRREVERSA
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowArchived(!showArchived)}
               className={showArchived ? 'text-primary' : 'text-muted-foreground'}
             >
-              <Archive className="w-4 h-4 mr-2" />
-              {showArchived ? 'Actifs' : 'Archives'} ({archivedCases.length})
+              <Archive className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">{showArchived ? 'Actifs' : 'Archives'}</span> ({archivedCases.length})
             </Button>
             {plan === 'free' && (
-              <span className="text-xs px-3 py-1 bg-primary/10 text-primary border border-primary/20">
+              <span className="text-xs px-2 sm:px-3 py-1 bg-primary/10 text-primary border border-primary/20">
                 {activeCases.length}/{limits.cases}
               </span>
             )}
@@ -108,10 +108,10 @@ export default function IrreversaCases() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-display text-3xl tracking-wide text-foreground mb-2">
+            <h1 className="font-display text-2xl sm:text-3xl tracking-wide text-foreground mb-2">
               {showArchived ? 'Dossiers archivés' : 'Mes dossiers'}
             </h1>
             <p className="text-muted-foreground text-sm">
@@ -220,10 +220,10 @@ export default function IrreversaCases() {
         )}
       </main>
 
-      <footer className="border-t border-primary/20 py-6 mt-12">
-        <div className="max-w-5xl mx-auto px-6 flex justify-between items-center">
-          <Link to="/" className="text-xs text-muted-foreground hover:text-foreground">← Territoires</Link>
-          <span className="text-xs text-muted-foreground/50">Outil de structuration</span>
+      <footer className="border-t border-primary/20 py-6 mt-8 sm:mt-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-muted-foreground">
+          <Link to="/" className="hover:text-foreground">← Territoires</Link>
+          <span className="text-muted-foreground/50">Outil de structuration</span>
         </div>
       </footer>
     </div>
