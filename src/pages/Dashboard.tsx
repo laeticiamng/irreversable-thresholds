@@ -14,6 +14,8 @@ import { StatsCharts } from '@/components/dashboard/StatsCharts';
 import { CalendarView } from '@/components/dashboard/CalendarView';
 import { AdvancedAnalytics } from '@/components/dashboard/AdvancedAnalytics';
 import { AnalyticsExport } from '@/components/dashboard/AnalyticsExport';
+import { EnhancedStats } from '@/components/dashboard/EnhancedStats';
+import { GuidedTour, useGuidedTour } from '@/components/onboarding/GuidedTour';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,7 +35,8 @@ import {
   TrendingUp,
   Clock,
   FileText,
-  Activity
+  Activity,
+  HelpCircle
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -50,6 +53,9 @@ export default function Dashboard() {
   
   // Enable realtime sync for all data
   useRealtimeSync({ userId: user?.id, enabled: !!user });
+  
+  // Guided tour
+  const { showTour, hasCompletedTour, startTour, completeTour, skipTour } = useGuidedTour();
   
   const [mounted, setMounted] = useState(false);
   const [time, setTime] = useState(new Date());
@@ -384,17 +390,21 @@ export default function Dashboard() {
                     <BarChart3 className="w-4 h-4" />
                     Vue d'ensemble
                   </TabsTrigger>
-                  <TabsTrigger value="advanced" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
+                  <TabsTrigger value="stats" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
-                    Analytics avancées
+                    Stats enrichies
+                  </TabsTrigger>
+                  <TabsTrigger value="advanced" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
+                    <Activity className="w-4 h-4" />
+                    Analytics
                   </TabsTrigger>
                   <TabsTrigger value="calendar" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Calendrier
                   </TabsTrigger>
                   <TabsTrigger value="activity" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
-                    <Activity className="w-4 h-4" />
-                    Activité récente
+                    <Clock className="w-4 h-4" />
+                    Activité
                   </TabsTrigger>
                 </TabsList>
                 
@@ -412,6 +422,15 @@ export default function Dashboard() {
                 <StatsCharts 
                   irreversaThresholds={irreversaThresholds}
                   threshThresholds={threshThresholds}
+                  absences={absences}
+                />
+              </TabsContent>
+
+              <TabsContent value="stats">
+                <EnhancedStats 
+                  cases={cases as Case[]}
+                  thresholds={irreversaThresholds}
+                  invisibleThresholds={threshThresholds}
                   absences={absences}
                 />
               </TabsContent>
@@ -551,12 +570,25 @@ export default function Dashboard() {
 
           {/* Footer */}
           <footer className="mt-16 pt-8 border-t border-border/20 text-center">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              {!hasCompletedTour && (
+                <Button variant="ghost" size="sm" onClick={startTour} className="text-muted-foreground hover:text-foreground">
+                  <HelpCircle className="w-4 h-4 mr-2" />
+                  Tour guidé
+                </Button>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground/40">
               Suite de lucidité. Aucune promesse. Aucune décision à ta place.
             </p>
           </footer>
         </div>
       </main>
+
+      {/* Guided Tour */}
+      {showTour && (
+        <GuidedTour onComplete={completeTour} onSkip={skipTour} />
+      )}
     </div>
   );
 }

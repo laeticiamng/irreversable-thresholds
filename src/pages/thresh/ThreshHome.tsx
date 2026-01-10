@@ -10,9 +10,10 @@ import { UpgradeModal } from '@/components/UpgradeModal';
 import { QuickCaptureModal } from '@/components/thresh/QuickCaptureModal';
 import { ThreshTimeline } from '@/components/thresh/ThreshTimeline';
 import { ThreshPatterns } from '@/components/thresh/ThreshPatterns';
+import { ThreshAdvancedPatterns } from '@/components/thresh/ThreshAdvancedPatterns';
 import { ThreshSynthesis } from '@/components/thresh/ThreshSynthesis';
 import { FocusMode } from '@/components/thresh/FocusMode';
-import { Zap, Eye, FileText, Clock, BarChart3, Sparkles, Focus } from 'lucide-react';
+import { Zap, Eye, FileText, Clock, BarChart3, Sparkles, Focus, Activity } from 'lucide-react';
 
 const FREE_ENTRY_LIMIT = 20;
 
@@ -94,6 +95,10 @@ export default function ThreshHome() {
               <TabsTrigger value="patterns" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
                 <BarChart3 className="w-4 h-4 mr-2" />Patterns
               </TabsTrigger>
+              <TabsTrigger value="advanced" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
+                <Activity className="w-4 h-4 mr-2" />Avancés
+                {!isSubscribed && <span className="text-[10px] px-1 py-0.5 bg-amber-500/20 text-amber-500 rounded ml-1">Pro</span>}
+              </TabsTrigger>
               <TabsTrigger value="synthesis" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
                 <Sparkles className="w-4 h-4 mr-2" />Synthèse
               </TabsTrigger>
@@ -104,6 +109,18 @@ export default function ThreshHome() {
             </TabsContent>
             <TabsContent value="patterns">
               <ThreshPatterns entries={thresholds as any} isSubscribed={isSubscribed} />
+            </TabsContent>
+            <TabsContent value="advanced">
+              {isSubscribed ? (
+                <ThreshAdvancedPatterns entries={thresholds as any} />
+              ) : (
+                <div className="text-center py-12 border border-amber-500/20 bg-card/30">
+                  <Activity className="w-8 h-8 text-amber-500/50 mx-auto mb-4" />
+                  <h3 className="font-display text-lg text-foreground mb-2">Patterns avancés</h3>
+                  <p className="text-sm text-muted-foreground mb-4">Disponible avec l'abonnement Pro</p>
+                  <UpgradeModal trigger={<Button className="bg-amber-500 hover:bg-amber-600 text-black">Débloquer Pro</Button>} />
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="synthesis">
               <ThreshSynthesis entries={thresholds as any} isSubscribed={isSubscribed} />

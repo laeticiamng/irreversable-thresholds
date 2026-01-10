@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
-import { useCases } from '@/hooks/useCases';
+import { useUserCases } from '@/hooks/useUserCases';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { CaseDomain, TimeHorizon, DOMAIN_LABELS, TIME_HORIZON_LABELS } from '@/types/database';
 import { ArrowLeft } from 'lucide-react';
@@ -17,7 +17,7 @@ export default function CreateThreshCase() {
   const { user, loading: authLoading } = useAuth();
   const { workspaces } = useWorkspaces(user?.id);
   const personalWorkspace = workspaces.find(w => w.is_personal);
-  const { createCase } = useCases(personalWorkspace?.id);
+  const { createCase } = useUserCases(user?.id);
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
