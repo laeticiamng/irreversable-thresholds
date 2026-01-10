@@ -10,16 +10,18 @@ import { ThresholdsList } from '@/components/irreversa/ThresholdsList';
 import { ExportsTab } from '@/components/irreversa/ExportsTab';
 import { AddThresholdModal } from '@/components/irreversa/AddThresholdModal';
 import { UpgradeModal } from '@/components/UpgradeModal';
+import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
 import { DOMAIN_LABELS } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { Leaf } from 'lucide-react';
 
-type TabType = 'timeline' | 'consequences' | 'thresholds' | 'exports';
+type TabType = 'timeline' | 'consequences' | 'thresholds' | 'exports' | 'silva';
 
 export default function CaseDetail() {
   const { caseId } = useParams<{ caseId: string }>();
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isSubscribed } = useAuth();
   const { 
     thresholds, 
     isLoading, 
@@ -52,11 +54,12 @@ export default function CaseDetail() {
   const caseThresholds = caseId ? getThresholdsByCase(caseId) : thresholds;
   const isAtThresholdLimit = plan === 'free' && caseThresholds.length >= limits.thresholdsPerCase;
 
-  const tabs: { id: TabType; label: string }[] = [
+  const tabs: { id: TabType; label: string; icon?: React.ReactNode; proOnly?: boolean }[] = [
     { id: 'timeline', label: 'Timeline' },
     { id: 'consequences', label: 'Conséquences' },
     { id: 'thresholds', label: `Seuils (${caseThresholds.length})` },
     { id: 'exports', label: 'Exports' },
+    { id: 'silva', label: 'SILVA', icon: <Leaf className="w-3 h-3" />, proOnly: true },
   ];
 
   return (
@@ -68,7 +71,9 @@ export default function CaseDetail() {
             ← Mes dossiers
           </Link>
           <span className="font-display text-lg tracking-[0.15em] text-primary">IRREVERSA</span>
-          <div className="w-24" />
+          <Link to="/dashboard" className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors">
+            Dashboard
+          </Link>
         </div>
       </header>
 
@@ -96,22 +101,27 @@ export default function CaseDetail() {
       {/* Tabs */}
       <div className="border-b border-border/50 sticky top-0 bg-background z-10">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 overflow-x-auto">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  relative py-4 text-xs font-display tracking-[0.15em] uppercase transition-colors
+                  relative py-4 text-xs font-display tracking-[0.15em] uppercase transition-colors whitespace-nowrap flex items-center gap-1.5
                   ${activeTab === tab.id 
-                    ? 'text-primary' 
+                    ? tab.id === 'silva' ? 'text-silva' : 'text-primary' 
                     : 'text-muted-foreground hover:text-foreground'
                   }
+                  ${tab.proOnly && !isSubscribed ? 'opacity-50' : ''}
                 `}
               >
+                {tab.icon}
                 {tab.label}
+                {tab.proOnly && !isSubscribed && (
+                  <span className="text-[10px] px-1 py-0.5 bg-muted/30 text-muted-foreground rounded ml-1">Pro</span>
+                )}
                 {activeTab === tab.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-px bg-primary" />
+                  <span className={`absolute bottom-0 left-0 right-0 h-px ${tab.id === 'silva' ? 'bg-silva' : 'bg-primary'}`} />
                 )}
               </button>
             ))}
@@ -119,27 +129,29 @@ export default function CaseDetail() {
         </div>
       </div>
 
-      {/* Sticky CTA */}
-      <div className="sticky top-[57px] z-10 bg-background border-b border-border/30">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex justify-end">
-          {isAtThresholdLimit ? (
-            <UpgradeModal 
-              trigger={
-                <Button variant="outline" className="border-primary/30 text-primary">
-                  🔒 Passer Pro pour plus de seuils
-                </Button>
-              }
-            />
-          ) : (
-            <Button 
-              onClick={() => setShowAddThreshold(true)}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              + Ajouter un seuil
-            </Button>
-          )}
+      {/* Sticky CTA (hide on SILVA tab) */}
+      {activeTab !== 'silva' && (
+        <div className="sticky top-[57px] z-10 bg-background border-b border-border/30">
+          <div className="max-w-5xl mx-auto px-6 py-3 flex justify-end">
+            {isAtThresholdLimit ? (
+              <UpgradeModal 
+                trigger={
+                  <Button variant="outline" className="border-primary/30 text-primary">
+                    🔒 Passer Pro pour plus de seuils
+                  </Button>
+                }
+              />
+            ) : (
+              <Button 
+                onClick={() => setShowAddThreshold(true)}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                + Ajouter un seuil
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Tab content */}
       <main className="max-w-5xl mx-auto px-6 py-8">
@@ -168,6 +180,15 @@ export default function CaseDetail() {
             thresholds={caseThresholds}
             canExport={canExport}
             isPro={isPro}
+          />
+        )}
+
+        {activeTab === 'silva' && user && caseId && (
+          <SilvaCaseTab
+            caseId={caseId}
+            caseTitle="Dossier IRREVERSA"
+            userId={user.id}
+            isSubscribed={isSubscribed}
           />
         )}
       </main>

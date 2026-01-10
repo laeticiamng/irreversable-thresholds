@@ -10,7 +10,8 @@ import { ThresholdsList } from '@/components/thresh/ThresholdsList';
 import { ThresholdsTimeline } from '@/components/thresh/ThresholdsTimeline';
 import { ThreshExportsTab } from '@/components/thresh/ThreshExportsTab';
 import { AddThresholdModal } from '@/components/thresh/AddThresholdModal';
-import { Plus, ArrowLeft } from 'lucide-react';
+import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
+import { Plus, ArrowLeft, Leaf } from 'lucide-react';
 
 const FREE_THRESHOLD_LIMIT = 5;
 
@@ -74,6 +75,9 @@ export default function ThreshCaseDetail() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
+            <Link to="/dashboard" className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors">
+              Dashboard
+            </Link>
             {!isSubscribed && (
               <UpgradeModal 
                 trigger={
@@ -108,14 +112,16 @@ export default function ThreshCaseDetail() {
                 )}
               </div>
             </div>
-            <Button 
-              onClick={handleAddThreshold}
-              disabled={!canAddThreshold}
-              className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Ajouter un seuil
-            </Button>
+            {activeTab !== 'silva' && (
+              <Button 
+                onClick={handleAddThreshold}
+                disabled={!canAddThreshold}
+                className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Ajouter un seuil
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -132,6 +138,13 @@ export default function ThreshCaseDetail() {
             </TabsTrigger>
             <TabsTrigger value="exports" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
               Exports
+            </TabsTrigger>
+            <TabsTrigger value="silva" className="data-[state=active]:bg-silva/20 data-[state=active]:text-silva flex items-center gap-1.5">
+              <Leaf className="w-3 h-3" />
+              SILVA
+              {!isSubscribed && (
+                <span className="text-[10px] px-1 py-0.5 bg-muted/30 text-muted-foreground rounded ml-1">Pro</span>
+              )}
             </TabsTrigger>
           </TabsList>
 
@@ -157,6 +170,17 @@ export default function ThreshCaseDetail() {
               isSubscribed={isSubscribed}
               onUpgrade={() => {}}
             />
+          </TabsContent>
+
+          <TabsContent value="silva">
+            {user && caseId && (
+              <SilvaCaseTab
+                caseId={caseId}
+                caseTitle={currentCase.title}
+                userId={user.id}
+                isSubscribed={isSubscribed}
+              />
+            )}
           </TabsContent>
         </Tabs>
       </main>
