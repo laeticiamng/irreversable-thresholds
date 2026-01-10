@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useAbsencesDB } from '@/hooks/useAbsencesDB';
+import { useUserCases } from '@/hooks/useUserCases';
 import { useSubscription } from '@/hooks/useSubscription';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { AbsenceMatrix } from '@/components/nulla/AbsenceMatrix';
@@ -16,7 +17,7 @@ import { AIAssistButton } from '@/components/ai/AIAssistButton';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
 import { useAIFormPrefill, type NullaFormData } from '@/hooks/useAIFormPrefill';
-import { Leaf } from 'lucide-react';
+import { Leaf, Folder } from 'lucide-react';
 import type { AIProposal } from '@/hooks/useAIAssist';
 
 type TabType = 'matrix' | 'map' | 'absences' | 'exports' | 'silva';
@@ -31,7 +32,11 @@ export default function NullaCaseDetail() {
   const navigate = useNavigate();
   const { user, loading: authLoading, isSubscribed } = useAuth();
   const { absences, isLoading, addAbsence, addEffect } = useAbsencesDB(user?.id);
+  const { cases } = useUserCases(user?.id);
   const { plan, canExport, isPro } = useSubscription(user?.id);
+
+  // Find current case
+  const currentCase = cases.find(c => c.id === caseId);
 
   const [activeTab, setActiveTab] = useState<TabType>('matrix');
   const [showAddAbsence, setShowAddAbsence] = useState(false);
@@ -111,9 +116,16 @@ export default function NullaCaseDetail() {
         <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex items-start justify-between gap-4">
             <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Folder className="w-4 h-4 text-nulla/60" />
+                <span className="text-xs text-muted-foreground uppercase tracking-wide">Dossier</span>
+              </div>
               <h1 className="font-display text-2xl tracking-wide text-foreground mb-2">
-                Dossier NULLA
+                {currentCase?.title || 'Dossier NULLA'}
               </h1>
+              {currentCase?.description && (
+                <p className="text-sm text-muted-foreground mb-2">{currentCase.description}</p>
+              )}
               <p className="text-sm text-muted-foreground">
                 {highImpactCount} absence{highImpactCount !== 1 ? 's' : ''} critique{highImpactCount !== 1 ? 's' : ''} · {totalEffects} effet{totalEffects !== 1 ? 's' : ''} documenté{totalEffects !== 1 ? 's' : ''}
               </p>
@@ -217,7 +229,7 @@ export default function NullaCaseDetail() {
         {activeTab === 'silva' && user && caseId && (
           <SilvaCaseTab
             caseId={caseId}
-            caseTitle="Dossier NULLA"
+            caseTitle={currentCase?.title || 'Dossier NULLA'}
             userId={user.id}
             isSubscribed={isSubscribed}
           />
@@ -256,7 +268,7 @@ export default function NullaCaseDetail() {
         onOpenChange={setShowAIPanel}
         module="nulla"
         caseId={caseId}
-        caseContext={{ title: 'Dossier NULLA' }}
+        caseContext={{ title: currentCase?.title || 'Dossier NULLA' }}
         userInput={{ absences: caseAbsences }}
         isSubscribed={isSubscribed}
         onAccept={onAIAccept}
