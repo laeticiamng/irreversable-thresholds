@@ -91,6 +91,44 @@ export function useInvisibleThresholds(userId: string | undefined) {
     },
   });
 
+  const updateThreshold = useMutation({
+    mutationFn: async ({
+      id,
+      title,
+      description,
+      threshType,
+      tags,
+      intensity,
+      context,
+    }: {
+      id: string;
+      title?: string;
+      description?: string;
+      threshType?: ThreshType;
+      tags?: string[];
+      intensity?: number;
+      context?: string;
+    }) => {
+      const updates: Record<string, unknown> = {};
+      if (title !== undefined) updates.title = title;
+      if (description !== undefined) updates.description = description;
+      if (threshType !== undefined) updates.thresh_type = threshType;
+      if (tags !== undefined) updates.tags = tags;
+      if (intensity !== undefined) updates.intensity = intensity;
+      if (context !== undefined) updates.context = context;
+
+      const { error } = await supabase
+        .from('invisible_thresholds')
+        .update(updates)
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invisible_thresholds', userId] });
+    },
+  });
+
   const getPendingThresholds = () => thresholds.filter(t => !t.sensed_at);
   const getSensedThresholds = () => thresholds.filter(t => t.sensed_at);
 
@@ -100,6 +138,7 @@ export function useInvisibleThresholds(userId: string | undefined) {
     addThreshold,
     markAsSensed,
     deleteThreshold,
+    updateThreshold,
     getPendingThresholds,
     getSensedThresholds,
   };

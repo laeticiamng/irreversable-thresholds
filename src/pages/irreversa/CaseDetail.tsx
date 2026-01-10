@@ -35,6 +35,8 @@ export default function CaseDetail() {
     getThresholdsByCase,
     crossThreshold,
     addConsequence,
+    deleteThreshold,
+    updateThreshold,
   } = useIrreversaCases(user?.id);
   const { cases } = useUserCases(user?.id);
   const { plan, limits, canExport, isPro } = useSubscription(user?.id);

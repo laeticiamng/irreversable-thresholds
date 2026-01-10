@@ -1,16 +1,19 @@
-import { Threshold, CATEGORY_LABELS, SEVERITY_LABELS } from '@/types/database';
+import { Threshold, CATEGORY_LABELS, SEVERITY_LABELS, ThresholdCategory, Severity } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { ThresholdActions } from './ThresholdActions';
 
 interface ThresholdsListProps {
   thresholds: Threshold[];
   onCross: (id: string) => Promise<void>;
   onAddThreshold: () => void;
+  onEdit?: (data: { id: string; title?: string; description?: string; category?: ThresholdCategory; severity?: Severity }) => void;
+  onDelete?: (id: string) => void;
   isAtLimit: boolean;
 }
 
-export function ThresholdsList({ thresholds, onCross, onAddThreshold, isAtLimit }: ThresholdsListProps) {
+export function ThresholdsList({ thresholds, onCross, onAddThreshold, onEdit, onDelete, isAtLimit }: ThresholdsListProps) {
   if (thresholds.length === 0) {
     return (
       <div className="text-center py-16 border border-dashed border-primary/20">
@@ -58,6 +61,13 @@ export function ThresholdsList({ thresholds, onCross, onAddThreshold, isAtLimit 
               </Button>
             )}
           </div>
+          {onEdit && onDelete && (
+            <ThresholdActions 
+              threshold={threshold} 
+              onEdit={onEdit} 
+              onDelete={onDelete} 
+            />
+          )}
         </div>
       ))}
     </div>
