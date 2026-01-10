@@ -88,10 +88,12 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          domain: string | null
           id: string
           metadata: Json | null
           status: string
           template_id: string | null
+          time_horizon: string | null
           title: string
           updated_at: string
           user_id: string
@@ -100,10 +102,12 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          domain?: string | null
           id?: string
           metadata?: Json | null
           status?: string
           template_id?: string | null
+          time_horizon?: string | null
           title: string
           updated_at?: string
           user_id: string
@@ -112,10 +116,12 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          domain?: string | null
           id?: string
           metadata?: Json | null
           status?: string
           template_id?: string | null
+          time_horizon?: string | null
           title?: string
           updated_at?: string
           user_id?: string
@@ -353,36 +359,89 @@ export type Database = {
         }
         Relationships: []
       }
+      threshold_consequences: {
+        Row: {
+          consequence_type: string
+          created_at: string
+          description: string
+          id: string
+          threshold_id: string
+          user_id: string
+        }
+        Insert: {
+          consequence_type: string
+          created_at?: string
+          description: string
+          id?: string
+          threshold_id: string
+          user_id: string
+        }
+        Update: {
+          consequence_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          threshold_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "threshold_consequences_threshold_id_fkey"
+            columns: ["threshold_id"]
+            isOneToOne: false
+            referencedRelation: "thresholds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       thresholds: {
         Row: {
           case_id: string | null
+          category: string | null
+          conditions: string | null
           created_at: string
           crossed_at: string | null
           description: string
           id: string
           is_crossed: boolean
+          notes: string | null
+          severity: string | null
           title: string
           user_id: string
+          what_cannot_be_undone: string | null
+          what_changes_after: string | null
         }
         Insert: {
           case_id?: string | null
+          category?: string | null
+          conditions?: string | null
           created_at?: string
           crossed_at?: string | null
           description: string
           id?: string
           is_crossed?: boolean
+          notes?: string | null
+          severity?: string | null
           title: string
           user_id: string
+          what_cannot_be_undone?: string | null
+          what_changes_after?: string | null
         }
         Update: {
           case_id?: string | null
+          category?: string | null
+          conditions?: string | null
           created_at?: string
           crossed_at?: string | null
           description?: string
           id?: string
           is_crossed?: boolean
+          notes?: string | null
+          severity?: string | null
           title?: string
           user_id?: string
+          what_cannot_be_undone?: string | null
+          what_changes_after?: string | null
         }
         Relationships: [
           {
@@ -393,6 +452,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          plan: string
+          started_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan?: string
+          started_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan?: string
+          started_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_workspace_roles: {
         Row: {
