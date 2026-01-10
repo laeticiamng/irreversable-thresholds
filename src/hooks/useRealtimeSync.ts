@@ -154,6 +154,74 @@ export function useRealtimeSync({ userId, enabled = true }: RealtimeSyncOptions)
       )
       .subscribe();
 
+    // Subscribe to notifications changes
+    const notificationsChannel = supabase
+      .channel('notifications-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to signals changes
+    const signalsChannel = supabase
+      .channel('signals-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'signals',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['signals'] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to threshold_consequences changes
+    const consequencesChannel = supabase
+      .channel('consequences-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'threshold_consequences',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['threshold-consequences'] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to absence_effects changes
+    const effectsChannel = supabase
+      .channel('effects-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'absence_effects',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['absence-effects'] });
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(thresholdsChannel);
       supabase.removeChannel(invisibleThresholdsChannel);
@@ -163,6 +231,10 @@ export function useRealtimeSync({ userId, enabled = true }: RealtimeSyncOptions)
       supabase.removeChannel(caseTagsChannel);
       supabase.removeChannel(silvaSpacesChannel);
       supabase.removeChannel(silvaSessionsChannel);
+      supabase.removeChannel(notificationsChannel);
+      supabase.removeChannel(signalsChannel);
+      supabase.removeChannel(consequencesChannel);
+      supabase.removeChannel(effectsChannel);
     };
   }, [userId, enabled, queryClient]);
 }

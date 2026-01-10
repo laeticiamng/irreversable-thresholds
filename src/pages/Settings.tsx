@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { GlobalNav } from '@/components/GlobalNav';
+import { ExportBackup } from '@/components/exports/ExportBackup';
 import {
   Select,
   SelectContent,
@@ -29,7 +30,8 @@ import {
   Zap,
   Volume2,
   Mail,
-  Compass
+  Compass,
+  Database
 } from 'lucide-react';
 
 export default function Settings() {
@@ -361,6 +363,17 @@ export default function Settings() {
               </SelectContent>
             </Select>
           </div>
+        </section>
+
+        {/* Data Backup Section */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full border border-border/50 flex items-center justify-center">
+              <Database className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <h2 className="font-display text-lg tracking-wide">Données</h2>
+          </div>
+          <ExportBackup />
         </section>
 
         {/* Account Link */}

@@ -24,12 +24,42 @@ import { fr } from 'date-fns/locale';
 
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { user } = useAuth();
   const { cases } = useUserCases(user?.id);
   const { thresholds: irreversaThresholds } = useThresholdsDB(user?.id);
   const { absences } = useAbsencesDB(user?.id);
   const { thresholds: threshThresholds } = useInvisibleThresholds(user?.id);
+
+  // Filter results based on search query
+  const filteredCases = searchQuery.length >= 2 
+    ? cases.filter(c => 
+        c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : cases;
+
+  const filteredIrreversa = searchQuery.length >= 2
+    ? irreversaThresholds.filter(t =>
+        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : irreversaThresholds;
+
+  const filteredAbsences = searchQuery.length >= 2
+    ? absences.filter(a =>
+        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : absences;
+
+  const filteredThresh = searchQuery.length >= 2
+    ? threshThresholds.filter(t =>
+        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : threshThresholds;
 
   // Keyboard shortcut
   useEffect(() => {
@@ -72,8 +102,15 @@ export function GlobalSearch() {
         </kbd>
       </Button>
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Rechercher dossiers, seuils, absences..." />
+      <CommandDialog open={open} onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) setSearchQuery('');
+      }}>
+        <CommandInput 
+          placeholder="Rechercher dossiers, seuils, absences..." 
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+        />
         <CommandList>
           <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
 
@@ -94,9 +131,9 @@ export function GlobalSearch() {
           <CommandSeparator />
 
           {/* Cases */}
-          {cases.length > 0 && (
-            <CommandGroup heading="Dossiers récents">
-              {cases.slice(0, 5).map((caseItem) => {
+          {filteredCases.length > 0 && (
+            <CommandGroup heading={`Dossiers${searchQuery ? ` (${filteredCases.length})` : ' récents'}`}>
+              {filteredCases.slice(0, searchQuery ? 10 : 5).map((caseItem) => {
                 const meta = caseItem.metadata as Record<string, unknown> | null;
                 const module = meta?.module as string || 'irreversa';
                 const path = `/${module}/cases/${caseItem.id}`;
@@ -119,9 +156,9 @@ export function GlobalSearch() {
           )}
 
           {/* Thresholds */}
-          {irreversaThresholds.length > 0 && (
-            <CommandGroup heading="Seuils IRREVERSA">
-              {irreversaThresholds.slice(0, 3).map((threshold) => (
+          {filteredIrreversa.length > 0 && (
+            <CommandGroup heading={`Seuils IRREVERSA${searchQuery ? ` (${filteredIrreversa.length})` : ''}`}>
+              {filteredIrreversa.slice(0, searchQuery ? 8 : 3).map((threshold) => (
                 <CommandItem
                   key={threshold.id}
                   onSelect={() => {
@@ -142,9 +179,9 @@ export function GlobalSearch() {
           )}
 
           {/* Absences */}
-          {absences.length > 0 && (
-            <CommandGroup heading="Absences NULLA">
-              {absences.slice(0, 3).map((absence) => (
+          {filteredAbsences.length > 0 && (
+            <CommandGroup heading={`Absences NULLA${searchQuery ? ` (${filteredAbsences.length})` : ''}`}>
+              {filteredAbsences.slice(0, searchQuery ? 8 : 3).map((absence) => (
                 <CommandItem
                   key={absence.id}
                   onSelect={() => {
@@ -162,9 +199,9 @@ export function GlobalSearch() {
           )}
 
           {/* Invisible Thresholds */}
-          {threshThresholds.length > 0 && (
-            <CommandGroup heading="Seuils THRESH">
-              {threshThresholds.slice(0, 3).map((threshold) => (
+          {filteredThresh.length > 0 && (
+            <CommandGroup heading={`Seuils THRESH${searchQuery ? ` (${filteredThresh.length})` : ''}`}>
+              {filteredThresh.slice(0, searchQuery ? 8 : 3).map((threshold) => (
                 <CommandItem
                   key={threshold.id}
                   onSelect={() => {

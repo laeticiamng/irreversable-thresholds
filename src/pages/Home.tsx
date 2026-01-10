@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { motion, type Variants } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -58,7 +58,12 @@ const footerVariants: Variants = {
 };
 
 export default function Home() {
-  const { user, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
+
+  // Redirect authenticated users to dashboard
+  if (!loading && user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
