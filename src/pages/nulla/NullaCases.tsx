@@ -11,14 +11,25 @@ import { fr } from 'date-fns/locale';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { GlobalNav } from '@/components/GlobalNav';
 import { useToast } from '@/hooks/use-toast';
-import { Archive, RotateCcw } from 'lucide-react';
+import { Archive, RotateCcw, Trash2 } from 'lucide-react';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function NullaCases() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { user, loading: authLoading, checkSubscription } = useAuth();
-  const { cases, isLoading, archiveCase, restoreCase } = useUserCases(user?.id);
+  const { cases, isLoading, archiveCase, restoreCase, deleteCase } = useUserCases(user?.id);
   const { plan, limits } = useSubscription(user?.id);
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -185,6 +196,7 @@ export default function NullaCases() {
                 showArchived={showArchived}
                 onArchive={() => archiveCase.mutate(caseItem.id)}
                 onRestore={() => restoreCase.mutate(caseItem.id)}
+                onDelete={() => deleteCase.mutate(caseItem.id)}
               />
             ))}
           </div>
@@ -211,13 +223,15 @@ function CaseCard({
   index, 
   showArchived, 
   onArchive, 
-  onRestore 
+  onRestore,
+  onDelete,
 }: { 
   caseItem: Case; 
   index: number; 
   showArchived: boolean;
   onArchive: () => void;
   onRestore: () => void;
+  onDelete: () => void;
 }) {
   return (
     <Link 
@@ -272,6 +286,28 @@ function CaseCard({
               <Archive className="w-4 h-4" />
             </Button>
           )}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={(e) => e.preventDefault()}
+                className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Supprimer ce dossier ?</AlertDialogTitle>
+                <AlertDialogDescription>Cette action est irréversible.</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction onClick={onDelete} className="bg-destructive">Supprimer</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <div className="text-nulla/40">→</div>
         </div>
       </div>
