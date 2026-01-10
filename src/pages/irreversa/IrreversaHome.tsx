@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { GlobalNav } from '@/components/GlobalNav';
 import { UpgradeModal } from '@/components/UpgradeModal';
 
 export default function IrreversaHome() {
@@ -18,18 +18,9 @@ export default function IrreversaHome() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-primary/20">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="text-xs font-body text-muted-foreground hover:text-foreground transition-colors">
-            ← Territoires
-          </Link>
-          <span className="font-display text-lg tracking-[0.15em] text-primary">IRREVERSA</span>
-          <ThemeToggle />
-        </div>
-      </header>
+      <GlobalNav />
 
-      <main className="max-w-5xl mx-auto px-6 py-12 md:py-20">
+      <main className="max-w-5xl mx-auto px-6 py-12 md:py-20 pt-20">
         {/* Hero */}
         <section className="text-center mb-16 md:mb-24">
           <div className="text-5xl text-primary/60 mb-6">◼</div>
@@ -62,11 +53,6 @@ export default function IrreversaHome() {
             <Link to={user ? "/irreversa/cases" : "/exposition"}>
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg">
                 {user ? "Créer un dossier" : "Commencer"}
-              </Button>
-            </Link>
-            <Link to="/irreversa/demo">
-              <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10 px-8 py-6 text-lg">
-                Voir un exemple
               </Button>
             </Link>
           </div>

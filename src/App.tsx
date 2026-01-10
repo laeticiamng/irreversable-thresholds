@@ -10,6 +10,7 @@ import Manifesto from "./pages/Manifesto";
 import About from "./pages/About";
 import Dashboard from "./pages/Dashboard";
 import Account from "./pages/Account";
+import Onboarding from "./pages/Onboarding";
 import Suite from "./pages/Suite";
 import NotFound from "./pages/NotFound";
 
@@ -57,6 +58,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/suite" element={<Suite />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/exposition" element={<Exposition />} />
             <Route path="/manifesto" element={<Manifesto />} />
             <Route path="/about" element={<About />} />
