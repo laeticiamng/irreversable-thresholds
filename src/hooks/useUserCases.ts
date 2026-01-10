@@ -2,6 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Case, ModuleType } from '@/types/database';
 import { toast } from 'sonner';
+import type { Json } from '@/integrations/supabase/types';
 
 /**
  * Hook for fetching cases by user ID (across all workspaces)
@@ -94,6 +95,45 @@ export function useUserCases(userId: string | undefined) {
     },
   });
 
+  const createCase = useMutation({
+    mutationFn: async (data: { title: string; description?: string; metadata?: Json }) => {
+      if (!userId) throw new Error('User not authenticated');
+      
+      // Get user's personal workspace
+      const { data: workspaces, error: wsError } = await supabase
+        .from('workspaces')
+        .select('id')
+        .eq('owner_id', userId)
+        .eq('is_personal', true)
+        .single();
+      
+      if (wsError || !workspaces) throw new Error('No personal workspace found');
+      
+      const { data: newCase, error } = await supabase
+        .from('cases')
+        .insert([{
+          title: data.title,
+          description: data.description || null,
+          metadata: data.metadata || null,
+          user_id: userId,
+          workspace_id: workspaces.id,
+          status: 'active',
+        }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return newCase as Case;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user_cases', userId] });
+      toast.success('Dossier créé');
+    },
+    onError: () => {
+      toast.error('Erreur lors de la création');
+    },
+  });
+
   const getActiveCases = () => cases.filter(c => c.status === 'active');
   const getArchivedCases = () => cases.filter(c => c.status === 'archived');
   
@@ -115,6 +155,7 @@ export function useUserCases(userId: string | undefined) {
   return {
     cases,
     isLoading,
+    createCase,
     deleteCase,
     archiveCase,
     restoreCase,

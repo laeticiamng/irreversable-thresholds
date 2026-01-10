@@ -104,7 +104,7 @@ function AnimatedRoutes() {
           {/* THRESH Module */}
           <Route path="/thresh/home" element={<ThreshHome />} />
           <Route path="/thresh/cases" element={<ThreshCases />} />
-          <Route path="/thresh/cases/new" element={<CreateCase />} />
+          <Route path="/thresh/cases/new" element={<CreateThreshCase />} />
           <Route path="/thresh/cases/:caseId" element={<ThreshCaseDetail />} />
           <Route path="/thresh/space" element={<ThreshModule />} />
           
