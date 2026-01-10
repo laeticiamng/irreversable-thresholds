@@ -29,7 +29,10 @@ import {
   Leaf,
   Plus,
   BarChart3,
-  TrendingUp
+  TrendingUp,
+  Clock,
+  FileText,
+  Activity
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -65,6 +68,31 @@ export default function Dashboard() {
   const totalThresh = threshThresholds.length;
   const totalSilvaSpaces = silvaSpaces.length;
   const totalCases = cases.length;
+
+  // Get recent activity
+  const recentActivity = [
+    ...irreversaThresholds.slice(0, 3).map(t => ({
+      type: 'irreversa' as const,
+      title: t.title,
+      date: t.created_at,
+      status: t.is_crossed ? 'crossed' : 'pending',
+      url: `/irreversa/cases/${t.case_id || ''}`
+    })),
+    ...threshThresholds.slice(0, 3).map(t => ({
+      type: 'thresh' as const,
+      title: t.title,
+      date: t.created_at,
+      status: t.sensed_at ? 'sensed' : 'latent',
+      url: `/thresh/cases/${t.case_id || ''}`
+    })),
+    ...absences.slice(0, 3).map(a => ({
+      type: 'nulla' as const,
+      title: a.title,
+      date: a.created_at,
+      status: 'documented',
+      url: `/nulla/cases/${a.case_id || ''}`
+    }))
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 6);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -363,6 +391,10 @@ export default function Dashboard() {
                     <Calendar className="w-4 h-4" />
                     Calendrier
                   </TabsTrigger>
+                  <TabsTrigger value="activity" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
+                    <Activity className="w-4 h-4" />
+                    Activité récente
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
@@ -390,49 +422,116 @@ export default function Dashboard() {
                   absences={absences}
                 />
               </TabsContent>
+
+              <TabsContent value="activity">
+                <div className="border border-border/30 bg-card/10 p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Clock className="w-4 h-4 text-primary" />
+                    <h3 className="font-display text-sm tracking-[0.15em] uppercase text-foreground/80">
+                      Activité récente
+                    </h3>
+                  </div>
+                  
+                  {recentActivity.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground text-sm">
+                        Aucune activité récente. Crée ton premier dossier pour commencer.
+                      </p>
+                      <Link to="/cases/new" className="inline-block mt-4">
+                        <Button variant="outline" size="sm">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Créer un dossier
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {recentActivity.map((item, index) => (
+                        <Link 
+                          key={index} 
+                          to={item.url}
+                          className="block p-4 border border-border/30 bg-background/50 hover:bg-card/30 transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                item.type === 'irreversa' ? 'bg-primary/20 border border-primary/30' :
+                                item.type === 'thresh' ? 'bg-amber-500/20 border border-amber-500/30' :
+                                'bg-nulla/20 border border-nulla/30'
+                              }`}>
+                                {item.type === 'irreversa' && <Target className="w-3 h-3 text-primary" />}
+                                {item.type === 'thresh' && <Eye className="w-3 h-3 text-amber-500" />}
+                                {item.type === 'nulla' && <XCircle className="w-3 h-3 text-nulla" />}
+                              </div>
+                              <div>
+                                <p className="text-sm text-foreground font-medium">{item.title}</p>
+                                <p className="text-xs text-muted-foreground/60 mt-0.5">
+                                  {item.type.toUpperCase()} · {item.status === 'crossed' ? 'Franchi' : 
+                                    item.status === 'pending' ? 'En attente' :
+                                    item.status === 'sensed' ? 'Ressenti' :
+                                    item.status === 'latent' ? 'Latent' : 'Documenté'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs text-muted-foreground">
+                                {formatDistanceToNow(new Date(item.date), { addSuffix: true, locale: fr })}
+                              </p>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
             </Tabs>
           </div>
 
-          {/* Recent Activity / Pro Benefits */}
+          {/* Pro Benefits or Upgrade Prompt */}
           {isSubscribed ? (
-            <div className="p-6 border border-border/30 bg-card/10">
-              <h3 className="font-display text-sm tracking-[0.2em] text-foreground/60 uppercase mb-4">
-                Avantages Pro actifs
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
+            <div className="mt-12 p-6 border border-primary/20 bg-primary/5">
+              <div className="flex items-center gap-3 mb-4">
+                <Crown className="w-5 h-5 text-primary" />
+                <h3 className="font-display text-lg tracking-wide text-foreground">
+                  Avantages Pro actifs
+                </h3>
+              </div>
+              <div className="grid md:grid-cols-4 gap-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="w-4 h-4 text-primary" />
                   Dossiers illimités
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  Entrées illimitées
-                </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="w-4 h-4 text-primary" />
                   Exports PDF
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  AI Assist illimité
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="w-4 h-4 text-primary" />
                   SILVA par dossier
                 </div>
               </div>
             </div>
           ) : (
-            <div className="p-6 border border-primary/20 bg-primary/5">
+            <div className="mt-12 p-6 border border-border/50 bg-card/20">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h3 className="font-display text-sm tracking-[0.2em] text-foreground uppercase mb-2">
+                  <h3 className="font-display text-lg tracking-wide text-foreground mb-2">
                     Débloquer tout le potentiel
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Entrées illimitées, exports PDF, SILVA par dossier, patterns avancés...
+                    Passe Pro pour accéder aux exports, à l'AI assist illimité, et à SILVA par dossier.
                   </p>
                 </div>
                 <UpgradeModal 
                   trigger={
-                    <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground">
-                      Voir les avantages Pro
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                      <Crown className="w-4 h-4 mr-2" />
+                      Débloquer Pro
                     </Button>
                   }
                 />
@@ -440,67 +539,12 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Recent Activity Section */}
-          <div className="mt-8 p-6 border border-border/30 bg-card/10">
-            <h3 className="font-display text-sm tracking-[0.2em] text-foreground/60 uppercase mb-4">
-              Activité récente
-            </h3>
-            <div className="space-y-3">
-              {/* Combine and sort recent items */}
-              {[
-                ...irreversaThresholds.slice(0, 2).map(t => ({
-                  type: 'irreversa' as const,
-                  title: t.title,
-                  date: t.created_at,
-                  status: t.is_crossed ? 'Franchi' : 'En attente',
-                })),
-                ...threshThresholds.slice(0, 2).map(t => ({
-                  type: 'thresh' as const,
-                  title: t.title,
-                  date: t.created_at,
-                  status: t.sensed_at ? 'Ressenti' : 'Latent',
-                })),
-                ...absences.slice(0, 2).map(a => ({
-                  type: 'nulla' as const,
-                  title: a.title,
-                  date: a.created_at,
-                  status: 'Documenté',
-                })),
-              ]
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .slice(0, 5)
-                .map((item, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs px-2 py-0.5 ${
-                        item.type === 'irreversa' ? 'bg-primary/10 text-primary' :
-                        item.type === 'thresh' ? 'bg-amber-500/10 text-amber-500' :
-                        'bg-nulla/10 text-nulla'
-                      }`}>
-                        {item.type.toUpperCase()}
-                      </span>
-                      <span className="text-sm text-foreground truncate max-w-[200px]">{item.title}</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(item.date), { addSuffix: true, locale: fr })}
-                    </span>
-                  </div>
-                ))
-              }
-              {irreversaThresholds.length === 0 && threshThresholds.length === 0 && absences.length === 0 && (
-                <p className="text-sm text-muted-foreground/60 text-center py-4">
-                  Aucune activité récente
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Contemplative Footer */}
-          <div className="text-center pt-12 border-t border-border/20 mt-12">
-            <p className="text-muted-foreground/40 font-body text-xs">
-              Observer. Structurer. Laisser être.
+          {/* Footer */}
+          <footer className="mt-16 pt-8 border-t border-border/20 text-center">
+            <p className="text-xs text-muted-foreground/40">
+              Suite de lucidité. Aucune promesse. Aucune décision à ta place.
             </p>
-          </div>
+          </footer>
         </div>
       </main>
     </div>
