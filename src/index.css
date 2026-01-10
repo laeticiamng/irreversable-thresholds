@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Dual System Design - IRREVERSA (warm) + NULLA (cold) */
+    /* Quad System Design */
     
     /* Core palette - obsidian and aged ivory */
     --background: 0 0% 4%;
@@ -39,6 +39,11 @@
     --nulla-foreground: 0 0% 4%;
     --nulla-muted: 220 10% 35%;
     
+    /* SILVA - deep forest green/earth */
+    --silva: 150 25% 25%;
+    --silva-foreground: 150 20% 85%;
+    --silva-muted: 150 15% 15%;
+    
     /* States */
     --destructive: 0 50% 40%;
     --destructive-foreground: 40 20% 88%;
@@ -61,11 +66,13 @@
     --shadow-monument: 0 20px 60px -10px hsl(0 0% 0% / 0.8);
     --shadow-seal: 0 0 30px hsl(35 60% 50% / 0.15);
     --shadow-void: 0 0 60px hsl(220 15% 55% / 0.1);
+    --shadow-silva: 0 0 100px hsl(150 25% 25% / 0.2);
     
     /* Gradients */
     --gradient-stone: linear-gradient(180deg, hsl(0 0% 8%) 0%, hsl(0 0% 4%) 100%);
     --gradient-seal: linear-gradient(135deg, hsl(35 60% 50%) 0%, hsl(30 70% 35%) 100%);
     --gradient-void: linear-gradient(180deg, hsl(0 0% 6%) 0%, hsl(0 0% 2%) 100%);
+    --gradient-silva: linear-gradient(180deg, hsl(150 20% 6%) 0%, hsl(150 25% 3%) 100%);
     
     /* Typography */
     --font-display: 'Cormorant Garamond', serif;
@@ -138,6 +145,11 @@
     box-shadow: var(--shadow-void);
   }
   
+  .surface-silva {
+    background: var(--gradient-silva);
+    box-shadow: var(--shadow-silva);
+  }
+  
   @keyframes seal {
     0% { opacity: 0; transform: scale(0.8); }
     50% { opacity: 1; transform: scale(1.02); }
@@ -183,66 +195,44 @@
   .animate-expand-void {
     animation: expand-void 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
-}
-
-@layer utilities {
-  .font-display {
-    font-family: var(--font-display);
+  
+  /* SILVA - very slow, organic animations */
+  @keyframes silva-breathe {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.25; transform: scale(1.02); }
   }
   
-  .font-body {
-    font-family: var(--font-body);
+  .animate-silva-breathe {
+    animation: silva-breathe 12s ease-in-out infinite;
   }
   
-  .text-balance {
-    text-wrap: balance;
+  @keyframes silva-drift {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-5px) translateX(2px); }
+    50% { transform: translateY(-2px) translateX(-3px); }
+    75% { transform: translateY(-8px) translateX(1px); }
   }
   
-  /* Monument text styling */
-  .text-carved {
-    font-family: var(--font-display);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+  .animate-silva-drift {
+    animation: silva-drift 30s ease-in-out infinite;
   }
   
-  /* Sealed state styling */
-  .sealed {
-    background: var(--gradient-seal);
-    box-shadow: var(--shadow-seal);
+  @keyframes silva-fade {
+    0% { opacity: 0; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0; }
   }
   
-  /* Stone surface */
-  .surface-stone {
-    background: var(--gradient-stone);
-    box-shadow: var(--shadow-monument);
+  .animate-silva-fade {
+    animation: silva-fade 20s ease-in-out infinite;
   }
   
-  /* Animate seal */
-  @keyframes seal {
-    0% { opacity: 0; transform: scale(0.8); }
-    50% { opacity: 1; transform: scale(1.02); }
-    100% { opacity: 1; transform: scale(1); }
+  @keyframes silva-pulse {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.3; }
   }
   
-  .animate-seal {
-    animation: seal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-  
-  @keyframes fade-up {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-  
-  .animate-fade-up {
-    animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-  
-  @keyframes pulse-subtle {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-  
-  .animate-pulse-subtle {
-    animation: pulse-subtle 3s ease-in-out infinite;
+  .animate-silva-pulse {
+    animation: silva-pulse 8s ease-in-out infinite;
   }
 }
