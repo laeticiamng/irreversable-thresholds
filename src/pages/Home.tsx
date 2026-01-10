@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function Home() {
   const { user, signOut } = useAuth();
@@ -12,21 +13,24 @@ export default function Home() {
           <span className="font-display text-base sm:text-lg tracking-[0.2em] text-foreground">
             QUATRE TERRITOIRES
           </span>
-          {user ? (
-            <button
-              onClick={() => signOut()}
-              className="text-xs font-body text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-            >
-              Quitter
-            </button>
-          ) : (
-            <Link
-              to="/exposition"
-              className="text-xs font-body text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-            >
-              Exposition
-            </Link>
-          )}
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            {user ? (
+              <button
+                onClick={() => signOut()}
+                className="text-xs font-body text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+              >
+                Quitter
+              </button>
+            ) : (
+              <Link
+                to="/exposition"
+                className="text-xs font-body text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+              >
+                Exposition
+              </Link>
+            )}
+          </div>
         </div>
       </header>
 
