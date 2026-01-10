@@ -4,6 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useIrreversaCases } from '@/hooks/useIrreversaCases';
+import { useUserCases } from '@/hooks/useUserCases';
 import { useSubscription } from '@/hooks/useSubscription';
 import { ThresholdTimeline } from '@/components/ThresholdTimeline';
 import { ConsequencesView } from '@/components/irreversa/ConsequencesView';
@@ -19,7 +20,7 @@ import { useAIFormPrefill, type IrreversaFormData } from '@/hooks/useAIFormPrefi
 import { DOMAIN_LABELS } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Leaf } from 'lucide-react';
+import { Leaf, Folder } from 'lucide-react';
 import type { AIProposal } from '@/hooks/useAIAssist';
 
 type TabType = 'timeline' | 'consequences' | 'thresholds' | 'exports' | 'silva';
@@ -35,7 +36,11 @@ export default function CaseDetail() {
     crossThreshold,
     addConsequence,
   } = useIrreversaCases(user?.id);
+  const { cases } = useUserCases(user?.id);
   const { plan, limits, canExport, isPro } = useSubscription(user?.id);
+
+  // Find current case from cases list
+  const currentCase = cases.find(c => c.id === caseId);
 
   const [activeTab, setActiveTab] = useState<TabType>('timeline');
   const [showAddThreshold, setShowAddThreshold] = useState(false);
@@ -109,9 +114,16 @@ export default function CaseDetail() {
         <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex items-start justify-between gap-4">
             <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Folder className="w-4 h-4 text-primary/60" />
+                <span className="text-xs text-muted-foreground uppercase tracking-wide">Dossier</span>
+              </div>
               <h1 className="font-display text-2xl tracking-wide text-foreground mb-2">
-                Dossier IRREVERSA
+                {currentCase?.title || 'Dossier IRREVERSA'}
               </h1>
+              {currentCase?.description && (
+                <p className="text-sm text-muted-foreground mb-2">{currentCase.description}</p>
+              )}
               <p className="text-sm text-muted-foreground">
                 {caseThresholds.filter(t => t.is_crossed).length} seuils franchis · {caseThresholds.filter(t => !t.is_crossed).length} en attente
               </p>
@@ -214,7 +226,7 @@ export default function CaseDetail() {
         {activeTab === 'silva' && user && caseId && (
           <SilvaCaseTab
             caseId={caseId}
-            caseTitle="Dossier IRREVERSA"
+            caseTitle={currentCase?.title || 'Dossier IRREVERSA'}
             userId={user.id}
             isSubscribed={isSubscribed}
           />
@@ -248,7 +260,7 @@ export default function CaseDetail() {
         onOpenChange={setShowAIPanel}
         module="irreversa"
         caseId={caseId}
-        caseContext={{ title: 'Dossier IRREVERSA' }}
+        caseContext={{ title: currentCase?.title || 'Dossier IRREVERSA' }}
         userInput={{ thresholds: caseThresholds }}
         isSubscribed={isSubscribed}
         onAccept={onAIAccept}

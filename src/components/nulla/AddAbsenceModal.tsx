@@ -29,7 +29,15 @@ const IMPACT_OPTIONS = [
 interface AddAbsenceModalProps {
   caseId?: string;
   onClose: () => void;
-  onSubmit: (data: { title: string; description: string }) => Promise<void>;
+  onSubmit: (data: { 
+    title: string; 
+    description: string;
+    caseId?: string;
+    category?: string;
+    impactLevel?: string;
+    counterfactual?: string;
+    evidenceNeeded?: string;
+  }) => Promise<void>;
   prefillData?: Partial<NullaFormData> | null;
 }
 
@@ -71,10 +79,14 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
 
     setLoading(true);
     try {
-      // Note: We're passing description as the effect since the current DB structure uses description
       await onSubmit({
         title: title.trim(),
         description: effect.trim(),
+        caseId: caseId,
+        category: category,
+        impactLevel: impactLevel,
+        counterfactual: counterfactual.trim() || undefined,
+        evidenceNeeded: evidenceNeeded.trim() || undefined,
       });
     } finally {
       setLoading(false);

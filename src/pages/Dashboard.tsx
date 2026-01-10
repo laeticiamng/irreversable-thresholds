@@ -5,7 +5,7 @@ import { useThresholdsDB } from '@/hooks/useThresholdsDB';
 import { useAbsencesDB } from '@/hooks/useAbsencesDB';
 import { useInvisibleThresholds } from '@/hooks/useInvisibleThresholds';
 import { useSilvaSpaces } from '@/hooks/useSilvaSpaces';
-import { useCases } from '@/hooks/useCases';
+import { useUserCases } from '@/hooks/useUserCases';
 import { Button } from '@/components/ui/button';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { GlobalNav } from '@/components/GlobalNav';
@@ -23,7 +23,7 @@ import {
   Eye,
   Leaf
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export default function Dashboard() {
@@ -33,7 +33,7 @@ export default function Dashboard() {
   const { absences } = useAbsencesDB(user?.id);
   const { thresholds: threshThresholds } = useInvisibleThresholds(user?.id);
   const { spaces: silvaSpaces } = useSilvaSpaces(user?.id);
-  const { cases } = useCases(user?.id);
+  const { cases } = useUserCases(user?.id);
   
   const [mounted, setMounted] = useState(false);
   const [time, setTime] = useState(new Date());
@@ -372,6 +372,61 @@ export default function Dashboard() {
               </div>
             </div>
           )}
+
+          {/* Recent Activity Section */}
+          <div className="mt-8 p-6 border border-border/30 bg-card/10">
+            <h3 className="font-display text-sm tracking-[0.2em] text-foreground/60 uppercase mb-4">
+              Activité récente
+            </h3>
+            <div className="space-y-3">
+              {/* Combine and sort recent items */}
+              {[
+                ...irreversaThresholds.slice(0, 2).map(t => ({
+                  type: 'irreversa' as const,
+                  title: t.title,
+                  date: t.created_at,
+                  status: t.is_crossed ? 'Franchi' : 'En attente',
+                })),
+                ...threshThresholds.slice(0, 2).map(t => ({
+                  type: 'thresh' as const,
+                  title: t.title,
+                  date: t.created_at,
+                  status: t.sensed_at ? 'Ressenti' : 'Latent',
+                })),
+                ...absences.slice(0, 2).map(a => ({
+                  type: 'nulla' as const,
+                  title: a.title,
+                  date: a.created_at,
+                  status: 'Documenté',
+                })),
+              ]
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .slice(0, 5)
+                .map((item, i) => (
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-border/20 last:border-0">
+                    <div className="flex items-center gap-3">
+                      <span className={`text-xs px-2 py-0.5 ${
+                        item.type === 'irreversa' ? 'bg-primary/10 text-primary' :
+                        item.type === 'thresh' ? 'bg-amber-500/10 text-amber-500' :
+                        'bg-nulla/10 text-nulla'
+                      }`}>
+                        {item.type.toUpperCase()}
+                      </span>
+                      <span className="text-sm text-foreground truncate max-w-[200px]">{item.title}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(item.date), { addSuffix: true, locale: fr })}
+                    </span>
+                  </div>
+                ))
+              }
+              {irreversaThresholds.length === 0 && threshThresholds.length === 0 && absences.length === 0 && (
+                <p className="text-sm text-muted-foreground/60 text-center py-4">
+                  Aucune activité récente
+                </p>
+              )}
+            </div>
+          </div>
 
           {/* Contemplative Footer */}
           <div className="text-center pt-12 border-t border-border/20 mt-12">

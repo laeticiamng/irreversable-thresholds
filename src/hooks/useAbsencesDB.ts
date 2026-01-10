@@ -38,16 +38,56 @@ export function useAbsencesDB(userId: string | undefined) {
   });
 
   const addAbsence = useMutation({
-    mutationFn: async ({ title, description }: { title: string; description: string }) => {
+    mutationFn: async ({ 
+      title, 
+      description,
+      caseId,
+      category = 'autre',
+      impactLevel = 'moderate',
+      counterfactual,
+      evidenceNeeded,
+    }: { 
+      title: string; 
+      description: string;
+      caseId?: string;
+      category?: string;
+      impactLevel?: string;
+      counterfactual?: string;
+      evidenceNeeded?: string;
+    }) => {
       if (!userId) throw new Error('User not authenticated');
       const { data, error } = await supabase
         .from('absences')
-        .insert({ user_id: userId, title, description })
+        .insert({ 
+          user_id: userId, 
+          title, 
+          description,
+          case_id: caseId || null,
+          category,
+          impact_level: impactLevel,
+          counterfactual: counterfactual || null,
+          evidence_needed: evidenceNeeded || null,
+        })
         .select()
         .single();
       
       if (error) throw error;
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['absences', userId] });
+    },
+  });
+
+  const deleteAbsence = useMutation({
+    mutationFn: async (absenceId: string) => {
+      if (!userId) throw new Error('User not authenticated');
+      const { error } = await supabase
+        .from('absences')
+        .delete()
+        .eq('id', absenceId);
+      
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['absences', userId] });
@@ -86,5 +126,6 @@ export function useAbsencesDB(userId: string | undefined) {
     isLoading,
     addAbsence,
     addEffect,
+    deleteAbsence,
   };
 }
