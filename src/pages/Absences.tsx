@@ -1,30 +1,39 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AbsenceCard } from '@/components/AbsenceCard';
 import { CreateAbsenceForm } from '@/components/CreateAbsenceForm';
 import { AddEffectForm } from '@/components/AddEffectForm';
 import { ViewEffects } from '@/components/ViewEffects';
 import { Button } from '@/components/ui/button';
-import { useAbsences } from '@/hooks/useAbsences';
-import { Absence } from '@/types/absence';
+import { useAuth } from '@/hooks/useAuth';
+import { useAbsencesDB } from '@/hooks/useAbsencesDB';
+import { Absence } from '@/types/database';
 
 export default function Absences() {
-  const { absences, addAbsence, addEffect, isLoaded } = useAbsences();
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const { absences, isLoading, addAbsence, addEffect } = useAbsencesDB(user?.id);
   const [isCreating, setIsCreating] = useState(false);
   const [addingEffectTo, setAddingEffectTo] = useState<Absence | null>(null);
   const [viewingEffectsOf, setViewingEffectsOf] = useState<Absence | null>(null);
 
-  const handleCreate = (title: string, description: string) => {
-    addAbsence(title, description);
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
+
+  const handleCreate = async (title: string, description: string) => {
+    await addAbsence.mutateAsync({ title, description });
     setIsCreating(false);
   };
 
-  const handleAddEffect = (absenceId: string, type: any, description: string) => {
-    addEffect(absenceId, type, description);
+  const handleAddEffect = async (absenceId: string, type: any, description: string) => {
+    await addEffect.mutateAsync({ absenceId, effectType: type, description });
     setAddingEffectTo(null);
   };
 
-  if (!isLoaded) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center surface-void">
         <span className="text-nulla/50 font-display tracking-widest text-sm animate-pulse">
@@ -111,7 +120,7 @@ export default function Absences() {
         )}
       </main>
 
-      {/* Back to home */}
+      {/* Footer */}
       <footer className="border-t border-nulla/20 py-6">
         <div className="max-w-4xl mx-auto px-6 flex justify-between items-center">
           <Link 

@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { Absence, AbsenceEffect, EFFECT_LABELS } from '@/types/absence';
+import { Absence, AbsenceEffect, EFFECT_LABELS } from '@/types/database';
 import { Button } from '@/components/ui/button';
 
 interface AddEffectFormProps {
   absence: Absence;
-  onSubmit: (type: AbsenceEffect['type'], description: string) => void;
+  onSubmit: (type: AbsenceEffect['effect_type'], description: string) => void;
   onCancel: () => void;
 }
 
-const EFFECT_TYPES: AbsenceEffect['type'][] = ['prevents', 'enables', 'forces', 'preserves'];
+const EFFECT_TYPES: AbsenceEffect['effect_type'][] = ['prevents', 'enables', 'forces', 'preserves'];
 
 export function AddEffectForm({ absence, onSubmit, onCancel }: AddEffectFormProps) {
-  const [selectedType, setSelectedType] = useState<AbsenceEffect['type'] | null>(null);
+  const [selectedType, setSelectedType] = useState<AbsenceEffect['effect_type'] | null>(null);
   const [description, setDescription] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -1,4 +1,4 @@
-import { Absence, EFFECT_LABELS } from '@/types/absence';
+import { Absence, EFFECT_LABELS } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -9,12 +9,14 @@ interface ViewEffectsProps {
 }
 
 export function ViewEffects({ absence, onClose }: ViewEffectsProps) {
+  const effects = absence.effects || [];
+  
   // Group effects by type
-  const effectsByType = absence.effects.reduce((acc, effect) => {
-    if (!acc[effect.type]) acc[effect.type] = [];
-    acc[effect.type].push(effect);
+  const effectsByType = effects.reduce((acc, effect) => {
+    if (!acc[effect.effect_type]) acc[effect.effect_type] = [];
+    acc[effect.effect_type].push(effect);
     return acc;
-  }, {} as Record<string, typeof absence.effects>);
+  }, {} as Record<string, typeof effects>);
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-6">
@@ -26,19 +28,19 @@ export function ViewEffects({ absence, onClose }: ViewEffectsProps) {
               <span className="opacity-40">∅</span> {absence.title}
             </h2>
             <p className="text-muted-foreground text-sm font-body">
-              {absence.effects.length} effet{absence.effects.length !== 1 ? 's' : ''} observé{absence.effects.length !== 1 ? 's' : ''}
+              {effects.length} effet{effects.length !== 1 ? 's' : ''} observé{effects.length !== 1 ? 's' : ''}
             </p>
           </div>
 
           {/* Effects by type */}
           <div className="space-y-6">
-            {Object.entries(effectsByType).map(([type, effects]) => (
+            {Object.entries(effectsByType).map(([type, typeEffects]) => (
               <div key={type} className="space-y-3">
                 <h3 className="text-xs font-display tracking-[0.2em] uppercase text-nulla/60">
                   {EFFECT_LABELS[type as keyof typeof EFFECT_LABELS]}
                 </h3>
                 <div className="space-y-2">
-                  {effects.map((effect) => (
+                  {typeEffects.map((effect) => (
                     <div 
                       key={effect.id}
                       className="p-4 border border-border bg-secondary/30"
@@ -47,7 +49,7 @@ export function ViewEffects({ absence, onClose }: ViewEffectsProps) {
                         {effect.description}
                       </p>
                       <span className="text-xs text-muted-foreground">
-                        {format(effect.createdAt, "d MMM yyyy", { locale: fr })}
+                        {format(new Date(effect.created_at), "d MMM yyyy", { locale: fr })}
                       </span>
                     </div>
                   ))}

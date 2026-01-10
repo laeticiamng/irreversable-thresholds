@@ -1,4 +1,4 @@
-import { Absence, EFFECT_LABELS } from '@/types/absence';
+import { Absence, EFFECT_LABELS } from '@/types/database';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -9,7 +9,7 @@ interface AbsenceCardProps {
 }
 
 export function AbsenceCard({ absence, onAddEffect, onViewEffects }: AbsenceCardProps) {
-  const hasEffects = absence.effects.length > 0;
+  const hasEffects = absence.effects && absence.effects.length > 0;
 
   return (
     <div className="relative p-8 border border-nulla/20 bg-card/50 hover:border-nulla/40 transition-all duration-500">
@@ -29,14 +29,14 @@ export function AbsenceCard({ absence, onAddEffect, onViewEffects }: AbsenceCard
       </p>
 
       {/* Effects summary */}
-      {hasEffects && (
+      {hasEffects && absence.effects && (
         <div className="flex flex-wrap gap-2 mb-4">
           {absence.effects.slice(0, 3).map((effect) => (
             <span 
               key={effect.id}
               className="text-xs px-2 py-1 bg-nulla/10 text-nulla/70 font-display tracking-wider uppercase"
             >
-              {EFFECT_LABELS[effect.type]}
+              {EFFECT_LABELS[effect.effect_type]}
             </span>
           ))}
           {absence.effects.length > 3 && (
@@ -49,7 +49,7 @@ export function AbsenceCard({ absence, onAddEffect, onViewEffects }: AbsenceCard
 
       {/* Date */}
       <div className="text-xs text-muted-foreground font-body mb-4">
-        Déclarée le {format(absence.createdAt, "d MMMM yyyy", { locale: fr })}
+        Déclarée le {format(new Date(absence.created_at), "d MMMM yyyy", { locale: fr })}
       </div>
 
       {/* Actions */}
@@ -67,7 +67,7 @@ export function AbsenceCard({ absence, onAddEffect, onViewEffects }: AbsenceCard
             onClick={onViewEffects}
             className="text-xs font-display tracking-[0.15em] uppercase text-nulla/50 hover:text-nulla transition-colors duration-300"
           >
-            Voir les effets ({absence.effects.length})
+            Voir les effets ({absence.effects?.length})
           </button>
         )}
       </div>
