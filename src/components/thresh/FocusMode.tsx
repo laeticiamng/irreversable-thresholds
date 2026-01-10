@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Eye, Pause, Play, X, Volume2, VolumeX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { useSilvaSessions } from '@/hooks/useSilvaSessions';
+import { useAuth } from '@/hooks/useAuth';
 
 interface FocusModeProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onComplete?: (durationSeconds: number) => void;
+  caseId?: string;
 }
 
 const FOCUS_PRESETS = [
@@ -18,7 +21,10 @@ const FOCUS_PRESETS = [
   { label: '45 min', seconds: 45 * 60 },
 ];
 
-export function FocusMode({ open, onOpenChange, onComplete }: FocusModeProps) {
+export function FocusMode({ open, onOpenChange, onComplete, caseId }: FocusModeProps) {
+  const { user } = useAuth();
+  const { startSession, endSession, getSessionCount, getTotalTimeSpent } = useSilvaSessions(user?.id);
+  
   const [selectedPreset, setSelectedPreset] = useState(FOCUS_PRESETS[2]); // 25 min default
   const [timeRemaining, setTimeRemaining] = useState(selectedPreset.seconds);
   const [isRunning, setIsRunning] = useState(false);
@@ -54,10 +60,18 @@ export function FocusMode({ open, onOpenChange, onComplete }: FocusModeProps) {
     };
   }, [isRunning, timeRemaining]);
 
-  const handleStart = useCallback(() => {
+  const handleStart = useCallback(async () => {
     setIsRunning(true);
     setHasStarted(true);
-  }, []);
+    // Start a session in the database
+    if (user) {
+      try {
+        await startSession.mutateAsync();
+      } catch (e) {
+        console.error('Failed to start session:', e);
+      }
+    }
+  }, [user, startSession]);
 
   const handlePause = useCallback(() => {
     setIsRunning(false);
@@ -73,14 +87,22 @@ export function FocusMode({ open, onOpenChange, onComplete }: FocusModeProps) {
     setTimeRemaining(selectedPreset.seconds);
   }, [selectedPreset.seconds]);
 
-  const handleComplete = useCallback(() => {
-    const totalDuration = selectedPreset.seconds;
+  const handleComplete = useCallback(async () => {
+    const totalDuration = selectedPreset.seconds - timeRemaining;
+    // End session in database
+    if (user) {
+      try {
+        await endSession.mutateAsync(totalDuration);
+      } catch (e) {
+        console.error('Failed to end session:', e);
+      }
+    }
     toast.success(`Session Focus terminée · ${selectedPreset.label}`, {
-      description: 'Tu as maintenu ton attention. Bien joué.',
+      description: `Tu as maintenu ton attention pendant ${Math.round(totalDuration / 60)} minutes.`,
     });
     onComplete?.(totalDuration);
     handleReset();
-  }, [selectedPreset, onComplete]);
+  }, [selectedPreset, timeRemaining, user, endSession, onComplete]);
 
   const handleClose = useCallback(() => {
     if (hasStarted && timeRemaining > 0) {
