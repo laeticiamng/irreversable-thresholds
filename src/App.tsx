@@ -9,6 +9,7 @@ import Exposition from "./pages/Exposition";
 import Manifesto from "./pages/Manifesto";
 import About from "./pages/About";
 import Dashboard from "./pages/Dashboard";
+import Account from "./pages/Account";
 import Suite from "./pages/Suite";
 import NotFound from "./pages/NotFound";
 
@@ -92,8 +93,9 @@ const App = () => (
             <Route path="/silva/space" element={<SilvaSpace />} />
             <Route path="/silva/spaces" element={<SilvaSpaces />} />
             
-            {/* Dashboard */}
+            {/* Dashboard & Account */}
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/account" element={<Account />} />
             
             {/* Legacy redirects */}
             <Route path="/pending" element={<IrreversaCases />} />
