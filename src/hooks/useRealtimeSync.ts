@@ -79,7 +79,77 @@ export function useRealtimeSync({ userId, enabled = true }: RealtimeSyncOptions)
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['cases'] });
+          queryClient.invalidateQueries({ queryKey: ['user_cases'] });
           queryClient.invalidateQueries({ queryKey: ['user-cases'] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to tags changes
+    const tagsChannel = supabase
+      .channel('tags-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tags',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['tags'] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to case_tags changes
+    const caseTagsChannel = supabase
+      .channel('case-tags-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'case_tags',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['case-tags'] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to silva_spaces changes
+    const silvaSpacesChannel = supabase
+      .channel('silva-spaces-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'silva_spaces',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['silva-spaces'] });
+          queryClient.invalidateQueries({ queryKey: ['silva_spaces'] });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to silva_sessions changes
+    const silvaSessionsChannel = supabase
+      .channel('silva-sessions-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'silva_sessions',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['silva_sessions'] });
+          queryClient.invalidateQueries({ queryKey: ['silva-sessions'] });
         }
       )
       .subscribe();
@@ -89,6 +159,10 @@ export function useRealtimeSync({ userId, enabled = true }: RealtimeSyncOptions)
       supabase.removeChannel(invisibleThresholdsChannel);
       supabase.removeChannel(absencesChannel);
       supabase.removeChannel(casesChannel);
+      supabase.removeChannel(tagsChannel);
+      supabase.removeChannel(caseTagsChannel);
+      supabase.removeChannel(silvaSpacesChannel);
+      supabase.removeChannel(silvaSessionsChannel);
     };
   }, [userId, enabled, queryClient]);
 }
