@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
-import { useCases } from '@/hooks/useCases';
+import { useUserCases } from '@/hooks/useUserCases';
 import { useInvisibleThresholds } from '@/hooks/useInvisibleThresholds';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { ThresholdsList } from '@/components/thresh/ThresholdsList';
@@ -27,7 +27,7 @@ export default function ThreshCaseDetail() {
   const { caseId } = useParams<{ caseId: string }>();
   const navigate = useNavigate();
   const { user, loading: authLoading, isSubscribed } = useAuth();
-  const { cases, isLoading: casesLoading } = useCases(user?.id);
+  const { cases, isLoading: casesLoading } = useUserCases(user?.id);
   const { thresholds, isLoading: thresholdsLoading, addThreshold, markAsSensed, deleteThreshold, updateThreshold } = useInvisibleThresholds(user?.id);
   
   const [activeTab, setActiveTab] = useState('thresholds');

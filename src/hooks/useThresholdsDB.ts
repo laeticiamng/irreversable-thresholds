@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Threshold } from '@/types/database';
+import { notifyThresholdCrossed } from '@/lib/notifications';
 
 export function useThresholdsDB(userId: string | undefined) {
   const queryClient = useQueryClient();
@@ -40,12 +41,22 @@ export function useThresholdsDB(userId: string | undefined) {
 
   const crossThreshold = useMutation({
     mutationFn: async (id: string) => {
+      const threshold = thresholds.find(t => t.id === id);
       const { error } = await supabase
         .from('thresholds')
         .update({ is_crossed: true, crossed_at: new Date().toISOString() })
         .eq('id', id);
       
       if (error) throw error;
+      
+      // Send notification
+      if (userId && threshold) {
+        try {
+          await notifyThresholdCrossed(userId, threshold.title, threshold.case_id || undefined);
+        } catch (notifError) {
+          console.error('Failed to send notification:', notifError);
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['thresholds', userId] });

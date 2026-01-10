@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { InvisibleThreshold, ThreshType } from '@/types/database';
+import { notifyThresholdSensed } from '@/lib/notifications';
 
 export function useInvisibleThresholds(userId: string | undefined) {
   const queryClient = useQueryClient();
@@ -65,12 +66,22 @@ export function useInvisibleThresholds(userId: string | undefined) {
 
   const markAsSensed = useMutation({
     mutationFn: async (id: string) => {
+      const threshold = thresholds.find(t => t.id === id);
       const { error } = await supabase
         .from('invisible_thresholds')
         .update({ sensed_at: new Date().toISOString() })
         .eq('id', id);
       
       if (error) throw error;
+      
+      // Send notification
+      if (userId && threshold) {
+        try {
+          await notifyThresholdSensed(userId, threshold.title, threshold.case_id || undefined);
+        } catch (notifError) {
+          console.error('Failed to send notification:', notifError);
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invisible_thresholds', userId] });
