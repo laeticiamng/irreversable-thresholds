@@ -97,6 +97,7 @@ export function GlobalNav() {
                     `}
                   >
                     <Icon className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
+                    <span className="hidden lg:inline">{item.label}</span>
                     <span className="hidden xl:inline">{item.label}</span>
                     {active && (
                       <span className={`absolute bottom-0 left-0 right-0 h-0.5 ${

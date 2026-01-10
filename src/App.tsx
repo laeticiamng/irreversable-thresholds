@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import Account from "./pages/Account";
 import Settings from "./pages/Settings";
 import Onboarding from "./pages/Onboarding";
+import Auth from "./pages/Auth";
 import Suite from "./pages/Suite";
 import NotFound from "./pages/NotFound";
 
@@ -126,7 +127,7 @@ function AnimatedRoutes() {
           <Route path="/archive" element={<IrreversaCases />} />
           <Route path="/absences" element={<NullaModule />} />
           <Route path="/thresholds" element={<ThreshModule />} />
-          <Route path="/auth" element={<Exposition />} />
+          <Route path="/auth" element={<Auth />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -4,15 +4,26 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useSilvaSpaces } from '@/hooks/useSilvaSpaces';
+import { useSilvaSessions } from '@/hooks/useSilvaSessions';
 import { GlobalNav } from '@/components/GlobalNav';
 import { UpgradeModal } from '@/components/UpgradeModal';
-import { Leaf, Moon, FileText, HelpCircle } from 'lucide-react';
+import { Leaf, Moon, FileText, HelpCircle, Clock, Timer, Activity } from 'lucide-react';
 
 export default function SilvaHome() {
   const navigate = useNavigate();
   const { user, isSubscribed } = useAuth();
   const { getGlobalSpace, createSpace, isLoading } = useSilvaSpaces(user?.id);
+  const { sessions, getTotalTimeSpent, getSessionCount, getAverageDuration } = useSilvaSessions(user?.id);
   const [isEntering, setIsEntering] = useState(false);
+
+  // Format seconds to readable time
+  const formatTime = (seconds: number) => {
+    if (seconds < 60) return `${seconds}s`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}min`;
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    return `${hours}h ${mins}min`;
+  };
 
   const handleEnterSilva = async () => {
     if (!user) {
@@ -59,6 +70,33 @@ export default function SilvaHome() {
           <p className="text-sm text-foreground/30 font-body mb-16 max-w-md mx-auto">
             Présence sans fonction.
           </p>
+
+          {/* Session Stats */}
+          {user && getSessionCount() > 0 && (
+            <div className="flex justify-center gap-8 mb-12 p-4 border border-border/10 bg-card/5">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Timer className="w-3 h-3 text-foreground/30" />
+                  <span className="text-lg font-display text-foreground/60">{formatTime(getTotalTimeSpent())}</span>
+                </div>
+                <p className="text-[10px] text-foreground/25">Temps total</p>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Activity className="w-3 h-3 text-foreground/30" />
+                  <span className="text-lg font-display text-foreground/60">{getSessionCount()}</span>
+                </div>
+                <p className="text-[10px] text-foreground/25">Sessions</p>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Clock className="w-3 h-3 text-foreground/30" />
+                  <span className="text-lg font-display text-foreground/60">{formatTime(getAverageDuration())}</span>
+                </div>
+                <p className="text-[10px] text-foreground/25">Durée moyenne</p>
+              </div>
+            </div>
+          )}
 
           {/* Features - ultra sobre */}
           <div className="flex flex-col items-center gap-3 mb-16">
