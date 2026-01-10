@@ -13,6 +13,7 @@ import { GlobalNav } from '@/components/GlobalNav';
 import { StatsCharts } from '@/components/dashboard/StatsCharts';
 import { CalendarView } from '@/components/dashboard/CalendarView';
 import { AdvancedAnalytics } from '@/components/dashboard/AdvancedAnalytics';
+import { AnalyticsExport } from '@/components/dashboard/AnalyticsExport';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -377,7 +378,7 @@ export default function Dashboard() {
           {/* Analytics Section */}
           <div className="mt-12">
             <Tabs defaultValue="overview" className="w-full">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
                 <TabsList className="bg-card/50 border border-border/30">
                   <TabsTrigger value="overview" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary flex items-center gap-2">
                     <BarChart3 className="w-4 h-4" />
@@ -396,6 +397,15 @@ export default function Dashboard() {
                     Activité récente
                   </TabsTrigger>
                 </TabsList>
+                
+                {/* Analytics Export */}
+                <AnalyticsExport
+                  cases={cases as Case[]}
+                  thresholds={irreversaThresholds}
+                  invisibleThresholds={threshThresholds}
+                  absences={absences}
+                  isSubscribed={isSubscribed}
+                />
               </div>
 
               <TabsContent value="overview">

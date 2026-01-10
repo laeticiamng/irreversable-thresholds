@@ -5,6 +5,7 @@ import { useUserCases } from '@/hooks/useUserCases';
 import { useThresholdsDB } from '@/hooks/useThresholdsDB';
 import { useAbsencesDB } from '@/hooks/useAbsencesDB';
 import { useInvisibleThresholds } from '@/hooks/useInvisibleThresholds';
+import { useSilvaSpaces } from '@/hooks/useSilvaSpaces';
 import {
   CommandDialog,
   CommandEmpty,
@@ -16,7 +17,7 @@ import {
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
 import { 
-  Search, Folder, Target, Eye, XCircle, 
+  Search, Folder, Target, Eye, XCircle, Leaf,
   LayoutDashboard, Settings, User 
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -31,6 +32,7 @@ export function GlobalSearch() {
   const { thresholds: irreversaThresholds } = useThresholdsDB(user?.id);
   const { absences } = useAbsencesDB(user?.id);
   const { thresholds: threshThresholds } = useInvisibleThresholds(user?.id);
+  const { spaces: silvaSpaces } = useSilvaSpaces(user?.id);
 
   // Filter results based on search query
   const filteredCases = searchQuery.length >= 2 
@@ -61,6 +63,12 @@ export function GlobalSearch() {
       )
     : threshThresholds;
 
+  const filteredSilva = searchQuery.length >= 2
+    ? silvaSpaces.filter(s =>
+        s.content?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : silvaSpaces;
+
   // Keyboard shortcut
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -79,6 +87,7 @@ export function GlobalSearch() {
     { label: 'IRREVERSA', icon: Target, path: '/irreversa/home' },
     { label: 'THRESH', icon: Eye, path: '/thresh/home' },
     { label: 'NULLA', icon: XCircle, path: '/nulla/home' },
+    { label: 'SILVA', icon: Leaf, path: '/silva/home' },
     { label: 'Paramètres', icon: Settings, path: '/settings' },
     { label: 'Mon compte', icon: User, path: '/account' },
   ];
@@ -216,6 +225,33 @@ export function GlobalSearch() {
                   {threshold.sensed_at && (
                     <span className="text-xs text-amber-500">Ressenti</span>
                   )}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+
+          {/* SILVA Spaces */}
+          {filteredSilva.length > 0 && (
+            <CommandGroup heading={`Espaces SILVA${searchQuery ? ` (${filteredSilva.length})` : ''}`}>
+              {filteredSilva.slice(0, searchQuery ? 5 : 2).map((space) => (
+                <CommandItem
+                  key={space.id}
+                  onSelect={() => {
+                    if (space.case_id) {
+                      handleSelect(`/silva/space?case=${space.case_id}`);
+                    } else {
+                      handleSelect('/silva/space');
+                    }
+                  }}
+                  className="cursor-pointer"
+                >
+                  <Leaf className="mr-2 h-4 w-4 text-silva" />
+                  <span className="flex-1">
+                    {space.case_id ? 'Espace lié' : 'Espace global'}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {space.content?.slice(0, 30)}...
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>
