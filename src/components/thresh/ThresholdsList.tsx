@@ -4,14 +4,17 @@ import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Eye, Clock, Plus } from 'lucide-react';
+import { ThresholdActions } from './ThresholdActions';
 
 interface ThresholdsListProps {
-  thresholds: InvisibleThreshold[];
+  thresholds: (InvisibleThreshold & { tags?: string[]; intensity?: number; context?: string })[];
   onSense: (id: string) => void;
   onAddThreshold: () => void;
+  onEdit?: (data: { id: string; title?: string; description?: string; threshType?: ThreshType }) => void;
+  onDelete?: (id: string) => void;
 }
 
-export function ThresholdsList({ thresholds, onSense, onAddThreshold }: ThresholdsListProps) {
+export function ThresholdsList({ thresholds, onSense, onAddThreshold, onEdit, onDelete }: ThresholdsListProps) {
   const pendingThresholds = thresholds.filter(t => !t.sensed_at);
   const sensedThresholds = thresholds.filter(t => t.sensed_at);
 
@@ -92,6 +95,13 @@ export function ThresholdsList({ thresholds, onSense, onAddThreshold }: Threshol
                     Ressenti
                   </Button>
                 </div>
+                {onEdit && onDelete && (
+                  <ThresholdActions 
+                    threshold={threshold}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -134,6 +144,13 @@ export function ThresholdsList({ thresholds, onSense, onAddThreshold }: Threshol
                     </p>
                   </div>
                 </div>
+                {onEdit && onDelete && (
+                  <ThresholdActions 
+                    threshold={threshold}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
+                )}
               </div>
             ))}
           </div>

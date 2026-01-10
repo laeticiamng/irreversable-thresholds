@@ -213,6 +213,8 @@ export default function CaseDetail() {
             thresholds={caseThresholds}
             onCross={crossThreshold.mutateAsync}
             onAddThreshold={() => setShowAddThreshold(true)}
+            onEdit={(data) => updateThreshold.mutateAsync(data)}
+            onDelete={(id) => deleteThreshold.mutateAsync(id)}
             isAtLimit={isAtThresholdLimit}
           />
         )}
