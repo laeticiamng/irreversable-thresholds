@@ -19,11 +19,16 @@ import Nulla from "./pages/territories/Nulla";
 import Thresh from "./pages/territories/Thresh";
 import Silva from "./pages/territories/Silva";
 
-// IRREVERSA Module (full)
+// IRREVERSA Module
 import IrreversaHome from "./pages/irreversa/IrreversaHome";
 import IrreversaCases from "./pages/irreversa/IrreversaCases";
 import CreateCase from "./pages/irreversa/CreateCase";
 import CaseDetail from "./pages/irreversa/CaseDetail";
+
+// NULLA Module
+import NullaHome from "./pages/nulla/NullaHome";
+import NullaCases from "./pages/nulla/NullaCases";
+import NullaCaseDetail from "./pages/nulla/NullaCaseDetail";
 
 // Other modules
 import NullaModule from "./pages/NullaModule";
@@ -58,8 +63,14 @@ const App = () => (
             <Route path="/irreversa/cases/:caseId" element={<CaseDetail />} />
             <Route path="/irreversa/space" element={<IrreversaHome />} />
             
-            {/* Other modules */}
+            {/* NULLA Module */}
+            <Route path="/nulla/home" element={<NullaHome />} />
+            <Route path="/nulla/cases" element={<NullaCases />} />
+            <Route path="/nulla/cases/new" element={<CreateCase />} />
+            <Route path="/nulla/cases/:caseId" element={<NullaCaseDetail />} />
             <Route path="/nulla/space" element={<NullaModule />} />
+            
+            {/* Other modules */}
             <Route path="/thresh/space" element={<ThreshModule />} />
             <Route path="/silva/space" element={<SilvaSpace />} />
             
