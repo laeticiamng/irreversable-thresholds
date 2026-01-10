@@ -9,6 +9,7 @@ import { useUserCases } from '@/hooks/useUserCases';
 import { Button } from '@/components/ui/button';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { GlobalNav } from '@/components/GlobalNav';
+import { StatsCharts } from '@/components/dashboard/StatsCharts';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -22,7 +23,8 @@ import {
   Target,
   Eye,
   Leaf,
-  Plus
+  Plus,
+  BarChart3
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -331,7 +333,22 @@ export default function Dashboard() {
                   <span className="text-xl font-display text-muted-foreground/40">∞</span>
                   <span className="text-xs text-muted-foreground/50">durée</span>
                 </div>
-              </div>
+          </div>
+
+          {/* Statistics Section */}
+          <div className="mt-12">
+            <div className="flex items-center gap-2 mb-6">
+              <BarChart3 className="w-4 h-4 text-primary" />
+              <h3 className="font-display text-xs tracking-[0.3em] text-muted-foreground/50 uppercase">
+                Statistiques globales
+              </h3>
+            </div>
+            <StatsCharts 
+              irreversaThresholds={irreversaThresholds}
+              threshThresholds={threshThresholds}
+              absences={absences}
+            />
+          </div>
             </Link>
           </div>
 
