@@ -9,8 +9,6 @@ import { Search, Plus, Calendar, FolderOpen } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-const FREE_CASE_LIMIT = 1;
-
 export default function ThreshCases() {
   const navigate = useNavigate();
   const { user, loading: authLoading, isSubscribed } = useAuth();
@@ -23,7 +21,6 @@ export default function ThreshCases() {
     }
   }, [user, authLoading, navigate]);
 
-  // Filter THRESH-related cases (using metadata or domain)
   const threshCases = cases.filter(c => 
     c.metadata && typeof c.metadata === 'object' && (c.metadata as Record<string, unknown>).module === 'thresh'
   );
@@ -33,18 +30,10 @@ export default function ThreshCases() {
     c.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const canCreateCase = isSubscribed || threshCases.length < FREE_CASE_LIMIT;
-
-  const handleNewCase = () => {
-    navigate('/thresh/cases/new');
-  };
-
   if (authLoading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <span className="text-amber-500/50 font-display tracking-widest text-sm animate-pulse">
-          THRESH
-        </span>
+        <span className="text-amber-500/50 font-display tracking-widest text-sm animate-pulse">THRESH</span>
       </div>
     );
   }
@@ -54,10 +43,7 @@ export default function ThreshCases() {
       {/* Navigation */}
       <nav className="border-b border-amber-500/20">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link 
-            to="/thresh/home" 
-            className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors"
-          >
+          <Link to="/thresh/home" className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors">
             THRESH
           </Link>
           <div className="flex items-center gap-4">
@@ -69,8 +55,6 @@ export default function ThreshCases() {
                   </Button>
                 }
               />
-                Débloquer Pro
-              </Button>
             )}
           </div>
         </div>
@@ -81,25 +65,17 @@ export default function ThreshCases() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-display text-3xl tracking-wide text-foreground mb-2">
-              Mes dossiers THRESH
-            </h1>
+            <h1 className="font-display text-3xl tracking-wide text-foreground mb-2">Mes dossiers THRESH</h1>
             <p className="text-muted-foreground text-sm">
               {threshCases.length} dossier{threshCases.length !== 1 ? 's' : ''}
-              {!isSubscribed && (
-                <span className="ml-2 text-amber-500/60">
-                  (Free: {FREE_CASE_LIMIT} dossier max)
-                </span>
-              )}
             </p>
           </div>
-          <Button 
-            onClick={handleNewCase}
-            className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Nouveau dossier
-          </Button>
+          <Link to="/thresh/cases/new">
+            <Button className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider">
+              <Plus className="w-4 h-4 mr-2" />
+              Nouveau dossier
+            </Button>
+          </Link>
         </div>
 
         {/* Search */}
@@ -125,12 +101,11 @@ export default function ThreshCases() {
               {searchQuery ? 'Aucun dossier trouvé.' : 'Aucun dossier THRESH pour l\'instant.'}
             </p>
             {!searchQuery && (
-              <Button 
-                onClick={handleNewCase}
-                className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider"
-              >
-                Créer le premier dossier
-              </Button>
+              <Link to="/thresh/cases/new">
+                <Button className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider">
+                  Créer le premier dossier
+                </Button>
+              </Link>
             )}
           </div>
         ) : (
@@ -149,28 +124,19 @@ export default function ThreshCases() {
                         {caseItem.title}
                       </h3>
                       {caseItem.description && (
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {caseItem.description}
-                        </p>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{caseItem.description}</p>
                       )}
                       <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground/60">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {formatDistanceToNow(new Date(caseItem.updated_at), { 
-                            addSuffix: true, 
-                            locale: fr 
-                          })}
+                          {formatDistanceToNow(new Date(caseItem.updated_at), { addSuffix: true, locale: fr })}
                         </span>
                         {caseItem.domain && (
-                          <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded">
-                            {caseItem.domain}
-                          </span>
+                          <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded">{caseItem.domain}</span>
                         )}
                       </div>
                     </div>
-                    <div className="text-amber-500/40 group-hover:text-amber-500 transition-colors">
-                      →
-                    </div>
+                    <div className="text-amber-500/40 group-hover:text-amber-500 transition-colors">→</div>
                   </div>
                 </div>
               </Link>
@@ -182,16 +148,10 @@ export default function ThreshCases() {
       {/* Footer */}
       <footer className="border-t border-amber-500/20 py-6">
         <div className="max-w-4xl mx-auto px-6 flex justify-between items-center">
-          <Link 
-            to="/thresh/home" 
-            className="text-xs font-display tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <Link to="/thresh/home" className="text-xs font-display tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors">
             ← THRESH Home
           </Link>
-          <Link 
-            to="/" 
-            className="text-xs font-display tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <Link to="/" className="text-xs font-display tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors">
             Territoires
           </Link>
         </div>

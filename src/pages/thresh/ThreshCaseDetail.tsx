@@ -38,19 +38,13 @@ export default function ThreshCaseDetail() {
   const canAddThreshold = isSubscribed || caseThresholds.length < FREE_THRESHOLD_LIMIT;
 
   const handleAddThreshold = () => {
-    if (!canAddThreshold) {
-      setShowUpgrade(true);
-    } else {
-      setShowAddModal(true);
-    }
+    setShowAddModal(true);
   };
 
   if (authLoading || casesLoading || thresholdsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <span className="text-amber-500/50 font-display tracking-widest text-sm animate-pulse">
-          THRESH
-        </span>
+        <span className="text-amber-500/50 font-display tracking-widest text-sm animate-pulse">THRESH</span>
       </div>
     );
   }
@@ -60,9 +54,7 @@ export default function ThreshCaseDetail() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         <p className="text-muted-foreground mb-4">Dossier non trouvé</p>
         <Link to="/thresh/cases">
-          <Button variant="ghost" className="text-amber-500">
-            Retour aux dossiers
-          </Button>
+          <Button variant="ghost" className="text-amber-500">Retour aux dossiers</Button>
         </Link>
       </div>
     );
@@ -74,16 +66,10 @@ export default function ThreshCaseDetail() {
       <nav className="border-b border-amber-500/20">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link 
-              to="/thresh/cases" 
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <Link to="/thresh/cases" className="text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <Link 
-              to="/thresh/home" 
-              className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors"
-            >
+            <Link to="/thresh/home" className="font-display text-lg tracking-[0.15em] text-amber-500 hover:text-amber-400 transition-colors">
               THRESH
             </Link>
           </div>
@@ -96,8 +82,6 @@ export default function ThreshCaseDetail() {
                   </Button>
                 }
               />
-                Débloquer Pro
-              </Button>
             )}
           </div>
         </div>
@@ -108,13 +92,9 @@ export default function ThreshCaseDetail() {
         <div className="max-w-5xl mx-auto px-6 py-8">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
             <div className="flex-1">
-              <h1 className="font-display text-2xl md:text-3xl tracking-wide text-foreground mb-2">
-                {currentCase.title}
-              </h1>
+              <h1 className="font-display text-2xl md:text-3xl tracking-wide text-foreground mb-2">{currentCase.title}</h1>
               {currentCase.description && (
-                <p className="text-muted-foreground text-sm max-w-2xl">
-                  {currentCase.description}
-                </p>
+                <p className="text-muted-foreground text-sm max-w-2xl">{currentCase.description}</p>
               )}
               <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground/60">
                 <span>{caseThresholds.length} seuil{caseThresholds.length !== 1 ? 's' : ''}</span>
@@ -123,15 +103,14 @@ export default function ThreshCaseDetail() {
                 {!isSubscribed && (
                   <>
                     <span>•</span>
-                    <span className="text-amber-500/60">
-                      Free: {FREE_THRESHOLD_LIMIT - caseThresholds.length} seuils restants
-                    </span>
+                    <span className="text-amber-500/60">Free: {FREE_THRESHOLD_LIMIT - caseThresholds.length} seuils restants</span>
                   </>
                 )}
               </div>
             </div>
             <Button 
               onClick={handleAddThreshold}
+              disabled={!canAddThreshold}
               className="bg-amber-500 hover:bg-amber-600 text-black font-display tracking-wider"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -145,22 +124,13 @@ export default function ThreshCaseDetail() {
       <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-card/50 border border-amber-500/20 mb-8">
-            <TabsTrigger 
-              value="thresholds" 
-              className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500"
-            >
+            <TabsTrigger value="thresholds" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
               Seuils ({caseThresholds.length})
             </TabsTrigger>
-            <TabsTrigger 
-              value="timeline" 
-              className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500"
-            >
+            <TabsTrigger value="timeline" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
               Timeline
             </TabsTrigger>
-            <TabsTrigger 
-              value="exports" 
-              className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500"
-            >
+            <TabsTrigger value="exports" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-500">
               Exports
             </TabsTrigger>
           </TabsList>
@@ -185,7 +155,7 @@ export default function ThreshCaseDetail() {
               caseData={currentCase}
               thresholds={caseThresholds}
               isSubscribed={isSubscribed}
-              onUpgrade={() => setShowUpgrade(true)}
+              onUpgrade={() => {}}
             />
           </TabsContent>
         </Tabs>
@@ -194,10 +164,7 @@ export default function ThreshCaseDetail() {
       {/* Footer */}
       <footer className="border-t border-amber-500/20 py-6">
         <div className="max-w-5xl mx-auto px-6 flex justify-between items-center">
-          <Link 
-            to="/thresh/cases" 
-            className="text-xs font-display tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <Link to="/thresh/cases" className="text-xs font-display tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors">
             ← Mes dossiers
           </Link>
           <span className="text-xs font-display tracking-[0.2em] uppercase text-muted-foreground/50">
