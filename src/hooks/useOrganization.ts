@@ -24,6 +24,42 @@ export function useOrganization(orgId?: string) {
     enabled: !!orgId && !!user,
   });
 
+  return {
+    organization,
+    isLoading,
+  };
+}
+
+export function useOrganizations() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const { data: organizations = [], isLoading } = useQuery({
+    queryKey: ['organizations', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+
+      const { data: memberships, error: membershipsError } = await supabase
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', user.id);
+
+      if (membershipsError) throw membershipsError;
+      if (!memberships?.length) return [];
+
+      const orgIds = memberships.map(m => m.organization_id);
+      
+      const { data: orgs, error: orgsError } = await supabase
+        .from('organizations')
+        .select('*')
+        .in('id', orgIds);
+
+      if (orgsError) throw orgsError;
+      return orgs as Organization[];
+    },
+    enabled: !!user,
+  });
+
   const createOrganization = useMutation({
     mutationFn: async ({ name, slug, domain }: { name: string; slug: string; domain?: string }) => {
       if (!user) throw new Error('User not authenticated');
@@ -77,7 +113,6 @@ export function useOrganization(orgId?: string) {
       return data as Organization;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organization', orgId] });
       queryClient.invalidateQueries({ queryKey: ['organizations'] });
       toast.success('Organisation mise à jour');
     },
@@ -104,43 +139,11 @@ export function useOrganization(orgId?: string) {
     },
   });
 
-  return {
-    organization,
+  return { 
+    organizations, 
     isLoading,
     createOrganization,
     updateOrganization,
     deleteOrganization,
   };
-}
-
-export function useOrganizations() {
-  const { user } = useAuth();
-
-  const { data: organizations = [], isLoading } = useQuery({
-    queryKey: ['organizations', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-
-      const { data: memberships, error: membershipsError } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', user.id);
-
-      if (membershipsError) throw membershipsError;
-      if (!memberships?.length) return [];
-
-      const orgIds = memberships.map(m => m.organization_id);
-      
-      const { data: orgs, error: orgsError } = await supabase
-        .from('organizations')
-        .select('*')
-        .in('id', orgIds);
-
-      if (orgsError) throw orgsError;
-      return orgs as Organization[];
-    },
-    enabled: !!user,
-  });
-
-  return { organizations, isLoading };
 }
