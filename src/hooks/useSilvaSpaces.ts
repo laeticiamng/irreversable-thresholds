@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef } from 'react';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 export interface SilvaSpace {
   id: string;
@@ -12,21 +13,36 @@ export interface SilvaSpace {
   format_mode: 'default' | 'silence';
   created_at: string;
   updated_at: string;
+  organization_id: string | null;
 }
 
 export function useSilvaSpaces(userId: string | undefined) {
   const queryClient = useQueryClient();
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { currentOrganization, isPersonalMode } = useOrganizationContext();
 
   const { data: spaces = [], isLoading } = useQuery({
-    queryKey: ['silva_spaces', userId],
+    queryKey: ['silva_spaces', userId, currentOrganization?.id, isPersonalMode],
     queryFn: async () => {
       if (!userId) return [];
-      const { data, error } = await supabase
+      
+      let query = supabase
         .from('silva_spaces')
         .select('*')
-        .eq('user_id', userId)
         .order('created_at', { ascending: false });
+      
+      if (isPersonalMode) {
+        // Personal mode: show only user's personal spaces (no org)
+        query = query.eq('user_id', userId).is('organization_id', null);
+      } else if (currentOrganization) {
+        // Organization mode: show org spaces + user's personal spaces
+        query = query.or(`organization_id.eq.${currentOrganization.id},and(user_id.eq.${userId},organization_id.is.null)`);
+      } else {
+        // Fallback: just user's spaces
+        query = query.eq('user_id', userId);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data as SilvaSpace[];
@@ -67,6 +83,7 @@ export function useSilvaSpaces(userId: string | undefined) {
           workspace_id: workspaceId || null,
           content: '',
           format_mode: 'default',
+          organization_id: isPersonalMode ? null : currentOrganization?.id || null,
         })
         .select()
         .single();

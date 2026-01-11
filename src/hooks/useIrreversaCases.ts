@@ -6,22 +6,36 @@ import {
   ThresholdCategory, 
   Severity 
 } from '@/types/database';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 export function useIrreversaCases(userId: string | undefined) {
   const queryClient = useQueryClient();
+  const { currentOrganization, isPersonalMode } = useOrganizationContext();
 
   // Fetch all thresholds with consequences for a user
   const { data: thresholds = [], isLoading } = useQuery({
-    queryKey: ['irreversa_thresholds', userId],
+    queryKey: ['irreversa_thresholds', userId, currentOrganization?.id, isPersonalMode],
     queryFn: async () => {
       if (!userId) return [];
       
-      // Get thresholds
-      const { data: thresholdData, error: thresholdError } = await supabase
+      // Build the query based on organization context
+      let query = supabase
         .from('thresholds')
         .select('*')
-        .eq('user_id', userId)
         .order('created_at', { ascending: false });
+      
+      if (isPersonalMode) {
+        // Personal mode: show only user's personal thresholds (no org)
+        query = query.eq('user_id', userId).is('organization_id', null);
+      } else if (currentOrganization) {
+        // Organization mode: show org thresholds + user's personal thresholds
+        query = query.or(`organization_id.eq.${currentOrganization.id},and(user_id.eq.${userId},organization_id.is.null)`);
+      } else {
+        // Fallback: just user's thresholds
+        query = query.eq('user_id', userId);
+      }
+      
+      const { data: thresholdData, error: thresholdError } = await query;
       
       if (thresholdError) throw thresholdError;
       
@@ -86,6 +100,7 @@ export function useIrreversaCases(userId: string | undefined) {
           what_changes_after: whatChangesAfter || null,
           conditions: conditions || null,
           notes: notes || null,
+          organization_id: isPersonalMode ? null : currentOrganization?.id || null,
         }])
         .select()
         .single();
