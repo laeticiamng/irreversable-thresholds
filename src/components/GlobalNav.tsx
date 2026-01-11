@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { GlobalSearch } from '@/components/GlobalSearch';
+import { OrganizationSwitcher } from '@/components/org/OrganizationSwitcher';
 import { 
   LayoutDashboard, 
   Target, 
@@ -115,6 +116,9 @@ export function GlobalNav() {
 
             {/* Right side actions */}
             <div className="flex items-center gap-2">
+              {/* Organization Switcher */}
+              <OrganizationSwitcher />
+
               {/* Global Search */}
               <GlobalSearch />
 
@@ -201,6 +205,11 @@ export function GlobalNav() {
             })}
             
             <div className="pt-2 border-t border-border/30 mt-2 space-y-1">
+              {/* Organization Switcher for Mobile */}
+              <div className="px-4 py-2">
+                <OrganizationSwitcher />
+              </div>
+              
               <Link
                 to="/settings"
                 onClick={() => setMobileOpen(false)}
