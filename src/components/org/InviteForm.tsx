@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Mail, Send, X, Clock, Copy, Check } from 'lucide-react';
-import { Invitation, OrgRole, ORG_ROLE_LABELS } from '@/types/organization';
+import { OrgRole, ORG_ROLE_LABELS } from '@/types/organization';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { useInvitations } from '@/hooks/useInvitations';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,19 +15,16 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 interface InviteFormProps {
-  invitations: Invitation[];
-  onInvite: (email: string, role: OrgRole) => Promise<void>;
-  onCancel: (invitationId: string) => void;
-  onResend: (invitationId: string) => void;
-  isLoading?: boolean;
+  organizationId: string;
 }
 
-export function InviteForm({ invitations, onInvite, onCancel, onResend, isLoading }: InviteFormProps) {
-  const { currentOrganization, canManageMembers } = useOrganizationContext();
+export function InviteForm({ organizationId }: InviteFormProps) {
+  const { canManageMembers } = useOrganizationContext();
+  const { invitations, isLoading, createInvitation, cancelInvitation, resendInvitation } = useInvitations(organizationId);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<OrgRole>('member');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -35,19 +33,21 @@ export function InviteForm({ invitations, onInvite, onCancel, onResend, isLoadin
     e.preventDefault();
     if (!email.trim()) return;
 
-    try {
-      await onInvite(email.trim(), role);
-      setEmail('');
-      setRole('member');
-    } catch (error) {
-      // Error is handled in the hook
-    }
+    createInvitation.mutate(
+      { email: email.trim(), role },
+      {
+        onSuccess: () => {
+          setEmail('');
+          setRole('member');
+        },
+      }
+    );
   };
 
-  const copyInviteLink = (invitation: Invitation) => {
-    const link = `${window.location.origin}/invite/${invitation.token}`;
+  const copyInviteLink = (token: string, id: string) => {
+    const link = `${window.location.origin}/invite/${token}`;
     navigator.clipboard.writeText(link);
-    setCopiedId(invitation.id);
+    setCopiedId(id);
     toast.success('Lien copié');
     setTimeout(() => setCopiedId(null), 2000);
   };
@@ -72,7 +72,7 @@ export function InviteForm({ invitations, onInvite, onCancel, onResend, isLoadin
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10"
-                disabled={isLoading}
+                disabled={isLoading || createInvitation.isPending}
               />
             </div>
           </div>
@@ -86,7 +86,7 @@ export function InviteForm({ invitations, onInvite, onCancel, onResend, isLoadin
               <SelectItem value="viewer">{ORG_ROLE_LABELS.viewer}</SelectItem>
             </SelectContent>
           </Select>
-          <Button type="submit" disabled={isLoading || !email.trim()}>
+          <Button type="submit" disabled={isLoading || createInvitation.isPending || !email.trim()}>
             <Send className="h-4 w-4 mr-2" />
             Inviter
           </Button>
@@ -139,7 +139,7 @@ export function InviteForm({ invitations, onInvite, onCancel, onResend, isLoadin
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => copyInviteLink(invitation)}
+                      onClick={() => copyInviteLink(invitation.token, invitation.id)}
                     >
                       {copiedId === invitation.id ? (
                         <Check className="h-4 w-4 text-green-500" />
@@ -152,8 +152,8 @@ export function InviteForm({ invitations, onInvite, onCancel, onResend, isLoadin
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onResend(invitation.id)}
-                        disabled={isLoading}
+                        onClick={() => resendInvitation.mutate(invitation.id)}
+                        disabled={resendInvitation.isPending}
                       >
                         Renvoyer
                       </Button>
@@ -163,8 +163,8 @@ export function InviteForm({ invitations, onInvite, onCancel, onResend, isLoadin
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => onCancel(invitation.id)}
-                      disabled={isLoading}
+                      onClick={() => cancelInvitation.mutate(invitation.id)}
+                      disabled={cancelInvitation.isPending}
                     >
                       <X className="h-4 w-4" />
                     </Button>

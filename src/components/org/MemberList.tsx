@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { MoreHorizontal, Shield, User, Eye, Crown, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Shield, User, Eye, Crown, Trash2, Loader2 } from 'lucide-react';
 import { OrganizationMember, OrgRole, ORG_ROLE_LABELS, ORG_ROLE_COLORS } from '@/types/organization';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { useOrganizationMembers } from '@/hooks/useOrganizationMembers';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -28,10 +29,8 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 interface MemberListProps {
-  members: OrganizationMember[];
-  onUpdateRole: (memberId: string, role: OrgRole) => void;
-  onRemove: (memberId: string) => void;
-  isUpdating?: boolean;
+  organizationId: string;
+  limit?: number;
 }
 
 const ROLE_ICONS: Record<OrgRole, React.ComponentType<{ className?: string }>> = {
@@ -41,9 +40,10 @@ const ROLE_ICONS: Record<OrgRole, React.ComponentType<{ className?: string }>> =
   viewer: Eye,
 };
 
-export function MemberList({ members, onUpdateRole, onRemove, isUpdating }: MemberListProps) {
+export function MemberList({ organizationId, limit }: MemberListProps) {
   const { user } = useAuth();
   const { userRole } = useOrganizationContext();
+  const { members, isLoading, updateMemberRole, removeMember } = useOrganizationMembers(organizationId);
   const [memberToRemove, setMemberToRemove] = useState<OrganizationMember | null>(null);
 
   const canManage = userRole === 'owner' || userRole === 'admin';
@@ -51,15 +51,33 @@ export function MemberList({ members, onUpdateRole, onRemove, isUpdating }: Memb
 
   const handleRemove = () => {
     if (memberToRemove) {
-      onRemove(memberToRemove.id);
+      removeMember.mutate(memberToRemove.id);
       setMemberToRemove(null);
     }
   };
 
+  const displayMembers = limit ? members.slice(0, limit) : members;
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (members.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        Aucun membre dans cette organisation
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="space-y-2">
-        {members.map((member) => {
+        {displayMembers.map((member) => {
           const RoleIcon = ROLE_ICONS[member.role];
           const isCurrentUser = member.user_id === user?.id;
           const canEditThisMember = canManage && !isCurrentUser && (isOwner || member.role !== 'owner');
@@ -110,31 +128,31 @@ export function MemberList({ members, onUpdateRole, onRemove, isUpdating }: Memb
                 {canEditThisMember && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={isUpdating}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={updateMemberRole.isPending}>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       {isOwner && member.role !== 'owner' && (
-                        <DropdownMenuItem onClick={() => onUpdateRole(member.id, 'owner')}>
+                        <DropdownMenuItem onClick={() => updateMemberRole.mutate({ memberId: member.id, role: 'owner' })}>
                           <Crown className="h-4 w-4 mr-2" />
                           Transférer la propriété
                         </DropdownMenuItem>
                       )}
                       {member.role !== 'admin' && (
-                        <DropdownMenuItem onClick={() => onUpdateRole(member.id, 'admin')}>
+                        <DropdownMenuItem onClick={() => updateMemberRole.mutate({ memberId: member.id, role: 'admin' })}>
                           <Shield className="h-4 w-4 mr-2" />
                           Définir comme admin
                         </DropdownMenuItem>
                       )}
                       {member.role !== 'member' && (
-                        <DropdownMenuItem onClick={() => onUpdateRole(member.id, 'member')}>
+                        <DropdownMenuItem onClick={() => updateMemberRole.mutate({ memberId: member.id, role: 'member' })}>
                           <User className="h-4 w-4 mr-2" />
                           Définir comme membre
                         </DropdownMenuItem>
                       )}
                       {member.role !== 'viewer' && (
-                        <DropdownMenuItem onClick={() => onUpdateRole(member.id, 'viewer')}>
+                        <DropdownMenuItem onClick={() => updateMemberRole.mutate({ memberId: member.id, role: 'viewer' })}>
                           <Eye className="h-4 w-4 mr-2" />
                           Définir comme lecteur
                         </DropdownMenuItem>
