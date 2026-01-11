@@ -102,6 +102,9 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="absence-modal-title"
     >
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
@@ -111,10 +114,14 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border/50">
-          <h2 className="font-display text-lg sm:text-xl text-nulla">
+          <h2 id="absence-modal-title" className="font-display text-lg sm:text-xl text-nulla">
             {prefillData ? '✨ Absence pré-remplie' : 'Déclarer une absence'}
           </h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-1">
+          <button 
+            onClick={onClose} 
+            className="text-muted-foreground hover:text-foreground p-1"
+            aria-label="Fermer le formulaire"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
