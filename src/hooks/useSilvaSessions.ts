@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 export interface SilvaSession {
   id: string;
@@ -9,24 +10,39 @@ export interface SilvaSession {
   ended_at: string | null;
   duration_seconds: number | null;
   created_at: string;
+  organization_id: string | null;
 }
 
 export function useSilvaSessions(userId: string | undefined) {
   const queryClient = useQueryClient();
   const currentSessionId = useRef<string | null>(null);
   const startTime = useRef<Date | null>(null);
+  const { currentOrganization, isPersonalMode } = useOrganizationContext();
 
   // Fetch past sessions
   const { data: sessions = [], isLoading } = useQuery({
-    queryKey: ['silva_sessions', userId],
+    queryKey: ['silva_sessions', userId, currentOrganization?.id, isPersonalMode],
     queryFn: async () => {
       if (!userId) return [];
-      const { data, error } = await supabase
+      
+      let query = supabase
         .from('silva_sessions')
         .select('*')
-        .eq('user_id', userId)
         .order('started_at', { ascending: false })
         .limit(50);
+      
+      if (isPersonalMode) {
+        // Personal mode: show only user's personal sessions (no org)
+        query = query.eq('user_id', userId).is('organization_id', null);
+      } else if (currentOrganization) {
+        // Organization mode: show org sessions + user's personal sessions
+        query = query.or(`organization_id.eq.${currentOrganization.id},and(user_id.eq.${userId},organization_id.is.null)`);
+      } else {
+        // Fallback: just user's sessions
+        query = query.eq('user_id', userId);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data as SilvaSession[];
@@ -41,7 +57,10 @@ export function useSilvaSessions(userId: string | undefined) {
       
       const { data, error } = await supabase
         .from('silva_sessions')
-        .insert({ user_id: userId })
+        .insert({ 
+          user_id: userId,
+          organization_id: isPersonalMode ? null : currentOrganization?.id || null,
+        })
         .select()
         .single();
       
