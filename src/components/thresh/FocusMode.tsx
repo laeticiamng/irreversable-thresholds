@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Button } from '@/components/ui/button';
 import { Eye, Pause, Play, X, Volume2, VolumeX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -125,7 +126,11 @@ export function FocusMode({ open, onOpenChange, onComplete, caseId }: FocusModeP
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md border-amber-500/20 bg-background p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md border-amber-500/20 bg-background p-0 overflow-hidden" aria-describedby={undefined}>
+        <VisuallyHidden>
+          <DialogTitle>Mode Focus</DialogTitle>
+          <DialogDescription>Session de concentration avec timer</DialogDescription>
+        </VisuallyHidden>
         <div className="relative min-h-[400px] flex flex-col items-center justify-center p-8">
           {/* Background gradient based on progress */}
           <div 
