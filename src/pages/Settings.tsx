@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { useGuidedTour } from '@/components/onboarding/GuidedTour';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,7 +34,8 @@ import {
   Mail,
   Compass,
   Database,
-  Tag
+  Tag,
+  RotateCcw
 } from 'lucide-react';
 
 export default function Settings() {
@@ -41,6 +43,7 @@ export default function Settings() {
   const { user, loading: authLoading } = useAuth();
   const { profile, updateProfile } = useProfile(user?.id);
   const { preferences, isLoading: prefsLoading, ensurePreferences, updatePreferences } = useUserPreferences(user?.id);
+  const { resetTour, startTour, hasCompletedTour } = useGuidedTour();
   const { theme, setTheme } = useTheme();
 
   const [displayName, setDisplayName] = useState('');
@@ -364,6 +367,29 @@ export default function Settings() {
                 <SelectItem value="silva">SILVA</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Guided Tour Reset */}
+          <div className="flex items-center justify-between pt-4 border-t border-border/30">
+            <div className="space-y-1">
+              <Label className="text-sm flex items-center gap-2">
+                <RotateCcw className="w-4 h-4" />
+                Tour guidé
+              </Label>
+              <p className="text-xs text-muted-foreground">Revoir la présentation des modules</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                resetTour();
+                navigate('/dashboard');
+                setTimeout(() => startTour(), 500);
+                toast.success('Tour guidé relancé');
+              }}
+            >
+              Relancer le tour
+            </Button>
           </div>
         </section>
 
