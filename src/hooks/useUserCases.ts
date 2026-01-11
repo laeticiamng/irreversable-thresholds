@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Case, ModuleType } from '@/types/database';
 import { toast } from 'sonner';
 import type { Json } from '@/integrations/supabase/types';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 /**
  * Hook for fetching cases by user ID (across all workspaces)
@@ -10,16 +11,30 @@ import type { Json } from '@/integrations/supabase/types';
  */
 export function useUserCases(userId: string | undefined) {
   const queryClient = useQueryClient();
+  const { currentOrganization, isPersonalMode } = useOrganizationContext();
 
   const { data: cases = [], isLoading } = useQuery({
-    queryKey: ['user_cases', userId],
+    queryKey: ['user_cases', userId, currentOrganization?.id, isPersonalMode],
     queryFn: async () => {
       if (!userId) return [];
-      const { data, error } = await supabase
+      
+      let query = supabase
         .from('cases')
         .select('*')
-        .eq('user_id', userId)
         .order('created_at', { ascending: false });
+      
+      if (isPersonalMode) {
+        // Personal mode: show only user's personal cases (no org)
+        query = query.eq('user_id', userId).is('organization_id', null);
+      } else if (currentOrganization) {
+        // Organization mode: show org cases + user's personal cases
+        query = query.or(`organization_id.eq.${currentOrganization.id},and(user_id.eq.${userId},organization_id.is.null)`);
+      } else {
+        // Fallback: just user's cases
+        query = query.eq('user_id', userId);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data as Case[];
@@ -118,6 +133,7 @@ export function useUserCases(userId: string | undefined) {
           user_id: userId,
           workspace_id: workspaces.id,
           status: 'active',
+          organization_id: isPersonalMode ? null : currentOrganization?.id || null,
         }])
         .select()
         .single();

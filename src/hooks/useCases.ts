@@ -1,20 +1,32 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Case, Signal, SignalType } from '@/types/database';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 export function useCases(workspaceId: string | undefined) {
   const queryClient = useQueryClient();
+  const { currentOrganization, isPersonalMode } = useOrganizationContext();
 
-  // Fetch all cases in workspace
+  // Fetch all cases in workspace (filtered by organization if applicable)
   const { data: cases = [], isLoading } = useQuery({
-    queryKey: ['cases', workspaceId],
+    queryKey: ['cases', workspaceId, currentOrganization?.id, isPersonalMode],
     queryFn: async () => {
       if (!workspaceId) return [];
-      const { data, error } = await supabase
+      
+      let query = supabase
         .from('cases')
         .select('*')
         .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false });
+      
+      // Apply organization filter
+      if (isPersonalMode) {
+        query = query.is('organization_id', null);
+      } else if (currentOrganization) {
+        query = query.or(`organization_id.eq.${currentOrganization.id},organization_id.is.null`);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data as Case[];
@@ -46,6 +58,7 @@ export function useCases(workspaceId: string | undefined) {
           workspace_id: workspaceId,
           user_id: user.id,
           template_id: templateId || null,
+          organization_id: isPersonalMode ? null : currentOrganization?.id || null,
         }])
         .select()
         .single();
