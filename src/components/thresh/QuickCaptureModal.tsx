@@ -249,12 +249,12 @@ export function QuickCaptureModal({ open, onOpenChange, cases, onAdd, isSubscrib
             <Label className="text-foreground">
               Associer à un dossier <span className="text-muted-foreground text-xs">(optionnel)</span>
             </Label>
-            <Select value={selectedCaseId} onValueChange={setSelectedCaseId}>
+            <Select value={selectedCaseId || "none"} onValueChange={(val) => setSelectedCaseId(val === "none" ? "" : val)}>
               <SelectTrigger className="bg-card/50 border-amber-500/20">
                 <SelectValue placeholder="Aucun dossier" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Aucun dossier</SelectItem>
+                <SelectItem value="none">Aucun dossier</SelectItem>
                 {threshCases.map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>
                 ))}
