@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
+import { OrganizationProvider } from "@/contexts/OrganizationContext";
 
 // Eagerly loaded pages (critical path)
 import Index from "./pages/Index";
@@ -60,6 +61,16 @@ const ThreshModule = lazy(() => import("./pages/ThreshModule"));
 
 // Dashboard pages (lazy)
 const StatsComparison = lazy(() => import("./pages/dashboard/StatsComparison"));
+
+// Organization pages (lazy)
+const CreateOrganization = lazy(() => import("./pages/org/CreateOrganization"));
+const OrgDashboard = lazy(() => import("./pages/org/OrgDashboard"));
+const OrgMembers = lazy(() => import("./pages/org/OrgMembers"));
+const OrgTeams = lazy(() => import("./pages/org/OrgTeams"));
+const OrgSettings = lazy(() => import("./pages/org/OrgSettings"));
+
+// Invitation page (lazy)
+const AcceptInvitation = lazy(() => import("./pages/invite/AcceptInvitation"));
 
 // Unified case creation (lazy)
 const CreateCase = lazy(() => import("./pages/CreateCase"));
@@ -145,6 +156,16 @@ function AnimatedRoutes() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/account" element={<Account />} />
             
+            {/* Organization routes */}
+            <Route path="/org/new" element={<CreateOrganization />} />
+            <Route path="/org/:orgSlug" element={<OrgDashboard />} />
+            <Route path="/org/:orgSlug/members" element={<OrgMembers />} />
+            <Route path="/org/:orgSlug/teams" element={<OrgTeams />} />
+            <Route path="/org/:orgSlug/settings" element={<OrgSettings />} />
+            
+            {/* Invitation acceptance */}
+            <Route path="/invite/:token" element={<AcceptInvitation />} />
+            
             {/* Legacy redirects */}
             <Route path="/pending" element={<IrreversaCases />} />
             <Route path="/archive" element={<IrreversaCases />} />
@@ -168,8 +189,10 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <OfflineIndicator />
-            <AnimatedRoutes />
+            <OrganizationProvider>
+              <OfflineIndicator />
+              <AnimatedRoutes />
+            </OrganizationProvider>
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
