@@ -7,6 +7,7 @@ import { useSilvaSpaces } from '@/hooks/useSilvaSpaces';
 import { useSilvaSessions } from '@/hooks/useSilvaSessions';
 import { GlobalNav } from '@/components/GlobalNav';
 import { UpgradeModal } from '@/components/UpgradeModal';
+import { SessionsChart } from '@/components/silva/SessionsChart';
 import { Leaf, Moon, FileText, HelpCircle, Clock, Timer, Activity } from 'lucide-react';
 
 export default function SilvaHome() {
@@ -95,6 +96,13 @@ export default function SilvaHome() {
                 </div>
                 <p className="text-[10px] text-foreground/25">Durée moyenne</p>
               </div>
+            </div>
+          )}
+
+          {/* Sessions Chart */}
+          {user && sessions.length > 0 && (
+            <div className="mb-12 max-w-md mx-auto">
+              <SessionsChart sessions={sessions} />
             </div>
           )}
 
