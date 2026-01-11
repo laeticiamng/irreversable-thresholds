@@ -2,19 +2,34 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Threshold } from '@/types/database';
 import { notifyThresholdCrossed } from '@/lib/notifications';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 export function useThresholdsDB(userId: string | undefined) {
   const queryClient = useQueryClient();
+  const { currentOrganization, isPersonalMode } = useOrganizationContext();
 
   const { data: thresholds = [], isLoading } = useQuery({
-    queryKey: ['thresholds', userId],
+    queryKey: ['thresholds', userId, currentOrganization?.id, isPersonalMode],
     queryFn: async () => {
       if (!userId) return [];
-      const { data, error } = await supabase
+      
+      let query = supabase
         .from('thresholds')
         .select('*')
-        .eq('user_id', userId)
         .order('created_at', { ascending: false });
+      
+      if (isPersonalMode) {
+        // Personal mode: show only user's personal thresholds (no org)
+        query = query.eq('user_id', userId).is('organization_id', null);
+      } else if (currentOrganization) {
+        // Organization mode: show org thresholds + user's personal thresholds
+        query = query.or(`organization_id.eq.${currentOrganization.id},and(user_id.eq.${userId},organization_id.is.null)`);
+      } else {
+        // Fallback: just user's thresholds
+        query = query.eq('user_id', userId);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data as Threshold[];
@@ -27,7 +42,12 @@ export function useThresholdsDB(userId: string | undefined) {
       if (!userId) throw new Error('User not authenticated');
       const { data, error } = await supabase
         .from('thresholds')
-        .insert({ user_id: userId, title, description })
+        .insert({ 
+          user_id: userId, 
+          title, 
+          description,
+          organization_id: isPersonalMode ? null : currentOrganization?.id || null,
+        })
         .select()
         .single();
       

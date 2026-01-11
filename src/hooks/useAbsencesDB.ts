@@ -1,26 +1,42 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Absence, AbsenceEffect } from '@/types/database';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 export function useAbsencesDB(userId: string | undefined) {
   const queryClient = useQueryClient();
+  const { currentOrganization, isPersonalMode } = useOrganizationContext();
 
   const { data: absences = [], isLoading } = useQuery({
-    queryKey: ['absences', userId],
+    queryKey: ['absences', userId, currentOrganization?.id, isPersonalMode],
     queryFn: async () => {
       if (!userId) return [];
       
-      // Fetch absences
-      const { data: absencesData, error: absencesError } = await supabase
+      // Build the query based on organization context
+      let query = supabase
         .from('absences')
         .select('*')
-        .eq('user_id', userId)
         .order('created_at', { ascending: false });
+      
+      if (isPersonalMode) {
+        // Personal mode: show only user's personal absences (no org)
+        query = query.eq('user_id', userId).is('organization_id', null);
+      } else if (currentOrganization) {
+        // Organization mode: show org absences + user's personal absences
+        query = query.or(`organization_id.eq.${currentOrganization.id},and(user_id.eq.${userId},organization_id.is.null)`);
+      } else {
+        // Fallback: just user's absences
+        query = query.eq('user_id', userId);
+      }
+      
+      const { data: absencesData, error: absencesError } = await query;
       
       if (absencesError) throw absencesError;
 
       // Fetch effects for all absences
       const absenceIds = absencesData.map(a => a.id);
+      if (absenceIds.length === 0) return [];
+      
       const { data: effectsData, error: effectsError } = await supabase
         .from('absence_effects')
         .select('*')
@@ -67,6 +83,7 @@ export function useAbsencesDB(userId: string | undefined) {
           impact_level: impactLevel,
           counterfactual: counterfactual || null,
           evidence_needed: evidenceNeeded || null,
+          organization_id: isPersonalMode ? null : currentOrganization?.id || null,
         })
         .select()
         .single();
