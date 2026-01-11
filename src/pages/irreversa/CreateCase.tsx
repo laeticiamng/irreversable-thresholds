@@ -44,7 +44,7 @@ export default function CreateCase() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/exposition');
+      navigate('/auth');
     }
   }, [user, authLoading, navigate]);
 
@@ -84,11 +84,28 @@ export default function CreateCase() {
     }
   };
 
-  if (authLoading || !workspaceId) {
+  // Show loading only during auth check
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <span className="text-primary/50 font-display tracking-widest text-sm animate-pulse">
           IRREVERSA
+        </span>
+      </div>
+    );
+  }
+
+  // Redirect if not authenticated
+  if (!user) {
+    return null;
+  }
+
+  // Show loading while workspace initializes
+  if (!workspaceId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <span className="text-primary/50 font-display tracking-widest text-sm animate-pulse">
+          Préparation...
         </span>
       </div>
     );
