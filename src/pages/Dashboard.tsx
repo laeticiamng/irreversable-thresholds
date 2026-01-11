@@ -14,6 +14,7 @@ import { StatsCharts } from '@/components/dashboard/StatsCharts';
 import { CalendarView } from '@/components/dashboard/CalendarView';
 import { AdvancedAnalytics } from '@/components/dashboard/AdvancedAnalytics';
 import { AnalyticsExport } from '@/components/dashboard/AnalyticsExport';
+import { DashboardPDFExport } from '@/components/dashboard/DashboardPDFExport';
 import { EnhancedStats } from '@/components/dashboard/EnhancedStats';
 import { GuidedTour, useGuidedTour } from '@/components/onboarding/GuidedTour';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -150,7 +151,7 @@ export default function Dashboard() {
       <main className="pt-20 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
           
-          {/* Title + New Case Button */}
+          {/* Title + Actions */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
             <div className="text-center md:text-left space-y-2">
               <h1 className="font-display text-2xl md:text-3xl tracking-widest text-foreground/80">
@@ -160,12 +161,23 @@ export default function Dashboard() {
                 Vue centralisée de ta suite de lucidité.
               </p>
             </div>
-            <Link to="/cases/new">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-display tracking-wider">
-                <Plus className="w-4 h-4 mr-2" />
-                Nouveau dossier
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <DashboardPDFExport
+                cases={cases as Case[]}
+                thresholds={irreversaThresholds}
+                invisibleThresholds={threshThresholds}
+                absences={absences}
+                silvaSpacesCount={silvaSpaces.length}
+                isSubscribed={isSubscribed}
+                userEmail={user?.email}
+              />
+              <Link to="/cases/new">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-display tracking-wider">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nouveau dossier
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Subscription Status Card */}
