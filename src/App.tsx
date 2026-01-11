@@ -58,6 +58,9 @@ const SilvaSpaces = lazy(() => import("./pages/silva/SilvaSpaces"));
 const NullaModule = lazy(() => import("./pages/NullaModule"));
 const ThreshModule = lazy(() => import("./pages/ThreshModule"));
 
+// Dashboard pages (lazy)
+const StatsComparison = lazy(() => import("./pages/dashboard/StatsComparison"));
+
 // Unified case creation (lazy)
 const CreateCase = lazy(() => import("./pages/CreateCase"));
 
@@ -138,6 +141,7 @@ function AnimatedRoutes() {
             
             {/* Dashboard, Settings & Account */}
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/comparison" element={<StatsComparison />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/account" element={<Account />} />
             

@@ -162,6 +162,12 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <Link to="/dashboard/comparison">
+                <Button variant="outline" className="font-display tracking-wider">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Comparer
+                </Button>
+              </Link>
               <DashboardPDFExport
                 cases={cases as Case[]}
                 thresholds={irreversaThresholds}
