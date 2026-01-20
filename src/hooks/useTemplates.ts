@@ -2,6 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Template, ModuleType } from '@/types/database';
 import { toast } from 'sonner';
+import type { Json } from '@/integrations/supabase/types';
 
 export function useTemplates(module?: ModuleType) {
   const queryClient = useQueryClient();
@@ -45,14 +46,14 @@ export function useTemplates(module?: ModuleType) {
 
       const { data, error } = await supabase
         .from('templates')
-        .insert({
+        .insert([{
           name,
           slug,
           description,
           module: templateModule,
           is_premium: isPremium,
-          structure,
-        })
+          structure: structure as Json,
+        }])
         .select()
         .single();
 
@@ -95,7 +96,7 @@ export function useTemplates(module?: ModuleType) {
       if (description !== undefined) updates.description = description;
       if (templateModule !== undefined) updates.module = templateModule;
       if (isPremium !== undefined) updates.is_premium = isPremium;
-      if (structure !== undefined) updates.structure = structure;
+      if (structure !== undefined) updates.structure = structure as Json;
 
       const { data, error } = await supabase
         .from('templates')
@@ -146,14 +147,14 @@ export function useTemplates(module?: ModuleType) {
 
       const { data, error } = await supabase
         .from('templates')
-        .insert({
+        .insert([{
           name: `${template.name} (copie)`,
           slug,
           description: template.description,
           module: template.module,
           is_premium: template.is_premium,
-          structure: template.structure,
-        })
+          structure: template.structure as Json,
+        }])
         .select()
         .single();
 
