@@ -32,12 +32,14 @@ export default function CaseDetail() {
   const { caseId } = useParams<{ caseId: string }>();
   const navigate = useNavigate();
   const { user, loading: authLoading, isSubscribed } = useAuth();
-  const { 
-    thresholds, 
-    isLoading, 
+  const {
+    thresholds,
+    isLoading,
     getThresholdsByCase,
     crossThreshold,
+    uncrossThreshold,
     addConsequence,
+    deleteConsequence,
     deleteThreshold,
     updateThreshold,
   } = useIrreversaCases(user?.id);
@@ -224,9 +226,10 @@ export default function CaseDetail() {
         )}
 
         {activeTab === 'consequences' && (
-          <ConsequencesView 
-            thresholds={caseThresholds} 
+          <ConsequencesView
+            thresholds={caseThresholds}
             onAddConsequence={addConsequence.mutateAsync}
+            onDeleteConsequence={deleteConsequence.mutateAsync}
           />
         )}
 
@@ -242,10 +245,11 @@ export default function CaseDetail() {
         )}
 
         {activeTab === 'exports' && (
-          <ExportsTab 
+          <ExportsTab
             thresholds={caseThresholds}
             canExport={canExport}
             isPro={isPro}
+            caseData={currentCase}
           />
         )}
 

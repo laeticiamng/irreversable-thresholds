@@ -26,7 +26,15 @@ export default function ThreshHome() {
   const [activeTab, setActiveTab] = useState('timeline');
 
   const canAddEntry = isSubscribed || thresholds.length < FREE_ENTRY_LIMIT;
-  
+
+  // Map thresholds to ensure required fields have default values
+  const threshEntries = thresholds.map(t => ({
+    ...t,
+    tags: t.tags || [],
+    intensity: t.intensity ?? 3,
+    context: t.context || undefined,
+  }));
+
   // Filter THRESH cases
   const threshCases = cases.filter(c => {
     const meta = c.metadata as Record<string, unknown> | null;
@@ -106,14 +114,14 @@ export default function ThreshHome() {
             </TabsList>
 
             <TabsContent value="timeline">
-              <ThreshTimeline entries={thresholds as any} isSubscribed={isSubscribed} onDelete={(id) => deleteThreshold.mutate(id)} />
+              <ThreshTimeline entries={threshEntries} isSubscribed={isSubscribed} onDelete={(id) => deleteThreshold.mutate(id)} />
             </TabsContent>
             <TabsContent value="patterns">
-              <ThreshPatterns entries={thresholds as any} isSubscribed={isSubscribed} />
+              <ThreshPatterns entries={threshEntries} isSubscribed={isSubscribed} />
             </TabsContent>
             <TabsContent value="advanced">
               {isSubscribed ? (
-                <ThreshAdvancedPatterns entries={thresholds as any} />
+                <ThreshAdvancedPatterns entries={threshEntries} />
               ) : (
                 <div className="text-center py-12 border border-amber-500/20 bg-card/30">
                   <Activity className="w-8 h-8 text-amber-500/50 mx-auto mb-4" />
@@ -124,7 +132,7 @@ export default function ThreshHome() {
               )}
             </TabsContent>
             <TabsContent value="synthesis">
-              <ThreshSynthesis entries={thresholds as any} isSubscribed={isSubscribed} />
+              <ThreshSynthesis entries={threshEntries} isSubscribed={isSubscribed} />
             </TabsContent>
           </Tabs>
         </main>

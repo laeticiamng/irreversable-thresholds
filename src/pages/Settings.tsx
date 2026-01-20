@@ -74,9 +74,9 @@ export default function Settings() {
   // Sync local state with preferences
   useEffect(() => {
     if (preferences) {
-      setDisplayDensity(preferences.display_density as any);
+      setDisplayDensity(preferences.display_density);
       setShowAnimations(preferences.show_animations);
-      setDefaultModule(preferences.default_module as any);
+      setDefaultModule(preferences.default_module);
       setNotificationsEnabled(preferences.notifications_enabled);
       setEmailNotifications(preferences.email_notifications);
       setSoundEnabled(preferences.sound_enabled);
