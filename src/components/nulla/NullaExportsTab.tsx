@@ -1,35 +1,44 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Absence } from '@/types/database';
+import { Absence, Case } from '@/types/database';
 import { UpgradeModal } from '@/components/UpgradeModal';
-import { Loader2, FileDown, Image, FileJson, Lock } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { generatePDFReport, downloadHTMLReport } from '@/components/exports/PDFExportGenerator';
+import { Loader2, FileDown, FileText, FileJson, Lock } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface NullaExportsTabProps {
   absences: Absence[];
   canExport: boolean;
   isPro: boolean;
+  caseData?: Case;
 }
 
-export function NullaExportsTab({ absences, canExport, isPro }: NullaExportsTabProps) {
+export function NullaExportsTab({ absences, canExport, isPro, caseData }: NullaExportsTabProps) {
   const [exporting, setExporting] = useState<string | null>(null);
-  const { toast } = useToast();
+
+  const criticalCount = absences.filter(a => a.impact_level === 'high').length;
+  const totalEffects = absences.reduce((sum, a) => sum + (a.effects?.length || 0), 0);
 
   const handleExportJSON = async () => {
     if (!canExport) return;
-    
+
     setExporting('json');
     try {
       const exportData = {
         module: 'NULLA',
         exported_at: new Date().toISOString(),
+        case: caseData ? {
+          id: caseData.id,
+          title: caseData.title,
+          description: caseData.description,
+        } : null,
         absences: absences.map(a => ({
           title: a.title,
           description: a.description,
-          category: (a as any).category,
-          impact_level: (a as any).impact_level,
-          counterfactual: (a as any).counterfactual,
-          evidence_needed: (a as any).evidence_needed,
+          category: a.category,
+          impact_level: a.impact_level,
+          counterfactual: a.counterfactual,
+          evidence_needed: a.evidence_needed,
           effects: a.effects?.map(e => ({
             type: e.effect_type,
             description: e.description,
@@ -37,8 +46,8 @@ export function NullaExportsTab({ absences, canExport, isPro }: NullaExportsTabP
         })),
         summary: {
           total_absences: absences.length,
-          critical_count: absences.filter(a => (a as any).impact_level === 'high').length,
-          total_effects: absences.reduce((sum, a) => sum + (a.effects?.length || 0), 0),
+          critical_count: criticalCount,
+          total_effects: totalEffects,
         },
       };
 
@@ -50,75 +59,45 @@ export function NullaExportsTab({ absences, canExport, isPro }: NullaExportsTabP
       link.click();
       URL.revokeObjectURL(url);
 
-      toast({
-        title: "Export réussi",
-        description: "Le fichier JSON a été téléchargé.",
-      });
+      toast.success('Export JSON téléchargé');
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de générer l'export.",
-        variant: "destructive",
-      });
+      toast.error('Impossible de générer l\'export');
     } finally {
       setExporting(null);
     }
   };
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = () => {
     if (!canExport) return;
-    
+
     setExporting('pdf');
     try {
-      // Generate markdown content for PDF
-      let content = `# Rapport NULLA\n\n`;
-      content += `**Date:** ${new Date().toLocaleDateString('fr-FR')}\n\n`;
-      content += `**Total absences:** ${absences.length}\n`;
-      content += `**Absences critiques:** ${absences.filter(a => (a as any).impact_level === 'high').length}\n\n`;
-      
-      content += `---\n\n## Absences critiques\n\n`;
-      absences
-        .filter(a => (a as any).impact_level === 'high')
-        .forEach(a => {
-          content += `### ${a.title}\n`;
-          if (a.effects && a.effects.length > 0) {
-            content += `→ ${a.effects[0].description}\n`;
-          }
-          content += `\n`;
-        });
-
-      content += `---\n\n## Toutes les absences\n\n`;
-      absences.forEach(a => {
-        content += `### ${a.title}\n`;
-        content += `- **Catégorie:** ${(a as any).category || 'Autre'}\n`;
-        content += `- **Impact:** ${(a as any).impact_level || 'Modéré'}\n`;
-        if (a.effects && a.effects.length > 0) {
-          content += `- **Effets:**\n`;
-          a.effects.forEach(e => {
-            content += `  - ${e.effect_type}: ${e.description}\n`;
-          });
-        }
-        content += `\n`;
+      generatePDFReport({
+        module: 'nulla',
+        caseData,
+        absences,
       });
-
-      const blob = new Blob([content], { type: 'text/markdown' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `nulla-rapport-${new Date().toISOString().split('T')[0]}.md`;
-      link.click();
-      URL.revokeObjectURL(url);
-
-      toast({
-        title: "Export réussi",
-        description: "Le rapport a été téléchargé (format Markdown).",
-      });
+      toast.success('Rapport PDF ouvert pour impression');
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de générer l'export.",
-        variant: "destructive",
+      toast.error('Impossible de générer le PDF');
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const handleDownloadHTML = () => {
+    if (!canExport) return;
+
+    setExporting('html');
+    try {
+      downloadHTMLReport({
+        module: 'nulla',
+        caseData,
+        absences,
       });
+      toast.success('Rapport HTML téléchargé');
+    } catch (error) {
+      toast.error('Impossible de générer le HTML');
     } finally {
       setExporting(null);
     }
@@ -128,23 +107,23 @@ export function NullaExportsTab({ absences, canExport, isPro }: NullaExportsTabP
     {
       id: 'pdf',
       title: 'Rapport PDF',
-      description: 'Rapport complet avec absences critiques et synthèse par catégorie',
+      description: 'Rapport complet avec absences critiques et synthèse. Prêt à imprimer.',
       icon: FileDown,
       action: handleExportPDF,
       premium: true,
     },
     {
-      id: 'png',
-      title: 'PNG Matrice',
-      description: 'Image de la matrice Absence → Effet',
-      icon: Image,
-      action: () => toast({ title: "Bientôt disponible", description: "Export PNG en cours de développement." }),
+      id: 'html',
+      title: 'Rapport HTML',
+      description: 'Version web du rapport, idéale pour partage et archivage.',
+      icon: FileText,
+      action: handleDownloadHTML,
       premium: true,
     },
     {
       id: 'json',
       title: 'JSON Data',
-      description: 'Export brut des données pour intégration',
+      description: 'Export brut des données pour intégration technique.',
       icon: FileJson,
       action: handleExportJSON,
       premium: true,
@@ -166,15 +145,15 @@ export function NullaExportsTab({ absences, canExport, isPro }: NullaExportsTabP
         {exports.map((exp) => {
           const isLocked = exp.premium && !isPro;
           const isLoading = exporting === exp.id;
-          
+
           return (
-            <div 
+            <div
               key={exp.id}
               className={`p-6 border ${isLocked ? 'border-border/30' : 'border-nulla/20'} bg-card/30 relative`}
             >
               {isLocked && (
                 <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
-                  <UpgradeModal 
+                  <UpgradeModal
                     trigger={
                       <Button variant="ghost" className="text-nulla border border-nulla/30">
                         <Lock className="w-4 h-4 mr-2" />
@@ -184,12 +163,12 @@ export function NullaExportsTab({ absences, canExport, isPro }: NullaExportsTabP
                   />
                 </div>
               )}
-              
+
               <div className={isLocked ? 'opacity-50' : ''}>
                 <exp.icon className="w-8 h-8 text-nulla mb-4" />
                 <h3 className="font-display text-foreground mb-2">{exp.title}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{exp.description}</p>
-                <Button 
+                <Button
                   onClick={exp.action}
                   disabled={isLocked || isLoading}
                   variant="outline"
@@ -210,14 +189,39 @@ export function NullaExportsTab({ absences, canExport, isPro }: NullaExportsTabP
         })}
       </div>
 
-      {/* Summary */}
-      <div className="p-6 border border-border/30 bg-card/20 text-center">
-        <p className="text-sm text-muted-foreground">
-          {absences.length} absence{absences.length !== 1 ? 's' : ''} · 
-          {' '}{absences.filter(a => (a as any).impact_level === 'high').length} critique{absences.filter(a => (a as any).impact_level === 'high').length !== 1 ? 's' : ''} · 
-          {' '}{absences.reduce((sum, a) => sum + (a.effects?.length || 0), 0)} effet{absences.reduce((sum, a) => sum + (a.effects?.length || 0), 0) !== 1 ? 's' : ''}
-        </p>
+      {/* Summary stats */}
+      <div className="p-6 border border-border/30 bg-card/20">
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <span className="block text-2xl font-display text-nulla">{absences.length}</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wide">Absences</span>
+          </div>
+          <div>
+            <span className="block text-2xl font-display text-red-500">{criticalCount}</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wide">Critiques</span>
+          </div>
+          <div>
+            <span className="block text-2xl font-display text-foreground">{totalEffects}</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wide">Effets</span>
+          </div>
+        </div>
       </div>
+
+      {/* Upgrade prompt */}
+      {!isPro && (
+        <div className="p-6 border border-nulla/30 bg-nulla/5 text-center">
+          <p className="text-sm text-muted-foreground mb-3">
+            Passez Pro pour débloquer les exports et conserver vos analyses.
+          </p>
+          <UpgradeModal
+            trigger={
+              <Button className="bg-nulla text-primary-foreground hover:bg-nulla/90">
+                Débloquer Pro
+              </Button>
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }

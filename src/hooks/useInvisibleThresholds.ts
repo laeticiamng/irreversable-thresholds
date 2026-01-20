@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { InvisibleThreshold, ThreshType } from '@/types/database';
 import { notifyThresholdSensed } from '@/lib/notifications';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { toast } from 'sonner';
 
 export function useInvisibleThresholds(userId: string | undefined) {
   const queryClient = useQueryClient();
@@ -77,6 +78,10 @@ export function useInvisibleThresholds(userId: string | undefined) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invisible_thresholds', userId] });
+      toast.success('Seuil créé avec succès');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur lors de la création: ${error.message}`);
     },
   });
 
@@ -101,6 +106,28 @@ export function useInvisibleThresholds(userId: string | undefined) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invisible_thresholds', userId] });
+      toast.success('Seuil marqué comme ressenti');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
+    },
+  });
+
+  const unmarkAsSensed = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('invisible_thresholds')
+        .update({ sensed_at: null })
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invisible_thresholds', userId] });
+      toast.success('Seuil remis en latent');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -110,11 +137,15 @@ export function useInvisibleThresholds(userId: string | undefined) {
         .from('invisible_thresholds')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invisible_thresholds', userId] });
+      toast.success('Seuil supprimé');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -148,25 +179,50 @@ export function useInvisibleThresholds(userId: string | undefined) {
         .from('invisible_thresholds')
         .update(updates)
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invisible_thresholds', userId] });
+      toast.success('Seuil mis à jour');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
+  // Helper functions
   const getPendingThresholds = () => thresholds.filter(t => !t.sensed_at);
   const getSensedThresholds = () => thresholds.filter(t => t.sensed_at);
+  const getThresholdsByCase = (caseId: string) => thresholds.filter(t => t.case_id === caseId);
+
+  const getStatistics = () => ({
+    total: thresholds.length,
+    sensed: thresholds.filter(t => t.sensed_at).length,
+    pending: thresholds.filter(t => !t.sensed_at).length,
+    byType: Object.entries(
+      thresholds.reduce((acc, t) => {
+        const type = t.thresh_type || 'evidence';
+        acc[type] = (acc[type] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ),
+    averageIntensity: thresholds.filter(t => t.intensity).length > 0
+      ? thresholds.reduce((sum, t) => sum + (t.intensity || 0), 0) / thresholds.filter(t => t.intensity).length
+      : 0,
+  });
 
   return {
     thresholds,
     isLoading,
     addThreshold,
     markAsSensed,
+    unmarkAsSensed,
     deleteThreshold,
     updateThreshold,
     getPendingThresholds,
     getSensedThresholds,
+    getThresholdsByCase,
+    getStatistics,
   };
 }

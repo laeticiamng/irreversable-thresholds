@@ -54,7 +54,7 @@ export default function Exposition() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent, isSignUp: boolean) => {
+  const handleSubmit = async (e: { preventDefault: () => void }, isSignUp: boolean) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -220,7 +220,7 @@ export default function Exposition() {
                   </button>
                   <button
                     type="button"
-                    onClick={(e) => handleSubmit(e as any, true)}
+                    onClick={(e) => handleSubmit(e, true)}
                     disabled={loading}
                     className="w-full py-3 border border-border text-muted-foreground font-body text-sm hover:border-foreground hover:text-foreground transition-colors disabled:opacity-50"
                   >

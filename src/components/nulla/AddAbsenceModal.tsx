@@ -65,11 +65,11 @@ export function AddAbsenceModal({ caseId, onClose, onSubmit, prefillData }: AddA
     }
   }, [prefillData]);
 
-  const handleTemplateSelect = (template: any) => {
-    const structure = template.structure as any;
-    if (structure.category) setCategory(structure.category);
-    if (structure.example_title) setTitle(structure.example_title);
-    if (structure.example_effect) setEffect(structure.example_effect);
+  const handleTemplateSelect = (template: { structure: Record<string, unknown> }) => {
+    const structure = template.structure;
+    if (typeof structure.category === 'string') setCategory(structure.category);
+    if (typeof structure.example_title === 'string') setTitle(structure.example_title);
+    if (typeof structure.example_effect === 'string') setEffect(structure.example_effect);
     setShowTemplates(false);
   };
 

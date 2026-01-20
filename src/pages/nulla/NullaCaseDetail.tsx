@@ -12,6 +12,7 @@ import { VulnerabilityMap } from '@/components/nulla/VulnerabilityMap';
 import { AbsencesList } from '@/components/nulla/AbsencesList';
 import { NullaExportsTab } from '@/components/nulla/NullaExportsTab';
 import { AddAbsenceModal } from '@/components/nulla/AddAbsenceModal';
+import { AddEffectModal } from '@/components/nulla/AddEffectModal';
 import { SilvaCaseTab } from '@/components/silva/SilvaCaseTab';
 import { AIAssistButton } from '@/components/ai/AIAssistButton';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
@@ -22,6 +23,7 @@ import { CaseTeamAssignment } from '@/components/teams/CaseTeamAssignment';
 import { useAIFormPrefill, type NullaFormData } from '@/hooks/useAIFormPrefill';
 import { Leaf, Folder } from 'lucide-react';
 import type { AIProposal } from '@/hooks/useAIAssist';
+import type { Absence } from '@/types/database';
 
 type TabType = 'matrix' | 'map' | 'absences' | 'exports' | 'silva';
 
@@ -34,7 +36,7 @@ export default function NullaCaseDetail() {
   const { caseId } = useParams<{ caseId: string }>();
   const navigate = useNavigate();
   const { user, loading: authLoading, isSubscribed } = useAuth();
-  const { absences, isLoading, addAbsence, addEffect, deleteAbsence, updateAbsence } = useAbsencesDB(user?.id);
+  const { absences, isLoading, addAbsence, addEffect, deleteEffect, deleteAbsence, updateAbsence } = useAbsencesDB(user?.id);
   const { cases } = useUserCases(user?.id);
   const { plan, canExport, isPro } = useSubscription(user?.id);
 
@@ -43,6 +45,7 @@ export default function NullaCaseDetail() {
 
   const [activeTab, setActiveTab] = useState<TabType>('matrix');
   const [showAddAbsence, setShowAddAbsence] = useState(false);
+  const [showAddEffect, setShowAddEffect] = useState<Absence | null>(null);
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showAIHistory, setShowAIHistory] = useState(false);
 
@@ -84,7 +87,7 @@ export default function NullaCaseDetail() {
   const isAtLimit = plan === 'free' && caseAbsences.length >= NULLA_FREE_LIMITS.absencesPerCase;
 
   // Count by impact
-  const highImpactCount = caseAbsences.filter(a => (a as any).impact_level === 'high').length;
+  const highImpactCount = caseAbsences.filter(a => a.impact_level === 'high').length;
   const totalEffects = caseAbsences.reduce((sum, a) => sum + (a.effects?.length || 0), 0);
 
   const tabs: { id: TabType; label: string; icon?: React.ReactNode; proOnly?: boolean }[] = [
@@ -233,9 +236,11 @@ export default function NullaCaseDetail() {
         )}
 
         {activeTab === 'absences' && (
-          <AbsencesList 
+          <AbsencesList
             absences={caseAbsences}
             onAddAbsence={() => setShowAddAbsence(true)}
+            onAddEffect={(absence) => setShowAddEffect(absence)}
+            onDeleteEffect={(id) => deleteEffect.mutateAsync(id)}
             onEdit={(data) => updateAbsence.mutateAsync(data)}
             onDelete={(id) => deleteAbsence.mutateAsync(id)}
             isAtLimit={isAtLimit}
@@ -243,10 +248,11 @@ export default function NullaCaseDetail() {
         )}
 
         {activeTab === 'exports' && (
-          <NullaExportsTab 
+          <NullaExportsTab
             absences={caseAbsences}
             canExport={canExport}
             isPro={isPro}
+            caseData={currentCase}
           />
         )}
 
@@ -283,6 +289,23 @@ export default function NullaCaseDetail() {
             clearPrefill();
           }}
           prefillData={prefillData}
+        />
+      )}
+
+      {/* Add effect modal */}
+      {showAddEffect && (
+        <AddEffectModal
+          absenceId={showAddEffect.id}
+          absenceTitle={showAddEffect.title}
+          onClose={() => setShowAddEffect(null)}
+          onSubmit={async (data) => {
+            await addEffect.mutateAsync({
+              absenceId: data.absenceId,
+              effectType: data.effectType,
+              description: data.description,
+            });
+            setShowAddEffect(null);
+          }}
         />
       )}
 

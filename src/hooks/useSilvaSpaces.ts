@@ -2,6 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef } from 'react';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { toast } from 'sonner';
 
 export interface SilvaSpace {
   id: string;
@@ -93,6 +94,10 @@ export function useSilvaSpaces(userId: string | undefined) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['silva_spaces', userId] });
+      toast.success('Espace SILVA créé');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -102,11 +107,14 @@ export function useSilvaSpaces(userId: string | undefined) {
         .from('silva_spaces')
         .update({ content })
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['silva_spaces', userId] });
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur de sauvegarde: ${error.message}`);
     },
   });
 
@@ -116,11 +124,15 @@ export function useSilvaSpaces(userId: string | undefined) {
         .from('silva_spaces')
         .update({ format_mode: formatMode })
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['silva_spaces', userId] });
+      toast.success('Mode mis à jour');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -130,11 +142,15 @@ export function useSilvaSpaces(userId: string | undefined) {
         .from('silva_spaces')
         .update({ content: '' })
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['silva_spaces', userId] });
+      toast.success('Contenu effacé');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -144,11 +160,15 @@ export function useSilvaSpaces(userId: string | undefined) {
         .from('silva_spaces')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['silva_spaces', userId] });
+      toast.success('Espace supprimé');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 

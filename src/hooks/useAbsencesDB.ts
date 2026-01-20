@@ -1,7 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Absence, AbsenceEffect } from '@/types/database';
+import { Absence, AbsenceEffect, AbsenceCategory, ImpactLevel } from '@/types/database';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { toast } from 'sonner';
 
 export function useAbsencesDB(userId: string | undefined) {
   const queryClient = useQueryClient();
@@ -54,29 +55,29 @@ export function useAbsencesDB(userId: string | undefined) {
   });
 
   const addAbsence = useMutation({
-    mutationFn: async ({ 
-      title, 
+    mutationFn: async ({
+      title,
       description,
       caseId,
       category = 'autre',
       impactLevel = 'moderate',
       counterfactual,
       evidenceNeeded,
-    }: { 
-      title: string; 
+    }: {
+      title: string;
       description: string;
       caseId?: string;
-      category?: string;
-      impactLevel?: string;
+      category?: AbsenceCategory | string;
+      impactLevel?: ImpactLevel | string;
       counterfactual?: string;
       evidenceNeeded?: string;
     }) => {
       if (!userId) throw new Error('User not authenticated');
       const { data, error } = await supabase
         .from('absences')
-        .insert({ 
-          user_id: userId, 
-          title, 
+        .insert({
+          user_id: userId,
+          title,
           description,
           case_id: caseId || null,
           category,
@@ -87,12 +88,16 @@ export function useAbsencesDB(userId: string | undefined) {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['absences', userId] });
+      toast.success('Absence créée avec succès');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur lors de la création: ${error.message}`);
     },
   });
 
@@ -103,11 +108,15 @@ export function useAbsencesDB(userId: string | undefined) {
         .from('absences')
         .delete()
         .eq('id', absenceId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['absences', userId] });
+      toast.success('Absence supprimée');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -124,13 +133,13 @@ export function useAbsencesDB(userId: string | undefined) {
       id: string;
       title?: string;
       description?: string;
-      category?: string;
-      impactLevel?: string;
+      category?: AbsenceCategory | string;
+      impactLevel?: ImpactLevel | string;
       counterfactual?: string;
       evidenceNeeded?: string;
     }) => {
       if (!userId) throw new Error('User not authenticated');
-      
+
       const updates: Record<string, unknown> = {};
       if (title !== undefined) updates.title = title;
       if (description !== undefined) updates.description = description;
@@ -143,11 +152,15 @@ export function useAbsencesDB(userId: string | undefined) {
         .from('absences')
         .update(updates)
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['absences', userId] });
+      toast.success('Absence mise à jour');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -158,39 +171,106 @@ export function useAbsencesDB(userId: string | undefined) {
         .from('absence_effects')
         .delete()
         .eq('id', effectId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['absences', userId] });
+      toast.success('Effet supprimé');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
   const addEffect = useMutation({
-    mutationFn: async ({ 
-      absenceId, 
-      effectType, 
-      description 
-    }: { 
-      absenceId: string; 
-      effectType: AbsenceEffect['effect_type']; 
+    mutationFn: async ({
+      absenceId,
+      effectType,
+      description
+    }: {
+      absenceId: string;
+      effectType: AbsenceEffect['effect_type'];
       description: string;
     }) => {
       if (!userId) throw new Error('User not authenticated');
+      const { data, error } = await supabase
+        .from('absence_effects')
+        .insert({
+          absence_id: absenceId,
+          user_id: userId,
+          effect_type: effectType,
+          description
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['absences', userId] });
+      toast.success('Effet ajouté');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
+    },
+  });
+
+  const updateEffect = useMutation({
+    mutationFn: async ({
+      id,
+      effectType,
+      description
+    }: {
+      id: string;
+      effectType?: AbsenceEffect['effect_type'];
+      description?: string;
+    }) => {
+      if (!userId) throw new Error('User not authenticated');
+
+      const updates: Record<string, unknown> = {};
+      if (effectType !== undefined) updates.effect_type = effectType;
+      if (description !== undefined) updates.description = description;
+
       const { error } = await supabase
         .from('absence_effects')
-        .insert({ 
-          absence_id: absenceId, 
-          user_id: userId,
-          effect_type: effectType, 
-          description 
-        });
-      
+        .update(updates)
+        .eq('id', id);
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['absences', userId] });
+      toast.success('Effet mis à jour');
     },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
+    },
+  });
+
+  // Helper functions
+  const getAbsencesByCase = (caseId: string) =>
+    absences.filter(a => a.case_id === caseId);
+
+  const getStatistics = () => ({
+    total: absences.length,
+    byCategory: Object.entries(
+      absences.reduce((acc, a) => {
+        const cat = a.category || 'autre';
+        acc[cat] = (acc[cat] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ),
+    byImpact: Object.entries(
+      absences.reduce((acc, a) => {
+        const imp = a.impact_level || 'moderate';
+        acc[imp] = (acc[imp] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ),
+    totalEffects: absences.reduce((sum, a) => sum + (a.effects?.length || 0), 0),
+    highImpact: absences.filter(a => a.impact_level === 'high').length,
   });
 
   return {
@@ -198,8 +278,11 @@ export function useAbsencesDB(userId: string | undefined) {
     isLoading,
     addAbsence,
     addEffect,
+    updateEffect,
     deleteAbsence,
     updateAbsence,
     deleteEffect,
+    getAbsencesByCase,
+    getStatistics,
   };
 }

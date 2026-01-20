@@ -1,12 +1,13 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Threshold, 
-  ThresholdConsequence, 
-  ThresholdCategory, 
-  Severity 
+import {
+  Threshold,
+  ThresholdConsequence,
+  ThresholdCategory,
+  Severity
 } from '@/types/database';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { toast } from 'sonner';
 
 export function useIrreversaCases(userId: string | undefined) {
   const queryClient = useQueryClient();
@@ -86,7 +87,7 @@ export function useIrreversaCases(userId: string | undefined) {
       notes?: string;
     }) => {
       if (!userId) throw new Error('User not authenticated');
-      
+
       const { data, error } = await supabase
         .from('thresholds')
         .insert([{
@@ -104,12 +105,16 @@ export function useIrreversaCases(userId: string | undefined) {
         }])
         .select()
         .single();
-      
+
       if (error) throw error;
       return data as Threshold;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+      toast.success('Seuil créé avec succès');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur lors de la création: ${error.message}`);
     },
   });
 
@@ -118,16 +123,42 @@ export function useIrreversaCases(userId: string | undefined) {
     mutationFn: async (thresholdId: string) => {
       const { error } = await supabase
         .from('thresholds')
-        .update({ 
-          is_crossed: true, 
-          crossed_at: new Date().toISOString() 
+        .update({
+          is_crossed: true,
+          crossed_at: new Date().toISOString()
         })
         .eq('id', thresholdId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+      toast.success('Seuil marqué comme franchi');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
+    },
+  });
+
+  // Uncross a threshold (revert to pending)
+  const uncrossThreshold = useMutation({
+    mutationFn: async (thresholdId: string) => {
+      const { error } = await supabase
+        .from('thresholds')
+        .update({
+          is_crossed: false,
+          crossed_at: null
+        })
+        .eq('id', thresholdId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+      toast.success('Seuil remis en attente');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -143,7 +174,7 @@ export function useIrreversaCases(userId: string | undefined) {
       description: string;
     }) => {
       if (!userId) throw new Error('User not authenticated');
-      
+
       const { data, error } = await supabase
         .from('threshold_consequences')
         .insert([{
@@ -154,12 +185,47 @@ export function useIrreversaCases(userId: string | undefined) {
         }])
         .select()
         .single();
-      
+
       if (error) throw error;
       return data as ThresholdConsequence;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+      toast.success('Conséquence ajoutée');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
+    },
+  });
+
+  // Update consequence
+  const updateConsequence = useMutation({
+    mutationFn: async ({
+      id,
+      consequenceType,
+      description,
+    }: {
+      id: string;
+      consequenceType?: ThresholdConsequence['consequence_type'];
+      description?: string;
+    }) => {
+      const updates: Record<string, unknown> = {};
+      if (consequenceType !== undefined) updates.consequence_type = consequenceType;
+      if (description !== undefined) updates.description = description;
+
+      const { error } = await supabase
+        .from('threshold_consequences')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+      toast.success('Conséquence mise à jour');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -170,11 +236,15 @@ export function useIrreversaCases(userId: string | undefined) {
         .from('threshold_consequences')
         .delete()
         .eq('id', consequenceId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+      toast.success('Conséquence supprimée');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -186,16 +256,20 @@ export function useIrreversaCases(userId: string | undefined) {
         .from('threshold_consequences')
         .delete()
         .eq('threshold_id', thresholdId);
-      
+
       const { error } = await supabase
         .from('thresholds')
         .delete()
         .eq('id', thresholdId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+      toast.success('Seuil supprimé');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -236,11 +310,15 @@ export function useIrreversaCases(userId: string | undefined) {
         .from('thresholds')
         .update(updates)
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['irreversa_thresholds', userId] });
+      toast.success('Seuil mis à jour');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -263,12 +341,36 @@ export function useIrreversaCases(userId: string | undefined) {
     return all;
   };
 
+  // Get statistics
+  const getStatistics = () => ({
+    total: thresholds.length,
+    crossed: thresholds.filter(t => t.is_crossed).length,
+    pending: thresholds.filter(t => !t.is_crossed).length,
+    consequences: thresholds.reduce((acc, t) => acc + (t.consequences?.length || 0), 0),
+    byCategory: Object.entries(
+      thresholds.reduce((acc, t) => {
+        const cat = t.category || 'autre';
+        acc[cat] = (acc[cat] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ),
+    bySeverity: Object.entries(
+      thresholds.reduce((acc, t) => {
+        const sev = t.severity || 'moderate';
+        acc[sev] = (acc[sev] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ),
+  });
+
   return {
     thresholds,
     isLoading,
     createThreshold,
     crossThreshold,
+    uncrossThreshold,
     addConsequence,
+    updateConsequence,
     deleteConsequence,
     deleteThreshold,
     updateThreshold,
@@ -276,5 +378,6 @@ export function useIrreversaCases(userId: string | undefined) {
     getPendingThresholds,
     getCrossedThresholds,
     getAllConsequences,
+    getStatistics,
   };
 }

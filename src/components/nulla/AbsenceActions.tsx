@@ -6,29 +6,21 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Absence } from '@/types/database';
+import { Absence, ABSENCE_CATEGORY_LABELS, IMPACT_LEVEL_LABELS } from '@/types/database';
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 
-const CATEGORY_OPTIONS = [
-  { value: 'ressource', label: 'Ressource' },
-  { value: 'preuve', label: 'Preuve / Document' },
-  { value: 'acces', label: 'Accès' },
-  { value: 'competence', label: 'Compétence' },
-  { value: 'protection', label: 'Protection' },
-  { value: 'information', label: 'Information' },
-  { value: 'relation', label: 'Relation / Soutien' },
-  { value: 'stabilite', label: 'Stabilité' },
-  { value: 'autre', label: 'Autre' },
-];
+const CATEGORY_OPTIONS = Object.entries(ABSENCE_CATEGORY_LABELS).map(([value, label]) => ({
+  value,
+  label,
+}));
 
-const IMPACT_OPTIONS = [
-  { value: 'low', label: 'Faible' },
-  { value: 'moderate', label: 'Modéré' },
-  { value: 'high', label: 'Élevé' },
-];
+const IMPACT_OPTIONS = Object.entries(IMPACT_LEVEL_LABELS).map(([value, label]) => ({
+  value,
+  label,
+}));
 
 interface AbsenceActionsProps {
-  absence: Absence & { category?: string; impact_level?: string; counterfactual?: string; evidence_needed?: string };
+  absence: Absence;
   onEdit: (data: {
     id: string;
     title?: string;
@@ -45,10 +37,10 @@ export function AbsenceActions({ absence, onEdit, onDelete }: AbsenceActionsProp
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editTitle, setEditTitle] = useState(absence.title);
   const [editDescription, setEditDescription] = useState(absence.description);
-  const [editCategory, setEditCategory] = useState((absence as any).category || 'autre');
-  const [editImpactLevel, setEditImpactLevel] = useState((absence as any).impact_level || 'moderate');
-  const [editCounterfactual, setEditCounterfactual] = useState((absence as any).counterfactual || '');
-  const [editEvidenceNeeded, setEditEvidenceNeeded] = useState((absence as any).evidence_needed || '');
+  const [editCategory, setEditCategory] = useState(absence.category || 'autre');
+  const [editImpactLevel, setEditImpactLevel] = useState(absence.impact_level || 'moderate');
+  const [editCounterfactual, setEditCounterfactual] = useState(absence.counterfactual || '');
+  const [editEvidenceNeeded, setEditEvidenceNeeded] = useState(absence.evidence_needed || '');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleEdit = async () => {

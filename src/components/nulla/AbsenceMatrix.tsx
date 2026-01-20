@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Absence, AbsenceEffect, EFFECT_LABELS } from '@/types/database';
+import { Absence, AbsenceEffect, EFFECT_LABELS, ABSENCE_CATEGORY_LABELS, ImpactLevel } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,19 +16,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-const CATEGORY_LABELS: Record<string, string> = {
-  ressource: 'Ressource',
-  preuve: 'Preuve / Document',
-  acces: 'Accès',
-  competence: 'Compétence',
-  protection: 'Protection',
-  information: 'Information',
-  relation: 'Relation / Soutien',
-  stabilite: 'Stabilité',
-  autre: 'Autre',
-};
+const CATEGORY_LABELS = ABSENCE_CATEGORY_LABELS;
 
-const IMPACT_LABELS: Record<string, { label: string; color: string }> = {
+const IMPACT_LABELS: Record<ImpactLevel, { label: string; color: string }> = {
   low: { label: 'Faible', color: 'text-green-500' },
   moderate: { label: 'Modéré', color: 'text-amber-500' },
   high: { label: 'Élevé', color: 'text-red-500' },
@@ -47,24 +37,24 @@ export function AbsenceMatrix({ absences, onAddEffect }: AbsenceMatrixProps) {
 
   // Get top critical absences
   const criticalAbsences = absences
-    .filter(a => (a as any).impact_level === 'high')
+    .filter(a => a.impact_level === 'high')
     .slice(0, 5);
 
   // Filter and sort absences
   let filteredAbsences = absences.filter(a => {
     const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           a.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || (a as any).category === categoryFilter;
-    const matchesImpact = impactFilter === 'all' || (a as any).impact_level === impactFilter;
+    const matchesCategory = categoryFilter === 'all' || a.category === categoryFilter;
+    const matchesImpact = impactFilter === 'all' || a.impact_level === impactFilter;
     return matchesSearch && matchesCategory && matchesImpact;
   });
 
   // Sort
+  const impactOrder: Record<ImpactLevel, number> = { high: 0, moderate: 1, low: 2 };
   filteredAbsences = [...filteredAbsences].sort((a, b) => {
     if (sortBy === 'impact') {
-      const impactOrder = { high: 0, moderate: 1, low: 2 };
-      return (impactOrder[(a as any).impact_level || 'moderate'] || 1) - 
-             (impactOrder[(b as any).impact_level || 'moderate'] || 1);
+      return (impactOrder[a.impact_level || 'moderate'] || 1) -
+             (impactOrder[b.impact_level || 'moderate'] || 1);
     }
     if (sortBy === 'alpha') {
       return a.title.localeCompare(b.title);
@@ -133,7 +123,7 @@ export function AbsenceMatrix({ absences, onAddEffect }: AbsenceMatrixProps) {
         </div>
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as any)}
+          onChange={(e) => setSortBy(e.target.value as 'impact' | 'alpha' | 'recent')}
           className="px-3 py-2 border border-border bg-background text-foreground text-sm"
         >
           <option value="impact">Tri: Impact</option>
@@ -160,8 +150,8 @@ export function AbsenceMatrix({ absences, onAddEffect }: AbsenceMatrixProps) {
             </TableHeader>
             <TableBody>
               {filteredAbsences.map((absence) => {
-                const impact = IMPACT_LABELS[(absence as any).impact_level || 'moderate'];
-                const category = CATEGORY_LABELS[(absence as any).category || 'autre'];
+                const impact = IMPACT_LABELS[absence.impact_level || 'moderate'];
+                const category = CATEGORY_LABELS[absence.category || 'autre'];
                 const firstEffect = absence.effects?.[0];
                 
                 return (

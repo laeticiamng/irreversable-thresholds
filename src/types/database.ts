@@ -55,6 +55,9 @@ export const CONSEQUENCE_TYPE_LABELS: Record<ThresholdConsequence['consequence_t
   enabled: 'Devient possible',
 };
 
+export type AbsenceCategory = 'ressource' | 'preuve' | 'acces' | 'protection' | 'information' | 'competence' | 'stabilite' | 'relation' | 'autre';
+export type ImpactLevel = 'low' | 'moderate' | 'high';
+
 export interface Absence {
   id: string;
   user_id: string;
@@ -62,8 +65,31 @@ export interface Absence {
   description: string;
   created_at: string;
   case_id?: string | null;
+  category?: AbsenceCategory;
+  impact_level?: ImpactLevel;
+  counterfactual?: string | null;
+  evidence_needed?: string | null;
+  organization_id?: string | null;
   effects?: AbsenceEffect[];
 }
+
+export const ABSENCE_CATEGORY_LABELS: Record<AbsenceCategory, string> = {
+  ressource: 'Ressource',
+  preuve: 'Preuve',
+  acces: 'Accès',
+  protection: 'Protection',
+  information: 'Information',
+  competence: 'Compétence',
+  stabilite: 'Stabilité',
+  relation: 'Relation',
+  autre: 'Autre',
+};
+
+export const IMPACT_LEVEL_LABELS: Record<ImpactLevel, string> = {
+  low: 'Faible',
+  moderate: 'Modéré',
+  high: 'Critique',
+};
 
 export interface AbsenceEffect {
   id: string;
@@ -83,6 +109,10 @@ export interface InvisibleThreshold {
   sensed_at: string | null;
   created_at: string;
   case_id?: string | null;
+  tags?: string[];
+  intensity?: number;
+  context?: string | null;
+  organization_id?: string | null;
 }
 
 export interface SilvaSession {
