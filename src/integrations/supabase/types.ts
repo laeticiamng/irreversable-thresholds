@@ -1142,7 +1142,60 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_public: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
+      templates_accessible: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_premium: boolean | null
+          module: string | null
+          name: string | null
+          slug: string | null
+          structure: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_premium?: boolean | null
+          module?: string | null
+          name?: string | null
+          slug?: string | null
+          structure?: never
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_premium?: boolean | null
+          module?: string | null
+          name?: string | null
+          slug?: string | null
+          structure?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_workspace_role: {
