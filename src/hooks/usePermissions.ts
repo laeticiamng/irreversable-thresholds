@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
 import { useOrganizationMembers } from '@/hooks/useOrganizationMembers';
 import { useTeamMembers } from '@/hooks/useTeams';
-import { OrganizationRole } from '@/types/organization';
+import { OrgRole } from '@/types/organization';
 
 export type Permission =
   | 'create_case'
@@ -33,7 +33,7 @@ export type Permission =
   | 'invite_members';
 
 // Permission matrix by role
-const ROLE_PERMISSIONS: Record<OrganizationRole, Permission[]> = {
+const ROLE_PERMISSIONS: Record<OrgRole, Permission[]> = {
   owner: [
     'create_case', 'read_case', 'update_case', 'delete_case',
     'create_threshold', 'read_threshold', 'update_threshold', 'delete_threshold',
@@ -72,7 +72,7 @@ export interface UsePermissionsReturn {
   hasPermission: (permission: Permission) => boolean;
   hasAnyPermission: (permissions: Permission[]) => boolean;
   hasAllPermissions: (permissions: Permission[]) => boolean;
-  role: OrganizationRole | null;
+  role: OrgRole | null;
   isOwner: boolean;
   isAdmin: boolean;
   isMember: boolean;
@@ -93,7 +93,7 @@ export function usePermissions(userId: string | undefined): UsePermissionsReturn
     return members.find(m => m.user_id === userId);
   }, [userId, members]);
 
-  const role = useMemo((): OrganizationRole | null => {
+  const role = useMemo((): OrgRole | null => {
     // In personal mode, user has full permissions
     if (isPersonalMode) return 'owner';
     // If no organization, return null
