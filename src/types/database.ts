@@ -135,6 +135,8 @@ export interface Case {
   metadata: Record<string, unknown>;
   domain?: CaseDomain;
   time_horizon?: TimeHorizon | null;
+  organization_id?: string | null;
+  assigned_team_id?: string | null;
   created_at: string;
   updated_at: string;
 }

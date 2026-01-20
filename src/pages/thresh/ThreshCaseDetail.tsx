@@ -17,6 +17,7 @@ import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
 import { TagManager } from '@/components/tags/TagManager';
 import { ShareCaseModal } from '@/components/collaboration/ShareCaseModal';
+import { CaseTeamAssignment } from '@/components/teams/CaseTeamAssignment';
 import { useAIFormPrefill, type ThreshFormData } from '@/hooks/useAIFormPrefill';
 import { Plus, ArrowLeft, Leaf } from 'lucide-react';
 import type { AIProposal } from '@/hooks/useAIAssist';
@@ -146,6 +147,13 @@ export default function ThreshCaseDetail() {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              {currentCase.organization_id && (
+                <CaseTeamAssignment
+                  caseId={caseId!}
+                  organizationId={currentCase.organization_id}
+                  currentTeamId={currentCase.assigned_team_id}
+                />
+              )}
               <ShareCaseModal 
                 caseId={caseId!}
                 caseTitle={currentCase.title}
