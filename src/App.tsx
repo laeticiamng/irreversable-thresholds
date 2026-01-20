@@ -72,6 +72,15 @@ const OrgSettings = lazy(() => import("./pages/org/OrgSettings"));
 // Invitation page (lazy)
 const AcceptInvitation = lazy(() => import("./pages/invite/AcceptInvitation"));
 
+// Templates page (lazy)
+const Templates = lazy(() => import("./pages/Templates"));
+
+// Workspaces page (lazy)
+const Workspaces = lazy(() => import("./pages/Workspaces"));
+
+// Signals page (lazy)
+const Signals = lazy(() => import("./pages/Signals"));
+
 // Unified case creation (lazy)
 const CreateCase = lazy(() => import("./pages/CreateCase"));
 
@@ -165,7 +174,16 @@ function AnimatedRoutes() {
             
             {/* Invitation acceptance */}
             <Route path="/invite/:token" element={<AcceptInvitation />} />
-            
+
+            {/* Templates */}
+            <Route path="/templates" element={<Templates />} />
+
+            {/* Workspaces */}
+            <Route path="/workspaces" element={<Workspaces />} />
+
+            {/* Signals */}
+            <Route path="/signals" element={<Signals />} />
+
             {/* Legacy redirects */}
             <Route path="/pending" element={<IrreversaCases />} />
             <Route path="/archive" element={<IrreversaCases />} />
