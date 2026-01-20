@@ -239,6 +239,7 @@ export type Database = {
       }
       cases: {
         Row: {
+          assigned_team_id: string | null
           created_at: string
           description: string | null
           domain: string | null
@@ -254,6 +255,7 @@ export type Database = {
           workspace_id: string
         }
         Insert: {
+          assigned_team_id?: string | null
           created_at?: string
           description?: string | null
           domain?: string | null
@@ -269,6 +271,7 @@ export type Database = {
           workspace_id: string
         }
         Update: {
+          assigned_team_id?: string | null
           created_at?: string
           description?: string | null
           domain?: string | null
@@ -284,6 +287,13 @@ export type Database = {
           workspace_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "cases_assigned_team_id_fkey"
+            columns: ["assigned_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "cases_organization_id_fkey"
             columns: ["organization_id"]
