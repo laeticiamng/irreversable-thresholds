@@ -18,6 +18,7 @@ import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { AIHistoryModal } from '@/components/ai/AIHistoryModal';
 import { TagManager } from '@/components/tags/TagManager';
 import { ShareCaseModal } from '@/components/collaboration/ShareCaseModal';
+import { CaseTeamAssignment } from '@/components/teams/CaseTeamAssignment';
 import { useAIFormPrefill, type IrreversaFormData } from '@/hooks/useAIFormPrefill';
 import { DOMAIN_LABELS } from '@/types/database';
 import { format } from 'date-fns';
@@ -136,6 +137,13 @@ export default function CaseDetail() {
               {caseId && <TagManager caseId={caseId} />}
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              {caseId && currentCase?.organization_id && (
+                <CaseTeamAssignment
+                  caseId={caseId}
+                  organizationId={currentCase.organization_id}
+                  currentTeamId={currentCase.assigned_team_id}
+                />
+              )}
               {caseId && currentCase && (
                 <ShareCaseModal 
                   caseId={caseId}

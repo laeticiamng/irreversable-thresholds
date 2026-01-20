@@ -1,6 +1,6 @@
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Settings, Users, Layers, Loader2, TrendingUp, Activity, Calendar } from 'lucide-react';
+import { ArrowLeft, Settings, Users, Layers, Loader2, TrendingUp, Activity, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { OrgStats } from '@/components/org/OrgStats';
 import { MemberList } from '@/components/org/MemberList';
 import { OrgActivityFeed } from '@/components/org/OrgActivityFeed';
+import { OrgPDFExport } from '@/components/org/OrgPDFExport';
 import { ModuleDistributionChart } from '@/components/charts/ModuleDistributionChart';
 import { GlobalNav } from '@/components/GlobalNav';
 import { useQuery } from '@tanstack/react-query';
@@ -103,6 +104,11 @@ export default function OrgDashboard() {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <OrgPDFExport 
+                organizationId={org.id} 
+                organizationName={org.name}
+                isSubscribed={planKey !== 'trial'}
+              />
               <Link to={`/org/${orgSlug}/members`}>
                 <Button variant="outline" size="sm" className="font-display tracking-wider">
                   <Users className="w-4 h-4 mr-2" />
