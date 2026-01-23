@@ -19,14 +19,14 @@ import {
 const CATEGORY_LABELS = ABSENCE_CATEGORY_LABELS;
 
 const IMPACT_LABELS: Record<ImpactLevel, { label: string; color: string }> = {
-  low: { label: 'Faible', color: 'text-green-500' },
+  low: { label: 'Faible', color: 'text-emerald-500' },
   moderate: { label: 'Modéré', color: 'text-amber-500' },
-  high: { label: 'Élevé', color: 'text-red-500' },
+  high: { label: 'Élevé', color: 'text-destructive' },
 };
 
 interface AbsenceMatrixProps {
   absences: Absence[];
-  onAddEffect: (absenceId: string, type: AbsenceEffect['effect_type'], description: string) => Promise<void>;
+  onAddEffect: (absenceId: string, type: AbsenceEffect['effect_type'], description: string) => Promise<unknown>;
 }
 
 export function AbsenceMatrix({ absences, onAddEffect }: AbsenceMatrixProps) {
@@ -66,14 +66,14 @@ export function AbsenceMatrix({ absences, onAddEffect }: AbsenceMatrixProps) {
     <div className="space-y-8">
       {/* Top 5 Critical */}
       {criticalAbsences.length > 0 && (
-        <div className="p-6 border border-red-500/20 bg-red-500/5">
-          <h3 className="font-display text-lg text-red-500 mb-4">
+        <div className="p-6 border border-destructive/20 bg-destructive/5">
+          <h3 className="font-display text-lg text-destructive mb-4">
             Top {criticalAbsences.length} absences critiques
           </h3>
           <div className="space-y-2">
             {criticalAbsences.map(a => (
               <div key={a.id} className="flex items-start gap-3 p-3 bg-background/50">
-                <span className="text-red-500">●</span>
+                <span className="text-destructive">●</span>
                 <div>
                   <span className="font-medium text-foreground">{a.title}</span>
                   {a.effects && a.effects.length > 0 && (
