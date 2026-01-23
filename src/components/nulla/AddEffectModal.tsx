@@ -7,8 +7,8 @@ import { X } from 'lucide-react';
 import { AbsenceEffect } from '@/types/database';
 
 const EFFECT_TYPES: { value: AbsenceEffect['effect_type']; label: string; description: string; color: string }[] = [
-  { value: 'prevents', label: 'Empêche', description: 'Rend quelque chose impossible', color: 'text-red-500 border-red-500/30' },
-  { value: 'enables', label: 'Rend possible', description: 'Permet quelque chose de négatif', color: 'text-green-500 border-green-500/30' },
+  { value: 'prevents', label: 'Empêche', description: 'Rend quelque chose impossible', color: 'text-destructive border-destructive/30' },
+  { value: 'enables', label: 'Rend possible', description: 'Permet quelque chose de négatif', color: 'text-emerald-500 border-emerald-500/30' },
   { value: 'forces', label: 'Force à contourner', description: 'Oblige à trouver une alternative', color: 'text-amber-500 border-amber-500/30' },
   { value: 'preserves', label: 'Préserve', description: 'Maintient un statu quo', color: 'text-blue-500 border-blue-500/30' },
 ];
@@ -21,7 +21,7 @@ interface AddEffectModalProps {
     absenceId: string;
     effectType: AbsenceEffect['effect_type']; 
     description: string;
-  }) => Promise<void>;
+  }) => Promise<unknown>;
 }
 
 export function AddEffectModal({ absenceId, absenceTitle, onClose, onSubmit }: AddEffectModalProps) {
@@ -104,7 +104,7 @@ export function AddEffectModal({ absenceId, absenceTitle, onClose, onSubmit }: A
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="font-display">
-              Description de l'effet <span className="text-red-500">*</span>
+              Description de l'effet <span className="text-destructive">*</span>
             </Label>
             <Textarea
               id="description"

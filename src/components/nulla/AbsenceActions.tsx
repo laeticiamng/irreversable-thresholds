@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Absence, ABSENCE_CATEGORY_LABELS, IMPACT_LEVEL_LABELS } from '@/types/database';
+import { Absence, AbsenceCategory, ImpactLevel, ABSENCE_CATEGORY_LABELS, IMPACT_LEVEL_LABELS } from '@/types/database';
 import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 
 const CATEGORY_OPTIONS = Object.entries(ABSENCE_CATEGORY_LABELS).map(([value, label]) => ({
@@ -37,8 +37,8 @@ export function AbsenceActions({ absence, onEdit, onDelete }: AbsenceActionsProp
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editTitle, setEditTitle] = useState(absence.title);
   const [editDescription, setEditDescription] = useState(absence.description);
-  const [editCategory, setEditCategory] = useState(absence.category || 'autre');
-  const [editImpactLevel, setEditImpactLevel] = useState(absence.impact_level || 'moderate');
+  const [editCategory, setEditCategory] = useState<AbsenceCategory>(absence.category || 'autre');
+  const [editImpactLevel, setEditImpactLevel] = useState<ImpactLevel>(absence.impact_level || 'moderate');
   const [editCounterfactual, setEditCounterfactual] = useState(absence.counterfactual || '');
   const [editEvidenceNeeded, setEditEvidenceNeeded] = useState(absence.evidence_needed || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -132,7 +132,7 @@ export function AbsenceActions({ absence, onEdit, onDelete }: AbsenceActionsProp
               <select
                 id="edit-category"
                 value={editCategory}
-                onChange={(e) => setEditCategory(e.target.value)}
+                onChange={(e) => setEditCategory(e.target.value as AbsenceCategory)}
                 className="w-full px-3 py-2 border border-border bg-background text-foreground"
               >
                 {CATEGORY_OPTIONS.map(opt => (
@@ -147,7 +147,7 @@ export function AbsenceActions({ absence, onEdit, onDelete }: AbsenceActionsProp
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => setEditImpactLevel(opt.value)}
+                    onClick={() => setEditImpactLevel(opt.value as ImpactLevel)}
                     className={`flex-1 py-2 text-sm border transition-colors ${
                       editImpactLevel === opt.value
                         ? 'border-nulla bg-nulla/10 text-nulla'
