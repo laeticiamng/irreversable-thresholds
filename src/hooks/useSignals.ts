@@ -1,32 +1,27 @@
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Signal, SignalType } from '@/types/database';
-import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { toast } from 'sonner';
 
+// Note: signals table does NOT have organization_id column
+// It is scoped via case_id which itself has organization_id
 export function useSignals(userId: string | undefined, caseId?: string) {
   const queryClient = useQueryClient();
-  const { currentOrganization, isPersonalMode } = useOrganizationContext();
 
   const { data: signals = [], isLoading } = useQuery({
-    queryKey: ['signals', userId, caseId, currentOrganization?.id, isPersonalMode],
+    queryKey: ['signals', userId, caseId],
     queryFn: async () => {
       if (!userId) return [];
 
       let query = supabase
         .from('signals')
         .select('*')
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
+      // Filter by case if provided
       if (caseId) {
         query = query.eq('case_id', caseId);
-      }
-
-      if (isPersonalMode) {
-        query = query.eq('user_id', userId).is('organization_id', null);
-      } else if (currentOrganization) {
-        query = query.or(`organization_id.eq.${currentOrganization.id},and(user_id.eq.${userId},organization_id.is.null)`);
-      } else {
-        query = query.eq('user_id', userId);
       }
 
       const { data, error } = await query;
@@ -52,6 +47,10 @@ export function useSignals(userId: string | undefined, caseId?: string) {
       caseId?: string;
     }) => {
       if (!userId) throw new Error('User not authenticated');
+      
+      const targetCaseId = signalCaseId || caseId;
+      if (!targetCaseId) throw new Error('Case ID is required for signals');
+      
       const { data, error } = await supabase
         .from('signals')
         .insert({
@@ -60,8 +59,7 @@ export function useSignals(userId: string | undefined, caseId?: string) {
           signal_type: signalType,
           intensity: intensity || null,
           occurred_at: occurredAt || null,
-          case_id: signalCaseId || caseId || null,
-          organization_id: isPersonalMode ? null : currentOrganization?.id || null,
+          case_id: targetCaseId,
         })
         .select()
         .single();
@@ -71,6 +69,10 @@ export function useSignals(userId: string | undefined, caseId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['signals', userId] });
+      toast.success('Signal ajouté');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -106,6 +108,10 @@ export function useSignals(userId: string | undefined, caseId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['signals', userId] });
+      toast.success('Signal mis à jour');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
@@ -120,6 +126,10 @@ export function useSignals(userId: string | undefined, caseId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['signals', userId] });
+      toast.success('Signal supprimé');
+    },
+    onError: (error: Error) => {
+      toast.error(`Erreur: ${error.message}`);
     },
   });
 
